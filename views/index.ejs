@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zomato — Find Food You Love</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:       #e23744;
+      --red-dark:  #b5202e;
+      --red-glow:  rgba(226, 55, 68, 0.35);
+      --cream:     #fdf6ee;
+      --warm:      #f5ede0;
+      --sand:      #e8d9c5;
+      --charcoal:  #1a1210;
+      --text:      #2d1f1a;
+      --muted:     #7a6560;
+      --white:     #ffffff;
+      --card-bg:   rgba(255,255,255,0.75);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ─── NAVBAR ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 5%;
+      background: rgba(253, 246, 238, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--sand);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem; font-weight: 900;
+      color: var(--red);
+      letter-spacing: -1px;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--charcoal); }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--muted); font-weight: 500;
+      font-size: 0.95rem; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--red); }
+    .nav-cta {
+      display: flex; gap: 0.75rem;
+    }
+    .btn {
+      padding: 0.55rem 1.3rem; border-radius: 50px; font-weight: 600;
+      font-size: 0.9rem; cursor: pointer; transition: all 0.25s; border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-outline {
+      background: transparent; border: 1.5px solid var(--red);
+      color: var(--red);
+    }
+    .btn-outline:hover { background: var(--red); color: var(--white); }
+    .btn-fill {
+      background: var(--red); color: var(--white);
+      box-shadow: 0 4px 18px var(--red-glow);
+    }
+    .btn-fill:hover { background: var(--red-dark); transform: translateY(-1px); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      padding: 140px 5% 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 50%, rgba(226,55,68,0.08) 0%, transparent 70%),
+        var(--cream);
+    }
+    .hero-text { animation: fadeUp 0.8s ease both; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(226,55,68,0.1); color: var(--red);
+      padding: 0.3rem 1rem; border-radius: 50px; font-size: 0.8rem;
+      font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .hero-eyebrow::before { content: '🍽️'; }
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 5vw, 4.5rem);
+      font-weight: 900; line-height: 1.1;
+      color: var(--charcoal);
+      margin-bottom: 1.25rem;
+    }
+    h1 em { font-style: italic; color: var(--red); }
+    .hero-sub {
+      font-size: 1.1rem; color: var(--muted); line-height: 1.7;
+      max-width: 480px; margin-bottom: 2rem;
+    }
+    .hero-search {
+      display: flex; align-items: center;
+      background: var(--white);
+      border: 1.5px solid var(--sand);
+      border-radius: 60px;
+      padding: 0.4rem 0.4rem 0.4rem 1.4rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+      max-width: 520px;
+      gap: 0.5rem;
+    }
+    .hero-search input {
+      flex: 1; border: none; outline: none; background: transparent;
+      font-size: 1rem; color: var(--text); font-family: 'DM Sans', sans-serif;
+    }
+    .hero-search input::placeholder { color: var(--muted); }
+    .hero-search .search-btn {
+      background: var(--red); color: var(--white);
+      border: none; border-radius: 50px; padding: 0.7rem 1.5rem;
+      font-weight: 600; font-size: 0.95rem; cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .hero-search .search-btn:hover { background: var(--red-dark); transform: scale(1.03); }
+    .hero-tags { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1rem; }
+    .tag {
+      background: var(--warm); border: 1px solid var(--sand);
+      color: var(--muted); padding: 0.3rem 0.9rem; border-radius: 50px;
+      font-size: 0.82rem; cursor: pointer; transition: all 0.2s;
+    }
+    .tag:hover { background: var(--red); color: var(--white); border-color: var(--red); }
+
+    /* Hero Image Grid */
+    .hero-visual {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 1rem;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+    .food-card {
+      border-radius: 20px; overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+      position: relative; cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .food-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.18); }
+    .food-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .food-card.tall { grid-row: span 2; min-height: 340px; }
+    .food-card.short { min-height: 160px; }
+    .food-card-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+      color: var(--white); padding: 0.8rem 1rem 0.6rem;
+      font-weight: 600; font-size: 0.9rem;
+    }
+    .food-card-badge {
+      position: absolute; top: 0.7rem; right: 0.7rem;
+      background: var(--red); color: var(--white);
+      font-size: 0.72rem; font-weight: 700;
+      padding: 0.25rem 0.6rem; border-radius: 50px;
+    }
+
+    /* ─── STATS BAR ─── */
+    .stats-bar {
+      background: var(--charcoal);
+      padding: 2.5rem 5%;
+      display: flex; justify-content: space-around; gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem; font-weight: 900; color: var(--red);
+    }
+    .stat-label { color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-top: 0.2rem; }
+
+    /* ─── CATEGORIES ─── */
+    .section { padding: 6rem 5%; }
+    .section-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2.5rem; }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 900; color: var(--charcoal);
+    }
+    .section-title span { color: var(--red); }
+    .see-all {
+      color: var(--red); font-weight: 600; font-size: 0.9rem;
+      text-decoration: none; display: flex; align-items: center; gap: 0.3rem;
+    }
+    .see-all::after { content: '→'; }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 1rem;
+    }
+    .category-card {
+      background: var(--white);
+      border: 1.5px solid var(--sand);
+      border-radius: 20px; padding: 1.5rem 1rem;
+      text-align: center; cursor: pointer;
+      transition: all 0.25s;
+    }
+    .category-card:hover {
+      border-color: var(--red); background: rgba(226,55,68,0.04);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px var(--red-glow);
+    }
+    .category-icon { font-size: 2.2rem; margin-bottom: 0.5rem; }
+    .category-name { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+
+    /* ─── RESTAURANT CARDS ─── */
+    .restaurants-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .restaurant-card {
+      background: var(--white);
+      border-radius: 20px; overflow: hidden;
+      border: 1.5px solid var(--sand);
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .restaurant-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+    }
+    .rc-img {
+      width: 100%; height: 180px; object-fit: cover;
+      display: block; position: relative;
+    }
+    .rc-img-wrap { position: relative; }
+    .rc-offer {
+      position: absolute; bottom: 0.6rem; left: 0.6rem;
+      background: var(--charcoal); color: var(--white);
+      font-size: 0.75rem; font-weight: 700; padding: 0.3rem 0.7rem;
+      border-radius: 8px;
+    }
+    .rc-body { padding: 1rem 1.2rem 1.2rem; }
+    .rc-name { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.25rem; }
+    .rc-cuisine { color: var(--muted); font-size: 0.85rem; margin-bottom: 0.75rem; }
+    .rc-meta {
+      display: flex; align-items: center; gap: 1rem;
+      font-size: 0.82rem; color: var(--muted);
+      border-top: 1px solid var(--warm); padding-top: 0.75rem;
+    }
+    .rc-rating {
+      display: flex; align-items: center; gap: 0.3rem;
+      background: #21a048; color: var(--white);
+      padding: 0.2rem 0.5rem; border-radius: 6px;
+      font-weight: 700; font-size: 0.82rem;
+    }
+
+    /* ─── PROMO BANNER ─── */
+    .promo-section {
+      padding: 0 5% 6rem;
+    }
+    .promo-banner {
+      background: linear-gradient(135deg, var(--charcoal) 0%, #3a1a15 100%);
+      border-radius: 28px;
+      padding: 4rem 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 2rem; flex-wrap: wrap;
+      position: relative; overflow: hidden;
+    }
+    .promo-banner::before {
+      content: '';
+      position: absolute; top: -60px; right: -60px;
+      width: 300px; height: 300px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(226,55,68,0.3), transparent 70%);
+    }
+    .promo-text { position: relative; z-index: 1; }
+    .promo-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      font-weight: 900; color: var(--white); margin-bottom: 0.75rem;
+    }
+    .promo-text p { color: rgba(255,255,255,0.6); max-width: 420px; line-height: 1.7; }
+    .promo-actions { display: flex; gap: 1rem; flex-wrap: wrap; position: relative; z-index: 1; }
+    .btn-white {
+      background: var(--white); color: var(--charcoal); padding: 0.8rem 2rem;
+      border-radius: 50px; font-weight: 700; font-size: 0.95rem;
+      border: none; cursor: pointer; transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-white:hover { background: var(--red); color: var(--white); }
+    .btn-ghost {
+      background: transparent; color: var(--white); padding: 0.8rem 2rem;
+      border-radius: 50px; font-weight: 700; font-size: 0.95rem;
+      border: 1.5px solid rgba(255,255,255,0.3); cursor: pointer;
+      transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+    }
+    .btn-ghost:hover { border-color: var(--white); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--charcoal);
+      color: rgba(255,255,255,0.55);
+      padding: 4rem 5% 2rem;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem; margin-bottom: 3rem;
+    }
+    .footer-brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem; color: var(--white); font-weight: 900;
+    }
+    .footer-brand-name span { color: var(--red); }
+    .footer-desc { margin-top: 0.75rem; line-height: 1.7; font-size: 0.9rem; }
+    .footer-heading { color: var(--white); font-weight: 700; margin-bottom: 1rem; font-size: 0.95rem; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+    .footer-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--red); }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 1.5rem; text-align: center; font-size: 0.82rem;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .animate { animation: fadeUp 0.7s ease both; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; padding-top: 110px; }
+      .hero-visual { display: none; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav>
+  <a class="nav-logo" href="/"><span>Zomato</span></a>
+  <ul class="nav-links">
+    <li><a href="#">Delivery</a></li>
+    <li><a href="#">Dining Out</a></li>
+  </ul>
+  <div class="nav-cta">
+    <% if (locals.user) { %>
+      <button class="btn btn-fill">Hi, <%= user.name %> 👋</button>
+    <% } else { %>
+      <a href="/auth/login"><button class="btn btn-outline">Log in</button></a>
+      <a href="/auth/signup"><button class="btn btn-fill">Sign up</button></a>
+    <% } %>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-eyebrow">Now delivering in your city</div>
+    <h1>
+      Discover <em>great</em><br>food around you
+    </h1>
+    <p class="hero-sub">
+      From local favourites to gourmet dining — order online or find the perfect restaurant for your next meal.
+    </p>
+
+    <div class="hero-search">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search for restaurants or dishes…"
+        autocomplete="off"
+      />
+      <button class="search-btn" onclick="handleSearch()">Search</button>
+    </div>
+
+    <div class="hero-tags">
+      <span class="tag" onclick="quickSearch('Pizza')">🍕 Pizza</span>
+      <span class="tag" onclick="quickSearch('Biryani')">🍚 Biryani</span>
+      <span class="tag" onclick="quickSearch('Burger')">🍔 Burger</span>
+      <span class="tag" onclick="quickSearch('Sushi')">🍣 Sushi</span>
+      <span class="tag" onclick="quickSearch('Desserts')">🍰 Desserts</span>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="food-card tall">
+      <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&q=80" alt="Pizza" />
+      <div class="food-card-label">Margherita Pizza</div>
+      <div class="food-card-badge">⭐ 4.8</div>
+    </div>
+    <div class="food-card short">
+      <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=80" alt="Burger" />
+      <div class="food-card-label">Smash Burger</div>
+    </div>
+    <div class="food-card short">
+      <img src="https://images.unsplash.com/photo-1548943487-a2e4e43b4853?w=500&q=80" alt="Dessert" />
+      <div class="food-card-label">Tiramisu</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS BAR ── -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-num">10K+</div>
+    <div class="stat-label">Restaurants</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">500+</div>
+    <div class="stat-label">Cities Covered</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">2M+</div>
+    <div class="stat-label">Happy Customers</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">30 min</div>
+    <div class="stat-label">Avg. Delivery Time</div>
+  </div>
+</div>
+
+<!-- ── CATEGORIES ── -->
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">What are you craving <span>today?</span></h2>
+    <a href="/categories" class="see-all">All categories</a>
+  </div>
+  <div class="categories-grid">
+    <% const categories = [
+      { icon: '🍕', name: 'Pizza' },
+      { icon: '🍔', name: 'Burgers' },
+      { icon: '🍚', name: 'Biryani' },
+      { icon: '🍣', name: 'Sushi' },
+      { icon: '🍜', name: 'Noodles' },
+      { icon: '🌮', name: 'Mexican' },
+      { icon: '🥗', name: 'Salads' },
+      { icon: '🍰', name: 'Desserts' },
+      { icon: '☕', name: 'Café' },
+      { icon: '🥩', name: 'BBQ' },
+      { icon: '🫕', name: 'Curry' },
+      { icon: '🥪', name: 'Sandwiches' },
+    ]; %>
+    <% categories.forEach(cat => { %>
+      <div class="category-card" onclick="window.location.href='/restaurants?category=<%= cat.name %>'">
+        <div class="category-icon"><%= cat.icon %></div>
+        <div class="category-name"><%= cat.name %></div>
+      </div>
+    <% }) %>
+  </div>
+</section>
+
+<!-- ── POPULAR RESTAURANTS ── -->
+<section class="section" style="padding-top: 0;">
+  <div class="section-header">
+    <h2 class="section-title">Popular <span>near you</span></h2>
+    <a href="/restaurants" class="see-all">View all</a>
+  </div>
+  <div class="restaurants-grid">
+    <% if (locals.restaurants && restaurants.length > 0) { %>
+      <% restaurants.forEach(r => { %>
+        <div class="restaurant-card" onclick="window.location.href='/restaurant/<%= r._id %>'">
+          <div class="rc-img-wrap">
+            <img class="rc-img" src="<%= r.image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&q=80' %>" alt="<%= r.name %>"/>
+            <% if (r.offer) { %><div class="rc-offer"><%= r.offer %></div><% } %>
+          </div>
+          <div class="rc-body">
+            <div class="rc-name"><%= r.name %></div>
+            <div class="rc-cuisine"><%= r.cuisine %></div>
+            <div class="rc-meta">
+              <span class="rc-rating">★ <%= r.rating || '4.2' %></span>
+              <span>⏱ <%= r.deliveryTime || '30-40' %> min</span>
+              <span>₹<%= r.priceForTwo || '300' %> for two</span>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    <% } else { %>
+      <%
+        const sampleRestaurants = [
+          { name: "The Spice Route", cuisine: "North Indian, Chinese", rating: "4.5", deliveryTime: "25-35", priceForTwo: "400", offer: "20% OFF", img: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&q=80" },
+          { name: "Burger Republic", cuisine: "Burgers, Fast Food", rating: "4.3", deliveryTime: "20-30", priceForTwo: "300", offer: "FREE DELIVERY", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=500&q=80" },
+          { name: "Sakura Sushi Bar", cuisine: "Japanese, Sushi", rating: "4.7", deliveryTime: "30-40", priceForTwo: "800", offer: null, img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=500&q=80" },
+          { name: "La Dolce Vita", cuisine: "Italian, Pizza, Pasta", rating: "4.4", deliveryTime: "35-45", priceForTwo: "600", offer: "15% OFF", img: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&q=80" },
+          { name: "Desi Tadka", cuisine: "Biryani, Mughlai", rating: "4.6", deliveryTime: "25-35", priceForTwo: "350", offer: null, img: "https://images.unsplash.com/photo-1563379091339-03246963d96f?w=500&q=80" },
+          { name: "Cafe Bloom", cuisine: "Café, Desserts, Beverages", rating: "4.2", deliveryTime: "20-30", priceForTwo: "250", offer: "BUY 1 GET 1", img: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500&q=80" },
+        ];
+      %>
+      <% sampleRestaurants.forEach(r => { %>
+        <div class="restaurant-card" onclick="window.location.href='/restaurants'">
+          <div class="rc-img-wrap">
+            <img class="rc-img" src="<%= r.img %>" alt="<%= r.name %>"/>
+            <% if (r.offer) { %><div class="rc-offer"><%= r.offer %></div><% } %>
+          </div>
+          <div class="rc-body">
+            <div class="rc-name"><%= r.name %></div>
+            <div class="rc-cuisine"><%= r.cuisine %></div>
+            <div class="rc-meta">
+              <span class="rc-rating">★ <%= r.rating %></span>
+              <span>⏱ <%= r.deliveryTime %> min</span>
+              <span>₹<%= r.priceForTwo %> for two</span>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+</section>
+
+<!-- ── PROMO BANNER ── -->
+<div class="promo-section">
+  <div class="promo-banner">
+    <div class="promo-text">
+      <h2>Get Zomato Pro &amp;<br>save on every order</h2>
+      <p>
+        Unlock unlimited free delivery, exclusive member deals, and priority customer support with a single subscription.
+      </p>
+    </div>
+    <div class="promo-actions">
+      <a href="/pro"><button class="btn-white">Get Pro — ₹149/mo</button></a>
+      <a href="/pro"><button class="btn-ghost">Learn more</button></a>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">Zo<span>mato</span></div>
+      <p class="footer-desc">
+        We're all about delivering joy — one meal at a time. Find food you'll love, from restaurants near you.
+      </p>
+    </div>
+    <div>
+      <div class="footer-heading">Company</div>
+      <ul class="footer-links">
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Team</a></li>
+        <li><a href="#">Blog</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">For You</div>
+      <ul class="footer-links">
+        <li><a href="#">Zomato Pro</a></li>
+        <li><a href="#">Zomato Gold</a></li>
+        <li><a href="#">Gift Cards</a></li>
+        <li><a href="#">Help Center</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">For Restaurants</div>
+      <ul class="footer-links">
+        <li><a href="#">Partner with us</a></li>
+        <li><a href="#">Apps for you</a></li>
+        <li><a href="#">Business Blog</a></li>
+        <li><a href="#">Advertise</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © <%= new Date().getFullYear() %> Zomato Clone — Built for learning purposes.
+  </div>
+</footer>
+
+<script>
+  function handleSearch() {
+    const q = document.getElementById('searchInput').value.trim();
+    if (q) window.location.href = `/restaurants?search=${encodeURIComponent(q)}`;
+  }
+  function quickSearch(term) {
+    window.location.href = `/restaurants?search=${encodeURIComponent(term)}`;
+  }
+  document.getElementById('searchInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleSearch();
+  });
+
+  // Scroll-reveal animation
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('animate'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.restaurant-card, .category-card').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

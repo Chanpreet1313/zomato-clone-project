@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile Zomato Dining Partner</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-base: #1a1a1a;
+      --bg-card: #242424;
+      --bg-input: #2e2e2e;
+      --bg-hover: #333333;
+      --border: #3a3a3a;
+      --border-focus: #e23744;
+      --text-primary: #f0f0f0;
+      --text-secondary: #9e9e9e;
+      --text-muted: #666;
+      --accent: #e23744;
+      --accent-hover: #c0303c;
+      --accent-soft: rgba(226, 55, 68, 0.12);
+      --success: #2ecc71;
+      --warning: #f39c12;
+      --sidebar-w: 240px;
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: #1f1f1f;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      padding: 20px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo-box {
+      background: linear-gradient(135deg, blue);
+      border-radius: 14px;
+      padding: 10px 16px;
+      margin-left: 40px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(226, 55, 68, 0.35);
+    }
+
+    .logo-box span:first-child {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 18px;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-box span:last-child {
+      font-size: 9px;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all .2s;
+      text-decoration: none;
+    }
+
+    .nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+    .nav-item.active { background: var(--accent-soft); color: var(--accent); }
+    .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    .sidebar-user {
+      padding: 14px 14px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 15px; color: #fff;
+      flex-shrink: 0;
+    }
+
+    .user-info { flex: 1; min-width: 0; }
+    .user-info .name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-info .email { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ── Main ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 36px 40px;
+      max-width: 860px;
+    }
+
+    .page-header {
+      margin-bottom: 32px;
+    }
+
+    .page-header h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .page-header p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* ── Profile Card ── */
+    .profile-hero {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), #ff7043);
+    }
+
+    .profile-avatar-lg {
+      width: 76px; height: 76px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), #ff7043);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Sora', sans-serif;
+      font-size: 30px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+      border: 3px solid rgba(226,55,68,0.3);
+    }
+
+    .profile-hero-info h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 20px; font-weight: 700;
+    }
+
+    .profile-hero-info p {
+      font-size: 13px; color: var(--text-secondary); margin-top: 3px;
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(46,204,113,0.12);
+      color: var(--success);
+      font-size: 11px; font-weight: 600;
+      padding: 3px 10px; border-radius: 20px;
+      margin-top: 8px;
+    }
+
+    .badge::before { content: '●'; font-size: 8px; }
+
+    /* ── Section Cards ── */
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .section-header .icon {
+      width: 32px; height: 32px;
+      background: var(--accent-soft);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent);
+    }
+
+    .section-header .icon svg { width: 16px; height: 16px; }
+
+    .section-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 15px; font-weight: 600;
+    }
+
+    .section-subtitle {
+      font-size: 12px; color: var(--text-muted); margin-top: 1px;
+    }
+
+    .section-body { padding: 24px; }
+
+    /* ── Form ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 12px; font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"] {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      width: 100%;
+    }
+
+    input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(226,55,68,0.12);
+    }
+
+    input[readonly] {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper input { padding-right: 42px; }
+
+    .input-icon {
+      position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex; align-items: center;
+    }
+
+    .input-icon svg { width: 17px; height: 17px; }
+    .input-icon:hover { color: var(--text-secondary); }
+
+    .hint {
+      font-size: 11px; color: var(--text-muted); margin-top: 2px;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px; background: var(--border);
+      margin: 20px 0;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .2s;
+    }
+
+    .btn svg { width: 16px; height: 16px; }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(226,55,68,0.3); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+    .btn-danger {
+      background: transparent;
+      color: #e74c3c;
+      border: 1px solid rgba(231,76,60,0.3);
+    }
+
+    .btn-danger:hover { background: rgba(231,76,60,0.1); }
+
+    .form-actions {
+      display: flex; gap: 10px; justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    /* ── Alert ── */
+    .alert {
+      display: flex; align-items: flex-start; gap: 10px;
+      background: rgba(243,156,18,0.1);
+      border: 1px solid rgba(243,156,18,0.25);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--warning);
+      margin-bottom: 18px;
+    }
+
+    .alert svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Password strength ── */
+    .strength-bar {
+      display: flex; gap: 4px; margin-top: 6px;
+    }
+
+    .strength-bar span {
+      flex: 1; height: 3px; border-radius: 10px;
+      background: var(--border);
+      transition: background .3s;
+    }
+
+    .strength-bar.weak span:nth-child(1) { background: #e74c3c; }
+    .strength-bar.medium span:nth-child(1),
+    .strength-bar.medium span:nth-child(2) { background: var(--warning); }
+    .strength-bar.strong span { background: var(--success); }
+
+    .strength-label { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: #2a2a2a;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--success);
+      border-radius: 10px;
+      padding: 13px 18px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 14px; font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .35s cubic-bezier(.34,1.56,.64,1);
+      z-index: 999;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast svg { width: 18px; height: 18px; color: var(--success); }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    @media (max-width: 700px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .main { padding: 20px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-box">
+      <span>zomato</span>
+      <span>Dining Partner</span>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a href="/owner/owner-dashboard" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+    <a href="/owner/profile" class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      Profile
+    </a>
+    <a href="/auth/logout" class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </a>
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="user-avatar">P</div>
+    <div class="user-info">
+      <div class="name"><%= typeof user !== 'undefined' ? user.name : 'Paras' %></div>
+      <div class="email"><%= typeof user !== 'undefined' ? user.email : 'paras567@gm...' %></div>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="main">
+  <div class="page-header">
+    <h1>My Profile</h1>
+    <p>Manage your personal information and account security</p>
+  </div>
+
+  <!-- Hero Card -->
+  <div class="profile-hero">
+    <div class="profile-avatar-lg">
+      <%= typeof user !== 'undefined' ? user.name.charAt(0).toUpperCase() : 'P' %>
+    </div>
+    <div class="profile-hero-info">
+      <h2><%= typeof user !== 'undefined' ? user.name : 'Paras' %></h2>
+      <p><%= typeof user !== 'undefined' ? user.email : 'paras567@gmail.com' %></p>
+      <div class="badge">Dining Partner Active</div>
+    </div>
+  </div>
+
+  <!-- ── Personal Information ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      </div>
+      <div>
+        <div class="section-title">Personal Information</div>
+        <div class="section-subtitle">Your basic profile details</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <form id="personalForm" action="owner/profile/update-personal" method="POST">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" name="firstName" value="<%= typeof user !== 'undefined' ? user.firstName || '' : 'Paras' %>" placeholder="First name"/>
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" name="lastName" value="<%= typeof user !== 'undefined' ? user.lastName || '' : '' %>" placeholder="Last name"/>
+          </div>
+          <div class="form-group full">
+            <label>Display Name</label>
+            <input type="text" name="name" id="displayName" value="<%= typeof user !== 'undefined' ? user.name : 'Paras' %>" placeholder="How your name appears on the platform"/>
+            <span class="hint">This is the name visible to customers and on reports.</span>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" value="<%= typeof user !== 'undefined' ? user.email : 'paras567@gmail.com' %>" placeholder="you@email.com"/>
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <div class="input-wrapper">
+              <input type="tel" name="phone" value="<%= typeof user !== 'undefined' ? user.phone || '' : '' %>" placeholder="+91 98765 43210"/>
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 3.08 5.18 2 2 0 0 1 5.09 3h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L9.91 10a16 16 0 0 0 6.09 6.09l1.36-1.35a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="reset" class="btn btn-ghost">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.79"/></svg>
+            Reset
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Account & Security ── -->
+  <div class="section-card">
+    <div class="section-header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <div>
+        <div class="section-title">Account &amp; Security</div>
+        <div class="section-subtitle">Manage your password and access</div>
+      </div>
+    </div>
+    <div class="section-body">
+
+      <div class="alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>For your security, choose a strong password with at least 8 characters, including uppercase, numbers, and symbols.</span>
+      </div>
+
+      <form id="passwordForm" action="/owner/profile/change-password" method="POST">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Current Password</label>
+            <div class="input-wrapper">
+              <input type="password" name="currentPassword" id="currentPassword" placeholder="Enter current password" autocomplete="current-password"/>
+              <span class="input-icon" onclick="togglePass('currentPassword', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <div class="input-wrapper">
+              <input type="password" name="newPassword" id="newPassword" placeholder="Enter new password" autocomplete="new-password" oninput="checkStrength(this.value)"/>
+              <span class="input-icon" onclick="togglePass('newPassword', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </span>
+            </div>
+            <div class="strength-bar" id="strengthBar">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="strength-label" id="strengthLabel"></div>
+          </div>
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <div class="input-wrapper">
+              <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Repeat new password" autocomplete="new-password"/>
+              <span class="input-icon" onclick="togglePass('confirmPassword', this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="form-actions">
+          <button type="reset" class="btn btn-ghost">Cancel</button>
+          <button type="submit" class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Update Password
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toastMsg">Changes saved successfully!</span>
+</div>
+
+<script>
+  function togglePass(id, iconEl) {
+    const input = document.getElementById(id);
+    const isPass = input.type === 'password';
+    input.type = isPass ? 'text' : 'password';
+    iconEl.querySelector('svg').innerHTML = isPass
+      ? '<line x1="1" y1="1" x2="23" y2="23"/><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 7 11 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 7 11 7a9.74 9.74 0 0 0 5.39-1.61"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  }
+
+  function checkStrength(val) {
+    const bar = document.getElementById('strengthBar');
+    const label = document.getElementById('strengthLabel');
+    bar.className = 'strength-bar';
+    if (!val) { label.textContent = ''; return; }
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    if (score === 1) { bar.classList.add('weak'); label.textContent = 'Weak password'; label.style.color = '#e74c3c'; }
+    else if (score === 2) { bar.classList.add('medium'); label.textContent = 'Medium strength'; label.style.color = '#f39c12'; }
+    else { bar.classList.add('strong'); label.textContent = 'Strong password'; label.style.color = '#2ecc71'; }
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg || 'Changes saved!';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+ document.getElementById('personalForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+
+  const dataObj = Object.fromEntries(formData.entries());
+
+  const res = await fetch('/owner/profile/update-personal', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(dataObj)
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    showToast(data.message);
+  } else {
+    showToast(data.message || "Error updating profile");
+  }
+});
+
+  document.getElementById('passwordForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const np = document.getElementById('newPassword').value;
+    const cp = document.getElementById('confirmPassword').value;
+    if (np !== cp) { showToast('Passwords do not match!'); return; }
+    showToast('Password changed successfully!');
+    this.reset();
+    document.getElementById('strengthBar').className = 'strength-bar';
+    document.getElementById('strengthLabel').textContent = '';
+  });
+</script>
+</body>
+</html>

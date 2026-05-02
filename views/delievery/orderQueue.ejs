@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order Queue – Zomato Delivery Partner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red:        #e23744;
+      --red-dark:   #c0303c;
+      --green:      #1c9d58;
+      --orange:     #e8a020;
+      --blue:       #2e5ce6;
+      --bg:         #f5f5f5;
+      --card:       #ffffff;
+      --border:     #e8e8e8;
+      --text:       #3d3d3d;
+      --muted:      #888;
+      --sidebar-w:  230px;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── TOP BAR ── */
+    header {
+      position: relative; top: 0; left: 0; right: 0; z-index: 100;
+      height: 65px;
+      background: #fff;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+    .logo-wrap { 
+        display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--red);
+      border-radius: 12px;
+      font-size: 50px;
+      text-decoration: none;
+      /* line-height: 1.2; */
+      box-shadow: 0 2px 8px rgba(229, 57, 53, 0.25);
+     }
+    
+    .logo-box {
+        height: 50px;
+      background: var(--red);
+      border-radius: 10px;
+      padding: 6px 12px;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .logo-box span:first-child { color: #fff; font-weight: 800; font-size: 20px; letter-spacing: .5px; }
+    .logo-box span:last-child  { color: rgba(255,255,255,.75); font-size: 8px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .pill-online {
+      border: 1.5px solid #1c9d58; border-radius: 20px;
+      padding: 4px 14px; font-size: 13px; font-weight: 700; color: #1c9d58;
+      background: rgba(28,157,88,.08);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .dot-green { width: 8px; height: 8px; border-radius: 50%; background: #1c9d58; }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--red); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 15px;
+    }
+
+    .layout {
+  display: flex;
+  margin-top: 0px;        /* push below fixed header */
+  min-height: calc(100vh - 65px);
+}
+    /* ✅ CORRECT — stays in place while scrolling */
+aside {
+    position: fixed;
+  width: var(--sidebar-w);
+  background: var(--card);
+  border-right: 1px solid var(--border);
+  padding: 24px 0 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;          /* never shrink */
+  position: sticky;        /* ← KEY: sticks while main scrolls */               /
+  height: calc(100vh - 65px);  /* exact viewport height */
+  overflow-y: auto;        /* sidebar scrolls internally if needed */
+}
+    .menu-label { font-size: 10px; font-weight: 800; color: var(--muted); letter-spacing: 1.5px; padding: 0 20px 10px; }
+    nav a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 20px; font-size: 14px; font-weight: 700;
+      color: var(--text); text-decoration: none; border-radius: 0;
+      transition: background .15s;
+    }
+    nav a:hover { background: #fef2f2; color: var(--red); }
+    nav a.active { background: #fef2f2; color: var(--red); border-left: 3px solid var(--red); }
+    nav a .icon { font-size: 18px; }
+    .sidebar-user {
+      margin: 0 16px; padding: 12px 16px;
+      background: var(--bg); border-radius: 12px;
+    }
+    .sidebar-user-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .sidebar-user-name { font-weight: 800; font-size: 14px; }
+    .sidebar-user-meta { font-size: 12px; color: var(--muted); }
+    .sidebar-user-meta span { color: #f5a623; }
+    .btn-logout {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 9px; border-radius: 8px;
+      border: 1.5px solid var(--red); color: var(--red);
+      background: none; font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: inherit; transition: background .15s;
+    }
+    .btn-logout:hover { background: #fef2f2; }
+
+    /* ── MAIN CONTENT ── */
+    main {
+  flex: 1;                 /* takes all remaining width */
+  padding: 28px 28px 40px;
+  overflow-y: auto;        /* only main scrolls */
+  /* REMOVE margin-top and margin-left — layout handles it */
+  margin: 0;
+}
+
+
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .section-title { font-size: 17px; font-weight: 800; }
+    .badge {
+      background: var(--red); color: #fff;
+      border-radius: 20px; padding: 2px 10px;
+      font-size: 12px; font-weight: 700;
+    }
+    .badge.green  { background: var(--green); }
+    .badge.orange { background: var(--orange); }
+
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 6px; margin-bottom: 18px; }
+    .tab {
+      padding: 7px 18px; border-radius: 20px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      border: 1.5px solid var(--border); background: var(--card); color: var(--muted);
+      transition: all .15s;
+    }
+    .tab.active { background: var(--red); color: #fff; border-color: var(--red); }
+
+    /* ── ORDER CARDS ── */
+    .order-card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+      border-left: 4px solid transparent;
+      transition: box-shadow .15s;
+    }
+    .order-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+    .order-card.pending   { border-left-color: var(--orange); }
+    .order-card.delivered { border-left-color: var(--green); }
+    .order-card.active-ord { border-left-color: var(--red); }
+
+    .order-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+    .order-id   { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .order-name { font-size: 15px; font-weight: 800; margin-top: 2px; }
+    .order-addr { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .status-pill {
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 11px; font-weight: 800; letter-spacing: .5px;
+      white-space: nowrap;
+    }
+    .status-pill.delivered { background: #e6f9f0; color: var(--green); }
+    .status-pill.pending   { background: #fff5e6; color: var(--orange); }
+    .status-pill.picking   { background: #fde8ea; color: var(--red); }
+
+    .order-items {
+      font-size: 13px; color: var(--muted);
+      margin-bottom: 12px; line-height: 1.6;
+    }
+
+    .order-meta {
+      display: flex; align-items: center; gap: 16px;
+      font-size: 12px; color: var(--muted); font-weight: 600;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+    .order-meta-item { display: flex; align-items: center; gap: 5px; }
+    .order-meta-item .val { color: var(--text); font-weight: 700; }
+    .order-meta-item .val.green  { color: var(--green); }
+    .order-meta-item .val.orange { color: var(--orange); }
+
+    .order-actions { display: flex; gap: 10px; margin-top: 14px; }
+    .btn {
+      flex: 1; padding: 10px; border-radius: 10px;
+      font-size: 13px; font-weight: 800; cursor: pointer;
+      border: none; font-family: inherit; transition: opacity .15s;
+    }
+    .btn:hover { opacity: .88; }
+    .btn-accept { background: var(--red); color: #fff; }
+    .btn-details { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
+
+    /* ── EMPTY STATE ── */
+    .empty {
+      text-align: center; padding: 50px 20px;
+      background: var(--card); border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .empty-text { font-size: 15px; font-weight: 700; color: var(--muted); }
+
+    .sidebar-user {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Dropdown hidden by default */
+.user-dropdown {
+  position: absolute;
+  bottom: 70px;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.15);
+  overflow: hidden;
+  display: none;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Dropdown items */
+.user-dropdown a {
+  display: block;
+  padding: 10px 14px;
+  font-size: 13px;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.user-dropdown a:hover {
+  background: #fef2f2;
+  color: var(--red);
+}
+
+/* Show class */
+.user-dropdown.show {
+  display: block;
+}
+
+/* Smooth animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logo-wrap">
+    <div class="logo-box">
+      <span>zomato</span>
+      <span>Delivery Partner</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="pill-online"><span class="dot-green"></span> Online</div>
+    <div class="avatar"><%= user.initials %></div>
+  </div>
+</header>
+<div class="layout">
+<!-- ── SIDEBAR ── -->
+<aside>
+  <div>
+    <div class="menu-label">MENU</div>
+    <nav>
+      <a href="/delievery/delievery-dashboard" class="<%= page === 'dashboard' ? 'active' : '' %>">
+        <span class="icon">🏠</span> Dashboard
+      </a>
+      <a href="/delievery/order-queue" class="<%= page === 'orderQueue' ? 'active' : '' %>">
+        <span class="icon">📋</span> Order Queue
+      </a>
+    </nav>
+  </div>
+  <div class="sidebar-user" onclick="toggleDropdown()">
+  <div class="sidebar-user-top">
+    <div class="avatar"><%= user.initials %></div>
+    <div>
+      <div class="sidebar-user-name"><%= user.name %></div>
+      <div class="sidebar-user-meta">
+        <span>★</span> <%= user.rating %> · <%= user.totalOrders %> orders
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔽 Dropdown -->
+  <div class="user-dropdown" id="userDropdown">
+    <a href="/delievery/profile">👤 Profile</a>
+    <a href="/auth/logout">⬡ Logout</a>
+  </div>
+</div>
+</aside>
+
+<!-- ── MAIN ── -->
+<main>
+
+  <!-- ── PENDING / AVAILABLE ORDERS ── -->
+  <div class="section-header">
+        <div class="section-title">Order Queue</div>
+        <span class="badge orange"><%= pendingOrders.length %> available</span>
+      </div>
+
+      <!-- ── ACTIVE ORDER ── -->
+<% if (activeOrder) { %>
+  <div class="section-header">
+    <div class="section-title">Active Order</div>
+    <span class="badge"><%= activeOrder.status.toUpperCase() %></span>
+  </div>
+
+  <div class="order-card active-ord">
+    <div class="order-top">
+      <div>
+        <div class="order-id">#<%= activeOrder.id %> · <%= activeOrder.restaurant %></div>
+        <div class="order-name"><%= activeOrder.customerName %></div>
+        <div class="order-addr">📍 <%= activeOrder.deliveryAddress %></div>
+      </div>
+
+      <span class="status-pill picking">
+        <% if (activeOrder.status === "accepted") { %>
+          📦 READY
+        <% } else { %>
+          🚚 OUT FOR DELIVERY
+        <% } %>
+      </span>
+    </div>
+
+    <div class="order-items">
+      <% activeOrder.items.forEach(function(item, i) { %>
+        <%= item.qty %>× <%= item.name %><%= i < activeOrder.items.length - 1 ? ', ' : '' %>
+      <% }) %>
+    </div>
+
+    <div class="order-meta">
+      <div class="order-meta-item">💰 <span class="val green">₹<%= activeOrder.earnings %></span></div>
+      <div class="order-meta-item">📏 <span class="val"><%= activeOrder.distance %> km</span></div>
+      <div class="order-meta-item">⏱ <span class="val orange"><%= activeOrder.estTime %> min</span></div>
+      <div class="order-meta-item">🧾 ₹<span class="val"><%= activeOrder.orderValue %></span></div>
+    </div>
+
+    <div class="order-actions">
+      <% if (activeOrder.status === "accepted") { %>
+        <button class="btn btn-accept" onclick="pickupOrder('<%= activeOrder.id %>')">
+          📦 Picked Up
+        </button>
+      <% } else { %>
+        <button class="btn btn-accept" onclick="deliverOrder('<%= activeOrder.id %>')">
+          ✅ Mark Delivered
+        </button>
+      <% } %>
+    </div>
+  </div>
+<% } %>
+
+      <!-- ── COMPLETED / DELIVERED ORDERS ── -->
+      <div class="section-header" style="margin-top:32px">
+        <div class="section-title">Completed Orders</div>
+        <span class="badge green"><%= deliveredOrders.length %> delivered</span>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" onclick="filterDelivered('all', this)">All</div>
+        <div class="tab" onclick="filterDelivered('today', this)">Today</div>
+        <div class="tab" onclick="filterDelivered('week', this)">This Week</div>
+      </div>
+
+      <% if (deliveredOrders.length === 0) { %>
+        <div class="empty">
+          <div class="empty-icon">🎉</div>
+          <div class="empty-text">No completed orders yet</div>
+        </div>
+      <% } else { %>
+        <% deliveredOrders.forEach(function(order) { %>
+        <div class="order-card delivered" data-date="<%= order.deliveredAtISO %>">
+          <div class="order-top">
+            <div>
+              <div class="order-id">#<%= order.id %> · <%= order.restaurant %></div>
+              <div class="order-name"><%= order.customerName %></div>
+              <div class="order-addr">📍 <%= order.deliveryAddress %></div>
+            </div>
+            <span class="status-pill delivered">✓ DELIVERED</span>
+          </div>
+          <div class="order-items">
+            <% order.items.forEach(function(item, i) { %>
+              <%= item.qty %>× <%= item.name %><%= i < order.items.length - 1 ? ', ' : '' %>
+            <% }) %>
+          </div>
+          <div class="order-meta">
+            <div class="order-meta-item">💰 <span class="val green">₹<%= order.earnings %></span></div>
+            <div class="order-meta-item">⏱ <span class="val"><%= order.timeTaken %> min</span></div>
+            <div class="order-meta-item">🧾 ₹<span class="val"><%= order.orderValue %></span></div>
+            <% if (order.tip > 0) { %>
+            <div class="order-meta-item">🎁 Tip <span class="val green">₹<%= order.tip %></span></div>
+            <% } %>
+            <div class="order-meta-item">🕐 <span class="val"><%= order.deliveredAt %></span></div>
+          </div>
+        </div>
+        <% }) %>
+      <% } %>
+
+
+</main>
+</div>
+
+<script>
+  function acceptOrder(id) {
+    if (confirm('Accept order #' + id + '?')) {
+      window.location.href = '/orders/accept/' + id;
+    }
+  }
+
+  function viewDetails(id) {
+    window.location.href = '/orders/' + id;
+  }
+
+  function filterDelivered(period, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+
+  const now = new Date();
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const weekStart = new Date();
+  weekStart.setDate(now.getDate() - 7);
+
+  document.querySelectorAll('.order-card.delivered').forEach(card => {
+    const orderTime = Number(card.dataset.date);
+
+    let show = false;
+
+    if (period === 'all') {
+      show = true;
+    }
+
+    if (period === 'today') {
+      show = orderTime >= todayStart.getTime();
+    }
+
+    if (period === 'week') {
+      show = orderTime >= weekStart.getTime();
+    }
+
+    card.style.display = show ? '' : 'none';
+  });
+}
+
+function toggleDropdown() {
+  const dropdown = document.getElementById("userDropdown");
+  dropdown.classList.toggle("show");
+}
+
+// Optional: close when clicking outside
+document.addEventListener("click", function (e) {
+  const userBox = document.querySelector(".sidebar-user");
+  const dropdown = document.getElementById("userDropdown");
+
+  if (!userBox.contains(e.target)) {
+    dropdown.classList.remove("show");
+  }
+});
+
+</script>
+<%- include("../partials/footer") %>
+
+</body>
+</html>

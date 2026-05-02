@@ -1,0 +1,257 @@
+/* ───────── NAVBAR (Ultra Premium) ───────── */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 50px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(226, 55, 68, 0.95) 0%,
+    rgba(226, 55, 68, 0.85) 100%
+  );
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  transition: all 0.3s ease;
+}
+
+/* Scroll effect */
+.navbar.scrolled {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  padding: 10px 40px;
+}
+
+/* ───────── LOGO ───────── */
+.logo a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  text-decoration: none;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+}
+
+/* ───────── RIGHT SECTION ───────── */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* NAV LINKS */
+.nav-link {
+  color: rgba(255,255,255,0.9);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+/* underline animation ONLY for links */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background: white;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-link:hover {
+  color: #fff;
+}
+
+/* ───────── CART BUTTON ───────── */
+.cart-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.35);
+
+  padding: 9px 16px;
+  border-radius: 30px;
+
+  font-size: 14px;
+  backdrop-filter: blur(6px);
+
+  transition: all 0.25s ease;
+}
+
+/* REMOVE underline from cart */
+.cart-btn::after {
+  display: none !important;
+}
+
+.cart-btn:hover {
+  background: rgba(255,255,255,0.25);
+  transform: translateY(-1px);
+}
+
+/* CART ICON + BADGE */
+.cart-icon {
+  position: relative;
+  display: flex;
+}
+
+.cart-count {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+
+  background: #fff;
+  color: #e23744;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  padding: 2px 6px;
+  border-radius: 50px;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* ───────── BUTTONS ───────── */
+.outline-btn {
+  border: 1.5px solid rgba(255,255,255,0.65);
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-size: 14px;
+  color: white !important;
+  transition: all 0.25s ease;
+}
+
+/* remove underline */
+.outline-btn::after {
+  display: none !important;
+}
+
+.outline-btn:hover {
+  background: white;
+  color: #e23744 !important;
+}
+
+/* SOLID */
+.solid-btn {
+  background: white;
+  color: #e23744 !important;
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+
+  text-decoration: none;   /* ✅ THIS LINE IS MISSING */
+}
+
+/* remove underline */
+.solid-btn::after {
+  display: none !important;
+}
+
+.solid-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+
+/* ───────── PROFILE ───────── */
+.profile {
+  position: relative;
+  cursor: pointer;
+}
+
+.avatar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  font-size: 14px;
+}
+
+/* Avatar */
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+
+  background: rgba(255,255,255,0.2);
+  border: 1.5px solid rgba(255,255,255,0.5);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.profile:hover .avatar {
+  transform: scale(1.05);
+}
+
+/* ───────── DROPDOWN ───────── */
+.dropdown {
+  position: absolute;
+  top: 130%;
+  right: 0;
+
+  opacity: 0;
+  transform: translateY(12px) scale(0.96);
+  pointer-events: none;
+
+  transition: all 0.25s ease;
+}
+
+.profile:hover .dropdown {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.dropdown-inner {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.18);
+  padding: 6px;
+  min-width: 160px;
+}
+
+.dropdown a {
+  padding: 10px 14px;
+  color: #333;
+  font-size: 13px;
+  border-radius: 8px;
+  display: block;
+  transition: all 0.2s;
+}
+
+.dropdown a:hover {
+  background: #fff0f0;
+  color: #e23744;
+}
+
+.dropdown-sep {
+  height: 1px;
+  background: #eee;
+  margin: 4px 0;
+}
+
+.logout-link {
+  color: #e23744;
+}

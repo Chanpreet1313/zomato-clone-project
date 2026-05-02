@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #fff5f5, #ffe3e6);
+      min-height: 100vh;
+      color: #1a1a1a;
+    }
+
+    .cart-page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 20px 16px 60px;
+    }
+
+    /* BACK */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #e23744;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-bottom: 16px;
+    }
+
+    .back-link:hover {
+      opacity: 0.8;
+    }
+
+    /* PAGE TITLE */
+    .page-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    /* RESTAURANT BADGE */
+    .rest-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+    }
+
+    .rest-badge img {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .rest-badge-info h3 {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .rest-badge-info p {
+      font-size: 12px;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    /* CART ITEMS */
+    .cart-items {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .cart-item {
+      background: white;
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
+
+    .cart-item-img {
+      width: 68px;
+      height: 68px;
+      border-radius: 12px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #f5f5f5;
+    }
+
+    .cart-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cart-item-name {
+      font-size: 14px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cart-item-meta {
+      font-size: 12px;
+      color: #999;
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .veg-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .veg-dot.veg {
+      background: #27ae60;
+    }
+
+    .veg-dot.nonveg {
+      background: #e23744;
+    }
+
+    .portion-badge {
+      background: #fff0f0;
+      color: #e23744;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    .cart-item-price {
+      font-size: 15px;
+      font-weight: 800;
+      color: #e23744;
+      margin-top: 6px;
+    }
+
+    .qty-stepper {
+      display: flex;
+      align-items: center;
+      width: 100px;
+      gap: 0;
+      background: #fff0f0;
+      border: 1.5px solid #f5c0c4;
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .qty-btn {
+      width: 32px;
+      height: 32px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 700;
+      color: #e23744;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+
+    .qty-btn:hover {
+      background: #ffd6d9;
+    }
+
+    .qty-btn:active {
+      background: #ffbfc4;
+    }
+
+    .qty-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .qty-num {
+      min-width: 28px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      color: #1a1a1a;
+      user-select: none;
+    }
+
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 70px 20px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
+
+    .empty-icon {
+      font-size: 52px;
+      margin-bottom: 14px;
+    }
+
+    .empty-state h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 20px;
+    }
+
+    .browse-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #ff4d5a, #e23744);
+      color: white;
+      padding: 12px 28px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* BILL SUMMARY */
+    .summary-box {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+    }
+
+    .summary-box h3 {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed #f0f0f0;
+    }
+
+    .sum-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #555;
+      padding: 8px 0;
+      border-bottom: 1px solid #f9f9f9;
+    }
+
+    .sum-row:last-of-type {
+      border-bottom: none;
+    }
+
+    .sum-row.discount {
+      color: #27ae60;
+    }
+
+    .sum-row.grand {
+      font-size: 17px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-top: 10px;
+      padding-top: 14px;
+      border-top: 2px solid #f0f0f0;
+      border-bottom: none;
+    }
+
+    .sum-row.grand span:last-child {
+      color: #e23744;
+    }
+
+    /* COUPON */
+    .coupon-row {
+      display: flex;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .coupon-input {
+      flex: 1;
+      border: 1.5px dashed #ddd;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+      outline: none;
+      background: #fafafa;
+      color: #1a1a1a;
+    }
+
+    .coupon-input:focus {
+      border-color: #e23744;
+    }
+
+    .coupon-btn {
+      background: #fff0f0;
+      color: #e23744;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* NOTE */
+    .note-area {
+      width: 100%;
+      border: 1.5px solid #f0f0f0;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13px;
+      outline: none;
+      resize: none;
+      margin: 14px 0;
+      font-family: inherit;
+      background: #fafafa;
+      color: #1a1a1a;
+    }
+
+    .note-area:focus {
+      border-color: #e23744;
+    }
+
+    /* CHECKOUT BTN */
+    .checkout-btn {
+      width: 100%;
+      margin-top: 18px;
+      padding: 15px;
+      background: linear-gradient(135deg, #ff4d5a, #e23744);
+      border: none;
+      border-radius: 20px;
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+
+    .checkout-btn:hover {
+      opacity: 0.92;
+    }
+
+    /* SAVINGS PILL */
+    .savings-pill {
+      display: inline-block;
+      background: #eafaf2;
+      color: #27ae60;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <%- include("../partials/header") %>
+
+    <div class="cart-page">
+
+      <a class="back-link" href="javascript:history.back()">
+        &#8592; Back to menu
+      </a>
+
+      <% if (!cart || !cart.items || cart.items.length===0) { %>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state">
+          <div class="empty-icon">🛒</div>
+          <h3>Your cart is empty</h3>
+          <p>Looks like you haven't added anything yet.<br>Go explore some delicious food!</p>
+          <a class="browse-btn" href="/customer/customer-dashboard">Browse Restaurants</a>
+        </div>
+
+        <% } else { %>
+
+          <div class="page-title">Your Cart</div>
+
+          <!-- RESTAURANT BADGE -->
+          <div class="rest-badge">
+            <img src="<%= cart.restaurantId.logoImage %>" alt="<%= cart.restaurantId.restaurantName %>">
+            <div class="rest-badge-info">
+              <h3>
+                <%= cart.restaurantId.restaurantName %>
+              </h3>
+              <p>
+                <%= cart.items.length %> item<%= cart.items.length> 1 ? 's' : '' %> in your cart
+              </p>
+            </div>
+          </div>
+
+          <!-- CART ITEMS -->
+          <div class="cart-items">
+            <% cart.items.forEach(item=> { %>
+              <div class="cart-item" id="cart-item-<%= item.menuItemId || item._id %>">
+
+                <img class="cart-item-img" src="<%= item.image %>" alt="<%= item.name %>"
+                  onerror="this.src='/images/placeholder-food.png'">
+
+                <div class="cart-item-info">
+
+                  <div class="cart-item-name">
+                    <%= item.name %>
+                  </div>
+
+                  <div class="cart-item-meta">
+                    <span class="veg-dot <%= item.foodType === 'veg' ? 'veg' : 'nonveg' %>"></span>
+                    <%= item.foodType==='veg' ? 'Veg' : 'Non-Veg' %>
+
+                      <% if (item.portion !=='regular' ) { %>
+                        &nbsp;·&nbsp;
+                        <span class="portion-badge">
+                          <%= item.portion.charAt(0).toUpperCase() + item.portion.slice(1) %> Plate
+                        </span>
+                        <% } %>
+
+                          &nbsp;·&nbsp; Qty: <%= item.quantity %>
+                  </div>
+
+                  <div class="cart-item-price">
+                    ₹<%= item.unitPrice %> &times; <%= item.quantity %>
+                        = ₹<%= item.totalPrice %>
+                  </div>
+                  <div class="qty-stepper">
+                    <button class="qty-btn"
+                      onclick='updateQty(`<%= item.menuItemId || item._id %>`, -1, <%= item.unitPrice %>)'>−</button>
+
+                    <span class="qty-num" id="qty-<%= item.menuItemId || item._id %>">
+                      <%= item.quantity %>
+                    </span>
+
+                    <button class="qty-btn"
+                      onclick="updateQty('<%= item.menuItemId || item._id %>', +1, <%= item.unitPrice %>)">+</button>
+                  </div>
+
+
+                </div>
+
+              </div>
+              <% }) %>
+          </div>
+
+          <div class="summary-box">
+
+            <h3>Bill Summary</h3>
+
+            <% if (cart.discount> 0) { %>
+              <div class="savings-pill">
+                You save ₹<%= cart.discount %> on this order!
+              </div>
+              <% } %>
+
+                <div class="sum-row">
+                  <span>Subtotal (<%= cart.items.length %> items)</span>
+                  <span>₹<%= cart.subtotal %></span>
+                </div>
+
+                <div class="sum-row">
+                  <span>GST (<%= cart.taxRate %>%)</span>
+                  <span>₹<%= cart.taxAmount %></span>
+                </div>
+
+                <div class="sum-row">
+                  <span>Delivery charge</span>
+                  <span>
+                    <% if (cart.deliveryCharge===0) { %>
+                      <span style="color:#27ae60;font-weight:600;">FREE</span>
+                      <% } else { %>
+                        ₹<%= cart.deliveryCharge %>
+                          <% } %>
+                  </span>
+                </div>
+
+                <% if (cart.discount> 0) { %>
+                  <div class="sum-row discount">
+                    <span>Discount</span>
+                    <span>− ₹<%= cart.discount %></span>
+                  </div>
+                  <% } %>
+
+                    <div class="sum-row grand">
+                      <span>Grand Total</span>
+                      <span>₹<%= cart.grandTotal %></span>
+                    </div>
+                    <div style="margin-top:16px;">
+                      <h4 style="font-size:14px; font-weight:700; margin-bottom:8px;">
+                        Select Payment Method
+                      </h4>
+
+                      <div style="display:flex; flex-direction:column; gap:10px;">
+
+                        <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                          <input type="radio" name="paymentMethod" value="COD" checked>
+                          <span>Cash on Delivery</span>
+                        </label>
+
+                        <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                          <input type="radio" name="paymentMethod" value="ONLINE">
+                          <span>Pay Online</span>
+                        </label>
+
+                      </div>
+                    </div>
+
+                    <button class="checkout-btn" onclick="proceedToCheckout()">
+                      Place order
+                    </button>
+
+          </div>
+
+          <% } %>
+
+    </div>
+
+    <script>
+
+  // ✅ PLACE ORDER
+  function proceedToCheckout() {
+    const note = document.querySelector('.note-area')?.value || "";
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || "COD";
+
+    fetch('/customer/order/place', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ note, paymentMethod })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) {
+        showToast(data.message || "Order failed ❌");
+        return;
+      }
+
+      showToast("Order placed successfully ✅");
+
+      setTimeout(() => {
+        window.location.href = '/customer/my-order';
+      }, 1200);
+    })
+    .catch(err => {
+      console.error(err);
+      showToast("Something went wrong ❌");
+    });
+  }
+
+
+  // ✅ UPDATE QUANTITY
+  async function updateQty(itemId, delta, unitPrice) {
+
+    const qtyEl = document.getElementById('qty-' + itemId);
+    const itemEl = document.getElementById('cart-item-' + itemId);
+
+    if (!qtyEl || !itemEl) return;
+
+    const current = parseInt(qtyEl.textContent);
+    const newQty = current + delta;
+
+    const buttons = itemEl.querySelectorAll('.qty-btn');
+    buttons.forEach(b => b.disabled = true);
+
+    try {
+
+      // 🔴 REMOVE ITEM
+      if (newQty <= 0) {
+
+        const res = await fetch('/customer/cart/remove', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ itemId })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) throw new Error(data.message);
+
+        itemEl.remove();
+        updateSummaryUI(data.cart);
+        checkEmptyCart();
+      }
+
+      // 🟢 UPDATE ITEM
+      else {
+
+        const res = await fetch('/customer/cart/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ itemId, quantity: newQty })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) throw new Error(data.message);
+
+        // update qty
+        qtyEl.textContent = newQty;
+
+        // update price
+        const priceEl = itemEl.querySelector('.cart-item-price');
+        priceEl.innerHTML = `₹${unitPrice} × ${newQty} = ₹${unitPrice * newQty}`;
+
+        updateSummaryUI(data.cart);
+      }
+
+    } catch (err) {
+      console.error(err);
+      showToast("Something went wrong ❌");
+    } finally {
+      buttons.forEach(b => b.disabled = false);
+    }
+  }
+
+
+  // ✅ UPDATE SUMMARY
+  function updateSummaryUI(cart) {
+    if (!cart) return;
+
+    // fallback calculation if backend didn't send
+    const subtotal = cart.subtotal || cart.totalAmount || 0;
+    const tax = cart.taxAmount || (subtotal * 0.05);
+    const delivery = cart.deliveryCharge !== undefined ? cart.deliveryCharge : (subtotal > 500 ? 0 : 40);
+    const grand = cart.grandTotal || (subtotal + tax + delivery);
+
+    document.querySelector('.sum-row:nth-child(2) span:last-child').textContent = "₹" + subtotal;
+    document.querySelector('.sum-row:nth-child(3) span:last-child').textContent = "₹" + tax;
+
+    const deliveryEl = document.querySelector('.sum-row:nth-child(4) span:last-child');
+    if (delivery === 0) {
+      deliveryEl.innerHTML = '<span style="color:#27ae60;font-weight:600;">FREE</span>';
+    } else {
+      deliveryEl.textContent = "₹" + delivery;
+    }
+
+    document.querySelector('.sum-row.grand span:last-child').textContent = "₹" + grand;
+  }
+
+
+  // ✅ TOAST
+  function showToast(message) {
+    let toast = document.getElementById('orderToast');
+
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = "orderToast";
+
+      toast.style.position = "fixed";
+      toast.style.bottom = "20px";
+      toast.style.left = "50%";
+      toast.style.transform = "translateX(-50%)";
+      toast.style.background = "#333";
+      toast.style.color = "#fff";
+      toast.style.padding = "10px 16px";
+      toast.style.borderRadius = "8px";
+      toast.style.zIndex = "999";
+      toast.style.opacity = "0";
+      toast.style.transition = "0.3s";
+
+      document.body.appendChild(toast);
+    }
+
+    toast.textContent = message;
+    toast.style.opacity = "1";
+
+    setTimeout(() => {
+      toast.style.opacity = "0";
+    }, 2000);
+  }
+
+
+  // ✅ EMPTY CHECK
+  function checkEmptyCart() {
+    if (document.querySelectorAll('.cart-item').length === 0) {
+      location.reload();
+    }
+  }
+
+</script>
+</body>
+
+</html>

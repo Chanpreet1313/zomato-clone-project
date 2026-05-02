@@ -1,0 +1,422 @@
+<!-- ═══════════════════════════════
+     ZOMATO-STYLE FOOTER
+     Expects: user = req.session.user (passed from controller)
+     Roles:   "customer" | "restaurantOwner" | undefined (not logged in)
+═══════════════════════════════ -->
+<style>
+  .zmt-footer {
+    background: #1a1a1a;
+    color: #fff;
+    font-family: 'Outfit', 'Segoe UI', sans-serif;
+    padding: 0;
+    margin-top: 40px;
+  }
+
+  /* ── Top brand strip ── */
+  .footer-brand-strip {
+    background: #111;
+    padding: 32px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .footer-logo-block { display: flex; flex-direction: column; gap: 6px; }
+
+  .footer-logo {
+    font-size: 32px;
+    font-weight: 800;
+    color: #e23744;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+
+  .footer-tagline {
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    font-weight: 400;
+  }
+
+  .footer-app-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .app-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 10px 18px;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    text-decoration: none;
+  }
+  .app-btn:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.25);
+  }
+  .app-btn-icon { font-size: 22px; line-height: 1; }
+  .app-btn-text { display: flex; flex-direction: column; }
+  .app-btn-sub  { font-size: 9px; color: rgba(255,255,255,0.5); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+  .app-btn-name { font-size: 14px; color: #fff; font-weight: 700; line-height: 1.2; }
+
+  /* ── Logged-in user greeting strip ── */
+  .footer-user-strip {
+    background: rgba(226,55,68,0.08);
+    border-bottom: 1px solid rgba(226,55,68,0.15);
+    padding: 14px 60px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .footer-user-avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: #e23744;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .footer-user-info { display: flex; flex-direction: column; gap: 1px; }
+  .footer-user-name { font-size: 13px; font-weight: 700; color: #fff; }
+  .footer-user-role {
+    font-size: 11px;
+    font-weight: 600;
+    color: #e23744;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .footer-user-strip .logout-link {
+    margin-left: auto;
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 5px 12px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .footer-user-strip .logout-link:hover { color: #e23744; border-color: rgba(226,55,68,0.4); }
+
+  /* ── Main columns ── */
+  .footer-main {
+    padding: 44px 60px 32px;
+    display: grid;
+    gap: 36px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .footer-main.cols-5 { grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr; }
+  .footer-main.cols-4 { grid-template-columns: 1.6fr 1fr 1fr 1fr; }
+
+  .footer-col-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 16px;
+  }
+
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+
+  .footer-col ul li a {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.18s;
+    line-height: 1.4;
+  }
+  .footer-col ul li a:hover { color: #e23744; }
+
+  /* highlighted links for role-specific primary actions */
+  .footer-col ul li a.link-highlight {
+    color: #e23744;
+    font-weight: 600;
+  }
+  .footer-col ul li a.link-highlight:hover { color: #ff6b77; }
+
+  /* accent border on role-specific column */
+  .footer-col.role-col {
+    border-left: 2px solid rgba(226,55,68,0.3);
+    padding-left: 20px;
+  }
+  .footer-col.role-col .footer-col-title { color: #e23744; }
+
+  .footer-about-text {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.75;
+    margin-bottom: 20px;
+  }
+
+  .footer-social { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .social-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 6px 13px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer; text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+  }
+  .social-pill:hover { background: rgba(226,55,68,0.15); color: #e23744; border-color: rgba(226,55,68,0.3); }
+
+  /* ── Countries row ── */
+  .footer-countries {
+    padding: 20px 60px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .footer-countries-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(255,255,255,0.3); margin-bottom: 12px;
+  }
+  .countries-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .country-chip {
+    font-size: 12px; color: rgba(255,255,255,0.5);
+    padding: 4px 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; cursor: pointer; text-decoration: none;
+    transition: color 0.18s, border-color 0.18s;
+  }
+  .country-chip:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+  .country-chip.active { color: #e23744; border-color: rgba(226,55,68,0.4); }
+
+  /* ── Bottom bar ── */
+  .footer-bottom {
+    padding: 18px 60px;
+    display: flex; align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+  .footer-copy span { color: #e23744; }
+  .footer-legal { display: flex; gap: 20px; flex-wrap: wrap; }
+  .footer-legal a {
+    font-size: 12px; color: rgba(255,255,255,0.35);
+    text-decoration: none; transition: color 0.18s;
+  }
+  .footer-legal a:hover { color: #e23744; }
+
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .footer-main { grid-template-columns: 1fr 1fr 1fr !important; padding: 36px 32px 28px; }
+    .footer-brand-strip, .footer-user-strip { padding: 24px 32px; }
+    .footer-countries { padding: 18px 32px; }
+    .footer-bottom    { padding: 16px 32px; }
+    .footer-col.role-col { border-left: none; padding-left: 0; border-top: 2px solid rgba(226,55,68,0.25); padding-top: 16px; }
+  }
+  @media (max-width: 640px) {
+    .footer-main { grid-template-columns: 1fr 1fr !important; padding: 28px 20px 20px; }
+    .footer-brand-strip { padding: 20px; flex-direction: column; align-items: flex-start; }
+    .footer-user-strip  { padding: 14px 20px; }
+    .footer-countries   { padding: 16px 20px; }
+    .footer-bottom      { padding: 14px 20px; flex-direction: column; align-items: flex-start; }
+  }
+</style>
+
+<footer class="zmt-footer">
+
+  <!-- ① Brand + App download -->
+  <div class="footer-brand-strip">
+    <div class="footer-logo-block">
+      <div class="footer-logo">zomato</div>
+      <div class="footer-tagline">Discover the best food &amp; drinks</div>
+    </div>
+    <div class="footer-app-btns">
+      <a href="#" class="app-btn">
+        <span class="app-btn-icon">🍎</span>
+        <div class="app-btn-text">
+          <span class="app-btn-sub">Download on the</span>
+          <span class="app-btn-name">App Store</span>
+        </div>
+      </a>
+      <a href="#" class="app-btn">
+        <span class="app-btn-icon">▶</span>
+        <div class="app-btn-text">
+          <span class="app-btn-sub">Get it on</span>
+          <span class="app-btn-name">Google Play</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ② Logged-in user greeting strip (only when session exists) -->
+  <!-- <% if (locals.user) { %>
+  <div class="footer-user-strip">
+    <div class="footer-user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+    <div class="footer-user-info">
+      <div class="footer-user-name">Hey, <%= user.name %> 👋</div>
+      <div class="footer-user-role">
+        <% if (user.role === 'restaurantOwner') { %>Restaurant Owner
+        <% } else if (user.role === 'deliveryAgent') { %>Delivery Agent
+        <% } else { %>Food Explorer
+        <% } %>
+      </div>
+    </div>
+    <a href="/auth/logout" class="logout-link">Log out</a>
+  </div>
+  <% } %> -->
+
+  <!-- ③ Main link columns — role-aware -->
+  <%
+    var isCustomer = locals.user && user.role === 'customer';
+    var isOwner    = locals.user && user.role === 'restaurantOwner';
+    var isGuest    = !locals.user;
+  %>
+  <div class="footer-main <%= isGuest ? 'cols-5' : 'cols-4' %>">
+
+    <!-- About (always shown) -->
+    <div class="footer-col">
+      <div class="footer-col-title">About Zomato</div>
+      <p class="footer-about-text">
+        India's largest food delivery &amp; restaurant discovery platform,
+        connecting millions of customers with the best restaurants near them.
+      </p>
+      <div class="footer-social">
+        <a href="#" class="social-pill">𝕏 Twitter</a>
+        <a href="#" class="social-pill">📘 Facebook</a>
+        <a href="#" class="social-pill">📸 Instagram</a>
+        <a href="#" class="social-pill">▶ YouTube</a>
+        <a href="#" class="social-pill">in LinkedIn</a>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         FOR FOODIES column
+         Show when: guest OR logged-in customer
+         Hide when: restaurantOwner is logged in
+    ══════════════════════════════════════ -->
+    <% if (isGuest || isCustomer) { %>
+    <div class="footer-col <%= isCustomer ? 'role-col' : '' %>">
+      <div class="footer-col-title"><%= isCustomer ? '✦ For You' : 'For Foodies' %></div>
+      <ul>
+        <% if (isCustomer) { %>
+          <li><a href="/customer/customer-dashboard" class="link-highlight">🏠 My Dashboard</a></li>
+          <li><a href="/customer/customer-dashboard" class="link-highlight">🍽️ Order Food</a></li>
+          <li><a href="/customer/my-order" class="link-highlight">📦 My Orders</a></li>
+          <li><a href="/customer/offers">🏷️ Offers &amp; Deals</a></li>
+          <li><a href="/customer/profile">👤 My Profile</a></li>
+          <li><a href="#">⭐ Zomato Gold</a></li>
+        <% } else { %>
+          <li><a href="/customer/customer-dashboard">Order Food Online</a></li>
+          <li><a href="/customer/customer-dashboard">Restaurants Near Me</a></li>
+          <li><a href="/customer/offers">Offers &amp; Deals</a></li>
+          <li><a href="#">Zomato Pro</a></li>
+          <li><a href="#">Zomato Gold</a></li>
+          <li><a href="#">Food Delivery Cities</a></li>
+          <li><a href="#">Top Cuisines</a></li>
+        <% } %>
+      </ul>
+    </div>
+    <% } %>
+
+    <!-- ══════════════════════════════════════
+         FOR RESTAURANTS column
+         Show when: guest OR logged-in owner
+         Hide when: customer is logged in
+    ══════════════════════════════════════ -->
+    <% if (isGuest || isOwner) { %>
+    <div class="footer-col <%= isOwner ? 'role-col' : '' %>">
+      <div class="footer-col-title"><%= isOwner ? '✦ Your Restaurant' : 'For Restaurants' %></div>
+      <ul>
+        <% if (isOwner) { %>
+          <li><a href="/owner/owner-dashboard" class="link-highlight">📊 My Dashboard</a></li>
+          <li><a href="/owner/menu" class="link-highlight">📋 Manage Menu</a></li>
+          <li><a href="/owner/orders" class="link-highlight">🛒 Incoming Orders</a></li>
+          <li><a href="/owner/profile">🏪 Restaurant Profile</a></li>
+          <li><a href="/owner/analytics">📈 Analytics</a></li>
+          <li><a href="/owner/offers">🏷️ My Offers</a></li>
+        <% } else { %>
+          <li><a href="/restaurant/register">Add Your Restaurant</a></li>
+          <li><a href="/restaurant/login">Restaurant Login</a></li>
+          <li><a href="#">Partner with Us</a></li>
+          <li><a href="#">Advertise with Zomato</a></li>
+          <li><a href="#">Restaurant Dashboard</a></li>
+          <li><a href="#">Business Blog</a></li>
+        <% } %>
+      </ul>
+    </div>
+    <% } %>
+
+    <!-- Learn More (always shown) -->
+    <!-- <div class="footer-col">
+      <div class="footer-col-title">Learn More</div>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press Kit</a></li>
+        <li><a href="#">Investor Relations</a></li>
+        <li><a href="#">Report Fraud</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </div> -->
+
+    <!-- Help & Support (always shown) -->
+    <div class="footer-col">
+      <div class="footer-col-title">Help &amp; Support</div>
+      <ul>
+        <li><a href="#">Help Centre</a></li>
+        <% if (isCustomer) { %>
+          <li><a href="/customer/my-order">Track My Order</a></li>
+        <% } else { %>
+          <li><a href="#">Track Order</a></li>
+        <% } %>
+        <li><a href="#">Refunds &amp; Cancellations</a></li>
+        <li><a href="#">Report an Issue</a></li>
+        <li><a href="#">Safety</a></li>
+        <li><a href="#">Sitemap</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- ④ Countries -->
+  <div class="footer-countries">
+    <div class="footer-countries-label">Zomato in</div>
+    <div class="countries-row">
+      <a href="#" class="country-chip active">🇮🇳 India</a>
+      <a href="#" class="country-chip">🇦🇺 Australia</a>
+      <a href="#" class="country-chip">🇧🇷 Brazil</a>
+      <a href="#" class="country-chip">🇨🇦 Canada</a>
+      <a href="#" class="country-chip">🇨🇿 Czech Republic</a>
+      <a href="#" class="country-chip">🇮🇩 Indonesia</a>
+      <a href="#" class="country-chip">🇮🇪 Ireland</a>
+      <a href="#" class="country-chip">🇮🇹 Italy</a>
+      <a href="#" class="country-chip">🇯🇴 Jordan</a>
+      <a href="#" class="country-chip">🇲🇾 Malaysia</a>
+      <a href="#" class="country-chip">🇳🇿 New Zealand</a>
+      <a href="#" class="country-chip">🇵🇭 Philippines</a>
+      <a href="#" class="country-chip">🇶🇦 Qatar</a>
+      <a href="#" class="country-chip">🇸🇬 Singapore</a>
+      <a href="#" class="country-chip">🇿🇦 South Africa</a>
+      <a href="#" class="country-chip">🇱🇰 Sri Lanka</a>
+      <a href="#" class="country-chip">🇹🇷 Turkey</a>
+      <a href="#" class="country-chip">🇦🇪 UAE</a>
+      <a href="#" class="country-chip">🇬🇧 United Kingdom</a>
+      <a href="#" class="country-chip">🇺🇸 United States</a>
+    </div>
+  </div>
+
+  <!-- ⑤ Bottom bar -->
+  <div class="footer-bottom">
+    <div class="footer-copy">
+      © 2024 <span>Zomato</span> Ltd. All rights reserved. Made with ❤️ in India.
+    </div>
+    <div class="footer-legal">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+      <a href="#">Accessibility</a>
+    </div>
+  </div>
+
+</footer>

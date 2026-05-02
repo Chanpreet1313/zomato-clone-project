@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Add Menu Item</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --red: #e23744;
+      --red-dark: #c0222e;
+      --red-soft: #fff0f1;
+      --green: #16a34a;
+      --green-soft: #f0fdf4;
+      --ink: #1a1a2e;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --white: #ffffff;
+      --surface: #fafafa;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    .page-wrap {
+      display: grid;
+      grid-template-columns: 1fr 480px;
+      min-height: calc(100vh - 64px);
+    }
+
+    /* Left decorative panel */
+    .deco-panel {
+      background: var(--ink);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 48px 40px;
+    }
+
+    .deco-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(226, 55, 68, 0.4) 0%, transparent 55%),
+        radial-gradient(circle at 80% 80%, rgba(226, 55, 68, 0.2) 0%, transparent 45%);
+    }
+
+    .deco-panel .tagline {
+      position: relative;
+      z-index: 1;
+    }
+
+    .deco-panel h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 38px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .deco-panel h2 span {
+      color: var(--red);
+    }
+
+    .deco-panel p {
+      color: rgba(255, 255, 255, 0.55);
+      font-size: 14px;
+      line-height: 1.7;
+      max-width: 260px;
+    }
+
+    .deco-circles {
+      position: absolute;
+      bottom: -60px;
+      right: -60px;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      border: 60px solid rgba(226, 55, 68, 0.12);
+    }
+
+    .deco-circles::before {
+      content: '';
+      position: absolute;
+      inset: 40px;
+      border-radius: 50%;
+      border: 40px solid rgba(226, 55, 68, 0.08);
+    }
+
+    /* Form Panel */
+    .form-panel {
+      background: var(--white);
+      border-left: 1px solid var(--border);
+      padding: 40px 36px 60px;
+      position: relative;
+      overflow-y: auto;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 20px;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--red);
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .form-header .icon-wrap {
+      width: 56px;
+      height: 56px;
+      background: var(--red-soft);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+    }
+
+    .form-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .form-header p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="file"],
+    select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      appearance: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(226, 55, 68, 0.1);
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%236b7280'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 38px;
+    }
+
+    .veg-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .veg-option {
+      position: relative;
+    }
+
+    .veg-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .veg-option label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--muted);
+      transition: all 0.18s;
+      background: var(--surface);
+    }
+
+    .veg-option input:checked+label.veg-label {
+      border-color: var(--green);
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .veg-option input:checked+label.nonveg-label {
+      border-color: var(--red);
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .veg-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .veg-dot::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .price-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* Current image preview */
+    .current-img-wrap {
+      margin-bottom: 10px;
+    }
+
+    .current-img-wrap img {
+      width: 90px;
+      height: 75px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--border);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .current-img-wrap p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .file-upload-wrap {
+      position: relative;
+      border: 1.5px dashed var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      background: var(--surface);
+    }
+
+    .file-upload-wrap:hover {
+      border-color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .file-upload-wrap input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      border: none;
+      padding: 0;
+    }
+
+    .file-upload-wrap .upload-icon {
+      color: var(--red);
+      margin-bottom: 6px;
+    }
+
+    .file-upload-wrap p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .file-upload-wrap span {
+      font-weight: 600;
+      color: var(--red);
+    }
+
+    #fileName {
+      font-size: 12px;
+      color: var(--green);
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 24px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--red);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 14px rgba(226, 55, 68, 0.35);
+    }
+
+    .btn-submit:hover {
+      background: var(--red-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(226, 55, 68, 0.45);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .page-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .deco-panel {
+        display: none;
+      }
+
+      .form-panel {
+        border: none;
+        padding: 28px 20px 48px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <% const isEdit=typeof editMode !=='undefined' && editMode; %>
+
+    <%- include("../partials/header") %>
+
+      <div class="page-wrap">
+
+        <!-- Left Deco Panel -->
+        <div class="deco-panel">
+          <div class="tagline">
+            <% if (isEdit) { %>
+              <h2>Update your<br><span>dish</span><br>details.</h2>
+              <p>Edit prices, availability, and images to keep your menu fresh.</p>
+              <% } else { %>
+                <h2>Build your<br><span>perfect</span><br>menu.</h2>
+                <p>Add dishes with photos, pricing options, and dietary info to attract more customers.</p>
+                <% } %>
+          </div>
+          <div class="deco-circles"></div>
+        </div>
+
+        <!-- Form Panel -->
+        <div class="form-panel">
+
+          <a href="javascript:history.back()" class="back-link">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+            </svg>
+            Back
+          </a>
+
+          <div class="form-header">
+            <div class="icon-wrap">
+              <% if (isEdit) { %>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="#e23744">
+                  <path
+                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                </svg>
+                <% } else { %>
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="#e23744">
+                    <path
+                      d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z" />
+                  </svg>
+                  <% } %>
+            </div>
+            <h1>
+              <%= isEdit ? "Edit Menu Item" : "Add Menu Item" %>
+            </h1>
+            <p>
+              <% if (isEdit) { %>
+                Updating details for <strong>
+                  <%= menuItem.itemName %>
+                </strong>
+                <% } else { %>
+                  Fill in the details below to add a new dish
+                  <% } %>
+            </p>
+          </div>
+
+          <form action="<%= isEdit ? '/owner/edit-menu/' + menuItem._id : '/owner/add-menu' %>" method="POST"
+            enctype="multipart/form-data">
+
+            <!-- Restaurant -->
+            <div class="section-label">Restaurant</div>
+            <div class="field">
+              <label for="restaurantId">Select Restaurant</label>
+              <input type="hidden" name="restaurantId" value="<%= selectedRestaurant._id %>">
+
+              <input type="text" value="<%= selectedRestaurant.restaurantName %>" readonly
+                style="background:#f3f4f6; cursor:not-allowed;">
+            </div>
+
+            <!-- Item Details -->
+            <div class="section-label">Item Details</div>
+
+            <div class="field">
+              <label for="itemName">Item Name</label>
+              <input type="text" id="itemName" name="itemName" value="<%= isEdit ? menuItem.itemName : '' %>"
+                placeholder="e.g. Butter Chicken, Veg Biryani…" required>
+            </div>
+
+            <!-- Veg / Non-Veg -->
+            <div class="field">
+              <label>Food Type</label>
+              <div class="veg-toggle">
+                <div class="veg-option">
+                  <input type="radio" id="veg" name="foodType" value="veg" <%=!isEdit || menuItem.foodType==='veg'
+                    ? 'checked' : '' %>>
+                  <label for="veg" class="veg-label">
+                    <span class="veg-dot"></span>Vegetarian
+                  </label>
+                </div>
+                <div class="veg-option">
+                  <input type="radio" id="nonveg" name="foodType" value="nonveg" <%=isEdit &&
+                    menuItem.foodType==='nonveg' ? 'checked' : '' %>>
+                  <label for="nonveg" class="nonveg-label">
+                    <span class="veg-dot"></span>Non-Vegetarian
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="category">Category</label>
+              <select id="category" name="category" required>
+                <option value="" disabled <%=!isEdit ? 'selected' : '' %>>Select category…</option>
+                <% ["Starters", "Main Course" , "Desserts" , "Beverages" , "Breads" , "Rice & Biryani", "Fast-Food" ].forEach(cat=> {
+                  %>
+                  <option value="<%= cat %>" <%=isEdit && menuItem.category===cat ? 'selected' : '' %>>
+                    <%= cat %>
+                  </option>
+                  <% }) %>
+              </select>
+            </div>
+
+            <!-- Pricing -->
+            <div class="section-label">Pricing</div>
+
+            <div class="field">
+              <label for="hasHalfFullOption">Pricing Type</label>
+              <select id="hasHalfFullOption" name="hasHalfFullOption" onchange="togglePriceFields()">
+                <option value="false" <%=!isEdit || !menuItem.hasHalfFullOption ? 'selected' : '' %>>Single Price
+                </option>
+                <option value="true" <%=isEdit && menuItem.hasHalfFullOption ? 'selected' : '' %>>Half / Full Plate
+                </option>
+              </select>
+            </div>
+
+            <div id="halfFullFields">
+              <div class="price-grid">
+                <div class="field">
+                  <label for="halfPrice">Half Plate (₹)</label>
+                  <input type="number" id="halfPrice" name="halfPrice"
+                    value="<%= isEdit && menuItem.halfPrice ? menuItem.halfPrice : '' %>" placeholder="e.g. 120">
+                </div>
+                <div class="field">
+                  <label for="fullPrice">Full Plate (₹)</label>
+                  <input type="number" id="fullPrice" name="fullPrice"
+                    value="<%= isEdit && menuItem.fullPrice ? menuItem.fullPrice : '' %>" placeholder="e.g. 220">
+                </div>
+              </div>
+            </div>
+
+            <div id="singlePriceField" class="field">
+              <label for="price">Price (₹)</label>
+              <input type="number" id="price" name="price" value="<%= isEdit && menuItem.price ? menuItem.price : '' %>"
+                placeholder="e.g. 180">
+            </div>
+
+            <!-- Availability & Image -->
+            <div class="section-label">Availability & Image</div>
+
+            <div class="field">
+              <label for="available">Availability</label>
+              <select id="available" name="available" required>
+                <option value="true" <%=!isEdit || menuItem.available ? 'selected' : '' %>>✅ Available</option>
+                <option value="false" <%=isEdit && !menuItem.available ? 'selected' : '' %>>❌ Not Available</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Item Photo</label>
+
+              <% if (isEdit && menuItem.image) { %>
+                <div class="current-img-wrap">
+                  <img src="<%= menuItem.image %>" alt="Current image" onerror="this.style.display='none'">
+                  <p>Current image — upload new to replace</p>
+                </div>
+                <% } %>
+
+                  <div class="file-upload-wrap">
+                    <input type="file" id="image" name="image" accept="image/*" onchange="showFileName(this)">
+                    <div class="upload-icon">
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                      </svg>
+                    </div>
+                    <p><span>
+                        <%= isEdit ? 'Click to replace' : 'Click to upload' %>
+                      </span> or drag & drop</p>
+                    <p>PNG, JPG, WEBP up to 5MB</p>
+                    <div id="fileName"></div>
+                  </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+              <%= isEdit ? "💾 Save Changes" : "+ Add to Menu" %>
+            </button>
+
+          </form>
+        </div>
+
+      </div>
+
+      <script>
+        function togglePriceFields() {
+          const hasOption = document.getElementById("hasHalfFullOption").value === "true";
+          document.getElementById("halfFullFields").style.display = hasOption ? "block" : "none";
+          document.getElementById("singlePriceField").style.display = hasOption ? "none" : "block";
+        }
+
+        function showFileName(input) {
+          const el = document.getElementById("fileName");
+          el.textContent = input.files[0] ? "📎 " + input.files[0].name : "";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+          togglePriceFields();
+        });
+      </script>
+</body>
+
+</html>

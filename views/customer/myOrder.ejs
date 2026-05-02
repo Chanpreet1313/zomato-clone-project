@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Orders</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #fff5f5, #ffe3e6);
+      min-height: 100vh;
+      color: #1a1a1a;
+    }
+
+    .orders-page {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 28px 16px 80px;
+    }
+
+    /* PAGE TITLE */
+    .page-title {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+      font-size: 13px;
+      color: #999;
+      margin-bottom: 24px;
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 70px 20px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    }
+
+    .empty-icon {
+      font-size: 52px;
+      margin-bottom: 14px;
+    }
+
+    .empty-state h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 20px;
+    }
+
+    .browse-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, #ff4d5a, #e23744);
+      color: white;
+      padding: 12px 28px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* ORDER CARD */
+    .order-card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+      overflow: hidden;
+    }
+
+    /* CARD HEADER */
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px dashed #f0f0f0;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .rest-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .rest-logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #f5f5f5;
+      flex-shrink: 0;
+    }
+
+    .rest-name {
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .order-meta {
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 3px;
+    }
+
+    /* STATUS BADGE */
+    .status-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .status-placed {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-confirmed {
+      background: #cfe2ff;
+      color: #084298;
+    }
+
+    .status-preparing {
+      background: #fff3cd;
+      color: #664d03;
+    }
+
+    .status-ready {
+      background: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .status-picked {
+      background: #e2d9f3;
+      color: #432874;
+    }
+
+    .status-delivered {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status-cancelled {
+      background: #f8d7da;
+      color: #842029;
+    }
+
+    /* ITEMS LIST */
+    .order-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .order-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .order-item-img {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #f5f5f5;
+      flex-shrink: 0;
+    }
+
+    .order-item-detail {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .order-item-name {
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .order-item-sub {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .veg-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .veg-dot.veg {
+      background: #27ae60;
+    }
+
+    .veg-dot.nonveg {
+      background: #e23744;
+    }
+
+    .portion-badge {
+      background: #fff0f0;
+      color: #e23744;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 20px;
+    }
+
+    .order-item-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e23744;
+      white-space: nowrap;
+    }
+
+    /* BILL ROW */
+    .bill-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #777;
+      padding: 4px 0;
+    }
+
+    .bill-row.grand {
+      font-size: 15px;
+      font-weight: 800;
+      color: #1a1a1a;
+      padding-top: 10px;
+      margin-top: 6px;
+      border-top: 1.5px dashed #f0f0f0;
+    }
+
+    .bill-row.grand span:last-child {
+      color: #e23744;
+    }
+
+    /* ─── TRACKER ─── */
+    .tracker-wrap {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px dashed #f0f0f0;
+    }
+
+    .tracker-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #888;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tracker {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    /* connecting line */
+    .tracker::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      height: 3px;
+      background: #f0f0f0;
+      z-index: 0;
+    }
+
+    /* filled progress line */
+    .tracker-progress {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      height: 3px;
+      background: linear-gradient(90deg, #ff4d5a, #e23744);
+      z-index: 1;
+      transition: width 0.6s ease;
+      border-radius: 3px;
+    }
+
+    .tracker-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      z-index: 2;
+      flex: 1;
+    }
+
+    .step-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #f0f0f0;
+      border: 2.5px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      transition: all 0.3s;
+    }
+
+    .step-dot.done {
+      background: linear-gradient(135deg, #ff4d5a, #e23744);
+      border-color: #e23744;
+      color: white;
+    }
+
+    .step-dot.active {
+      background: white;
+      border-color: #e23744;
+      color: #e23744;
+      box-shadow: 0 0 0 4px rgba(226, 55, 68, 0.15);
+      animation: pulse 1.4s infinite;
+    }
+
+    .agent-box {
+  margin-top: 16px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid #f0f0f0;
+}
+
+.agent-header {
+  font-size: 12px;
+  font-weight: 700;
+  color: #888;
+  margin-bottom: 10px;
+}
+
+.agent-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.agent-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #ffe3e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agent-details {
+  flex: 1;
+}
+
+.agent-name {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.agent-sub {
+  font-size: 12px;
+  color: #888;
+}
+
+.call-btn {
+  background: #e23744;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 4px rgba(226, 55, 68, 0.15);
+      }
+
+      50% {
+        box-shadow: 0 0 0 8px rgba(226, 55, 68, 0.08);
+      }
+    }
+
+    .step-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #bbb;
+      text-align: center;
+      line-height: 1.2;
+      max-width: 52px;
+    }
+
+    .step-label.done {
+      color: #e23744;
+    }
+
+    .step-label.active {
+      color: #e23744;
+      font-weight: 800;
+    }
+
+    /* CANCELLED BANNER */
+    .cancelled-banner {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff0f1;
+      border: 1.5px solid #ffc9cc;
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: #c0392b;
+      font-weight: 600;
+    }
+
+    /* REORDER BTN */
+    .reorder-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #ff4d5a, #e23744);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 14px;
+      transition: opacity 0.2s;
+    }
+
+    .reorder-btn:hover {
+      opacity: 0.88;
+    }
+  </style>
+</head>
+
+<body>
+
+  <%- include("../partials/header") %>
+
+    <div class="orders-page">
+
+      <div class="page-title">My Orders</div>
+      <div class="page-subtitle">Track and manage all your orders</div>
+
+      <% if (!orders || orders.length===0) { %>
+
+        <div class="empty-state">
+          <div class="empty-icon">🍽️</div>
+          <h3>No orders yet</h3>
+          <p>You haven't placed any orders yet.<br>Explore restaurants and order your favourite food!</p>
+          <a class="browse-btn" href="/customer/customer-dashboard">Browse Restaurants</a>
+        </div>
+
+        <% } else { %>
+
+          <% orders.forEach(order=> {
+
+            const STEPS = ['placed','confirmed','preparing','ready','accepted','picked','delivered'];
+            const currentIndex = STEPS.indexOf(order.orderStatus);
+            const isCancelled = order.orderStatus === 'cancelled';
+
+            const stepIcons = ['🧾','✅','👨‍🍳','📦','🤝','🛵','🎉'];
+            const stepLabels = ['Placed','Confirmed','Preparing','Ready','Accepted','Picked Up','Delivered'];
+            %>
+
+            <div class="order-card">
+
+              <!-- ── HEADER ── -->
+              <div class="card-header">
+                <div class="rest-info">
+                  <img class="rest-logo" src="<%= order.restaurantId.logoImage %>"
+                    alt="<%= order.restaurantId.restaurantName %>" onerror="this.src='/images/placeholder-food.png'">
+                  <div>
+                    <div class="rest-name">
+                      <%= order.restaurantId.restaurantName %>
+                    </div>
+                    <div class="order-meta">
+                      Order #<%= order._id.toString().slice(-6).toUpperCase() %>
+                        &nbsp;·&nbsp;
+                        <%= new Date(order.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'short',
+                          year:'numeric' }) %>
+                          &nbsp;·&nbsp;
+                          <%= new Date(order.createdAt).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit'
+                            }) %>
+                    </div>
+                  </div>
+                </div>
+
+                <span class="status-badge status-<%= order.orderStatus %>">
+                  <% const labelMap={ placed: '🧾 Placed' , confirmed: '✅ Confirmed' , preparing: '👨‍🍳 Preparing' ,
+                    ready: '📦 Ready' , accepted: '🤝 Accepted' , // ✅ FIXED picked: '🛵 Picked Up' ,
+                    delivered: '🎉 Delivered' , cancelled: '❌ Cancelled' }; %>
+                    <%= labelMap[order.orderStatus] || order.orderStatus %>
+                </span>
+              </div>
+
+              <!-- ── ITEMS ── -->
+              <div class="order-items">
+                <% order.items.forEach(item=> { %>
+                  <div class="order-item">
+                    <img class="order-item-img" src="<%= item.image %>" alt="<%= item.name %>"
+                      onerror="this.src='/images/placeholder-food.png'">
+                    <div class="order-item-detail">
+                      <div class="order-item-name">
+                        <%= item.name %>
+                      </div>
+                      <div class="order-item-sub">
+                        <span class="veg-dot <%= item.foodType === 'veg' ? 'veg' : 'nonveg' %>"></span>
+                        <%= item.foodType==='veg' ? 'Veg' : 'Non-Veg' %>
+                          <% if (item.portion && item.portion !=='regular' ) { %>
+                            &nbsp;·&nbsp;
+                            <span class="portion-badge">
+                              <%= item.portion.charAt(0).toUpperCase() + item.portion.slice(1) %> Plate
+                            </span>
+                            <% } %>
+                              &nbsp;·&nbsp; Qty: <%= item.quantity %>
+                      </div>
+                    </div>
+                    <div class="order-item-price">₹<%= item.totalPrice %>
+                    </div>
+                  </div>
+                  <% }) %>
+              </div>
+
+              <!-- ── BILL ── -->
+              <div class="bill-row">
+                <span>Subtotal</span>
+                <span>₹<%= order.subtotal %></span>
+              </div>
+              <div class="bill-row">
+                <span>GST (<%= order.taxRate %>%)</span>
+                <span>₹<%= order.taxAmount %></span>
+              </div>
+              <% if (order.deliveryCharge===0) { %>
+                <div class="bill-row">
+                  <span>Delivery</span>
+                  <span style="color:#27ae60;font-weight:600;">FREE</span>
+                </div>
+                <% } else { %>
+                  <div class="bill-row">
+                    <span>Delivery</span>
+                    <span>₹<%= order.deliveryCharge %></span>
+                  </div>
+                  <% } %>
+                    <% if (order.discount> 0) { %>
+                      <div class="bill-row" style="color:#27ae60;">
+                        <span>Discount</span>
+                        <span>− ₹<%= order.discount %></span>
+                      </div>
+                      <% } %>
+                        <div class="bill-row grand">
+                          <span>Grand Total</span>
+                          <span>₹<%= order.grandTotal %></span>
+                        </div>
+
+                        <!-- ── TRACKER or CANCELLED ── -->
+                        <% if (isCancelled) { %>
+
+                          <div class="cancelled-banner">
+                            ❌ &nbsp;This order was cancelled.
+                          </div>
+
+                          <% } else { %>
+
+                            <div class="tracker-wrap">
+                              <div class="tracker-title">Order Progress</div>
+
+                              <div class="tracker" id="tracker-<%= order._id %> data-status="<%= order.orderStatus %>">
+
+                                <!-- filled progress bar (width set by JS below) -->
+                                <div class="tracker-progress" id="prog-<%= order._id %>" style="width:0"></div>
+
+                                <% STEPS.forEach((step, idx)=> { %>
+                                  <% let dotClass='' ; if (idx < currentIndex) dotClass='done' ; else if
+                                    (idx===currentIndex) dotClass='active' ; let labelClass='' ; if (idx < currentIndex)
+                                    labelClass='done' ; else if (idx===currentIndex) labelClass='active' ; %>
+                                    <div class="tracker-step">
+                                      <div class="step-dot <%= dotClass %>">
+                                        <%= idx <=currentIndex ? stepIcons[idx] : '' %>
+                                      </div>
+                                      <span class="step-label <%= labelClass %>">
+                                        <%= stepLabels[idx] %>
+                                      </span>
+                                    </div>
+                                    <% }) %>
+
+                              </div>
+                            </div>
+
+                            <% } %>
+                            <% if (order.deliveryAgentSnapshot && ['accepted','picked','delivered'].includes(order.orderStatus)) { %>
+
+  <div class="agent-box">
+
+    <div class="agent-header">🚚 Delivery Partner</div>
+
+    <div class="agent-info">
+
+      <div class="agent-avatar">👤</div>
+
+      <div class="agent-details">
+        <div class="agent-name">
+          <%= order.deliveryAgentSnapshot.name %>
+        </div>
+
+        <div class="agent-sub">
+          📞 <%= order.deliveryAgentSnapshot.phone %>
+
+          <% if (order.deliveryAgentSnapshot.rating) { %>
+            &nbsp;·&nbsp; ⭐ <%= order.deliveryAgentSnapshot.rating %>
+          <% } %>
+        </div>
+      </div>
+
+      <a href="tel:<%= order.deliveryAgentSnapshot.phone %>" class="call-btn">
+        Call
+      </a>
+
+    </div>
+  </div>
+
+<% } %>
+                              <!-- REORDER BUTTON (only for delivered/cancelled) -->
+                              <% if (order.orderStatus==='delivered' || order.orderStatus==='cancelled' ) { %>
+                                <a class="reorder-btn" href="/customer/menu/<%= order.restaurantId._id %>">
+                                  🔄 &nbsp;Order Again
+                                </a>
+                                <% } %>
+
+            </div>
+
+            <% }) %>
+
+              <% } %>
+
+    </div>
+
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+
+  const STEPS = ['placed','confirmed','preparing','ready','accepted','picked','delivered'];
+
+  document.querySelectorAll('[id^="tracker-"]').forEach(tracker => {
+
+    const orderId = tracker.id.replace('tracker-', '');
+    const progressBar = document.getElementById('prog-' + orderId);
+    if (!progressBar) return;
+
+    const dots = tracker.querySelectorAll('.step-dot');
+
+    // 🔥 Get current status from data attribute (we'll add this below)
+    const status = tracker.getAttribute('data-status');
+
+    const currentIndex = STEPS.indexOf(status);
+
+    if (currentIndex === -1) return;
+
+    // ✅ Update dots dynamically (fixes UI issues)
+    dots.forEach((dot, idx) => {
+      dot.classList.remove('done', 'active');
+
+      if (idx < currentIndex) {
+        dot.classList.add('done');
+      } else if (idx === currentIndex) {
+        dot.classList.add('active');
+      }
+    });
+
+    // ✅ Progress bar calculation
+    const totalSteps = dots.length - 1;
+
+    if (currentIndex <= 0) {
+      progressBar.style.width = '0%';
+    } else {
+      progressBar.style.width = ((currentIndex / totalSteps) * 100) + '%';
+    }
+
+  });
+
+});
+</script>
+</body>
+
+</html>

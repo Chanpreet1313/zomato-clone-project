@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Restaurant</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #e23744;
+      --red-dark: #c0222e;
+      --red-soft: #fff0f1;
+      --ink: #1a1a2e;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --white: #ffffff;
+      --surface: #fafafa;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--surface);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* ── Layout ── */
+    .page-wrap {
+      display: grid;
+      grid-template-columns: 480px 1fr;
+      min-height: calc(100vh - 64px);
+    }
+
+    /* ── Form Panel ── */
+    .form-panel {
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      padding: 44px 40px 60px;
+      overflow-y: auto;
+    }
+
+    .form-header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 20px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--red); }
+
+    .icon-wrap {
+      width: 52px;
+      height: 52px;
+      background: var(--red-soft);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+
+    .form-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 5px;
+    }
+
+    .form-header p {
+      font-size: 13px;
+      color: var(--muted);
+      text-align: left;
+      margin: 0;
+    }
+
+    /* ── Fields ── */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 24px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .field { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+      margin-top: 0;
+    }
+
+    input[type="text"],
+    input[type="file"],
+    select {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--ink);
+      background: var(--white);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      appearance: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(226,55,68,0.1);
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='%236b7280'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 38px;
+    }
+
+    /* ── Logo Upload ── */
+    .logo-upload-area {
+      border: 1.5px dashed var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--surface);
+      position: relative;
+    }
+
+    .logo-upload-area:hover {
+      border-color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .logo-upload-area input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      border: none;
+      padding: 0;
+    }
+
+    #imagePreview {
+      width: 90px;
+      height: 90px;
+      border-radius: 14px;
+      object-fit: cover;
+      border: 2px solid var(--border);
+      display: none;
+      margin: 0 auto 10px;
+    }
+
+    .upload-placeholder svg { color: var(--red); }
+    .upload-placeholder p { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .upload-placeholder span { font-weight: 600; color: var(--red); }
+    #uploadFileName { font-size: 12px; color: #16a34a; margin-top: 4px; font-weight: 500; }
+
+    /* ── Submit ── */
+    .btn-submit {
+      width: 100%;
+      background: var(--red);
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 14px rgba(226,55,68,0.35);
+      letter-spacing: 0.3px;
+    }
+    .btn-submit:hover {
+      background: var(--red-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(226,55,68,0.45);
+    }
+    .btn-submit:active { transform: translateY(0); }
+
+    /* ── Right Deco Panel ── */
+    .deco-panel {
+      background: var(--ink);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 60px 52px;
+    }
+
+    .deco-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 80% 20%, rgba(226,55,68,0.45) 0%, transparent 50%),
+        radial-gradient(circle at 20% 85%, rgba(226,55,68,0.2) 0%, transparent 45%);
+    }
+
+    .deco-content { position: relative; z-index: 1; }
+
+    .deco-panel h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 42px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+    .deco-panel h2 span { color: var(--red); }
+
+    .deco-panel p {
+      color: rgba(255,255,255,0.5);
+      font-size: 14px;
+      line-height: 1.75;
+      max-width: 320px;
+      margin-bottom: 36px;
+    }
+
+    /* Feature list */
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(255,255,255,0.75);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .feature-list .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--red);
+      flex-shrink: 0;
+    }
+
+    /* Floating card preview */
+    .preview-card {
+      position: absolute;
+      bottom: 48px;
+      right: 44px;
+      background: rgba(255,255,255,0.07);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 18px 22px;
+      min-width: 200px;
+    }
+
+    .preview-card .preview-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 8px;
+    }
+
+    .preview-card .preview-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .preview-card .preview-meta {
+      font-size: 12px;
+      color: rgba(255,255,255,0.45);
+    }
+
+    /* Decorative circles */
+    .deco-circle-1 {
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      border: 70px solid rgba(226,55,68,0.08);
+    }
+
+    .deco-circle-2 {
+      position: absolute;
+      bottom: 140px;
+      left: -40px;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      border: 30px solid rgba(255,255,255,0.04);
+    }
+
+    /* ── Toast ── */
+    #toastContainer {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 999;
+    }
+
+    .toast {
+      background: #16a34a;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      margin-top: 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+      font-size: 13px;
+      font-weight: 500;
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 860px) {
+      .page-wrap { grid-template-columns: 1fr; }
+      .deco-panel { display: none; }
+      .form-panel { border: none; padding: 28px 20px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+  <%- include("../partials/header") %>
+
+  <div class="page-wrap">
+
+    <!-- Form Panel -->
+    <div class="form-panel">
+
+      <div class="form-header">
+        <a href="/owner/owner-dashboard" class="back-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          Back to Dashboard
+        </a>
+        <div class="icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="#e23744">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/>
+          </svg>
+        </div>
+        <h1>Create Restaurant</h1>
+        <p>Set up your restaurant profile to start receiving orders.</p>
+      </div>
+
+      <form action="/owner/create-restaurant" method="POST" enctype="multipart/form-data" class="restaurant-form">
+        <input type="hidden" name="ownerId" value="<%= user._id %>">
+
+        <!-- Basic Info -->
+        <div class="section-label">Basic Info</div>
+
+        <div class="field">
+          <label for="restaurantName">Restaurant Name</label>
+          <input type="text" id="restaurantName" name="restaurantName"
+            placeholder="e.g. Spice Garden, The Punjab House…" required
+            oninput="updatePreview(this.value)">
+        </div>
+
+        <div class="field">
+          <label for="foodType">Cuisine Type</label>
+          <select id="foodType" name="foodType" required onchange="updatePreviewMeta(this.value)">
+            <option value="" disabled selected>Select cuisine…</option>
+            <option value="Indian">🍛 Indian</option>
+            <option value="Chinese">🥡 Chinese</option>
+            <option value="Italian">🍕 Italian</option>
+            <option value="Continental">🥩 Continental</option>
+            <option value="Fast Food">🍔 Fast Food</option>
+            <option value="South Indian">🍚 South Indian</option>
+            <option value="Street Food">🌮 Street Food</option>
+          </select>
+        </div>
+
+        <!-- Location -->
+        <div class="section-label">Location</div>
+
+        <div class="field">
+          <label for="location">Restaurant Address</label>
+          <input type="text" id="location" name="location"
+            placeholder="e.g. Sector 17, Chandigarh" required>
+        </div>
+
+        <!-- Branding -->
+        <div class="section-label">Logo / Branding</div>
+
+        <div class="field">
+          <label>Upload Logo</label>
+          <div class="logo-upload-area" id="uploadArea">
+            <input type="file" id="logoImage" name="logoImage" accept="image/*"
+              onchange="previewImage(this)">
+            <img id="imagePreview" src="#" alt="Preview">
+            <div class="upload-placeholder" id="uploadPlaceholder">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="#e23744">
+                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+              </svg>
+              <p><span>Click to upload</span> your logo</p>
+              <p>PNG, JPG, WEBP — max 5MB</p>
+            </div>
+            <div id="uploadFileName"></div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">🚀 Create Restaurant</button>
+      </form>
+    </div>
+
+    <!-- Right Deco Panel -->
+    <div class="deco-panel">
+      <div class="deco-circle-1"></div>
+      <div class="deco-circle-2"></div>
+
+      <div class="deco-content">
+        <h2>Your restaurant,<br><span>your rules.</span></h2>
+        <p>Join thousands of restaurant owners who manage their menu, orders, and earnings — all from one place.</p>
+
+        <ul class="feature-list">
+          <li><span class="dot"></span> Add unlimited menu items with photos</li>
+          <li><span class="dot"></span> Manage veg & non-veg offerings</li>
+          <li><span class="dot"></span> Track orders in real time</li>
+          <li><span class="dot"></span> View earnings & analytics</li>
+        </ul>
+      </div>
+
+      <!-- Live preview card -->
+      <div class="preview-card">
+        <div class="preview-label">Live Preview</div>
+        <div class="preview-name" id="previewName">Your Restaurant</div>
+        <div class="preview-meta" id="previewMeta">Cuisine • Location</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toastContainer"></div>
+
+  <script>
+    function previewImage(input) {
+      const preview = document.getElementById('imagePreview');
+      const placeholder = document.getElementById('uploadPlaceholder');
+      const fileName = document.getElementById('uploadFileName');
+
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(input.files[0]);
+        fileName.textContent = '📎 ' + input.files[0].name;
+      }
+    }
+
+    function updatePreview(val) {
+      document.getElementById('previewName').textContent = val || 'Your Restaurant';
+    }
+
+    function updatePreviewMeta(val) {
+      const meta = document.getElementById('previewMeta');
+      const loc = document.getElementById('location').value || 'Location';
+      meta.textContent = (val || 'Cuisine') + ' • ' + loc;
+    }
+
+    document.getElementById('location').addEventListener('input', function() {
+      const cuisine = document.getElementById('foodType').value || 'Cuisine';
+      document.getElementById('previewMeta').textContent = cuisine + ' • ' + (this.value || 'Location');
+    });
+  </script>
+</body>
+</html>

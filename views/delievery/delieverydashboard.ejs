@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delivery Agent Dashboard – Zomato</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700&family=DM+Sans:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --red: #E53935;
+      --orange: #FF6D00;
+      --bg: #F3F4F6;
+      --surface: #FFFFFF;
+      --border: #E5E7EB;
+      --text: #111827;
+      --muted: #6B7280;
+      --subtle: #9CA3AF;
+      --green: #16A34A;
+      --green-bg: #F0FDF4;
+      --green-border: #BBF7D0;
+      --amber: #D97706;
+      --amber-bg: #FFFBEB;
+      --amber-border: #FDE68A;
+      --blue: #2563EB;
+      --blue-bg: #EFF6FF;
+      --blue-border: #BFDBFE;
+      --red-bg: #FEF2F2;
+      --red-border: #FECACA;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 15px;
+    }
+
+    /* ── Shell ── */
+    .shell {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      grid-template-rows: 70px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Logo Badge ── */
+    .logo-badge {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--red);
+      border-radius: 12px;
+      padding: 8px 20px;
+      text-decoration: none;
+      line-height: 1.2;
+      box-shadow: 0 2px 8px rgba(229, 57, 53, 0.25);
+    }
+
+    .logo-badge-main {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-badge-sub {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.85);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .online-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--green);
+    }
+
+    .online-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--red);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .btn-logout {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--red-bg);
+      border: 1px solid var(--red-border);
+      color: var(--red);
+      border-radius: 9px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      transition: background .12s;
+    }
+
+    .btn-logout:hover {
+      background: #fee2e2;
+    }
+
+    .btn-logout svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.25rem 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-label {
+      font-size: 11px;
+      letter-spacing: 1.2px;
+      color: var(--subtle);
+      padding: .85rem 1.25rem .4rem;
+      text-transform: uppercase;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 12px 1.25rem;
+      font-size: 14px;
+      color: var(--muted);
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      text-decoration: none;
+      transition: all .12s;
+    }
+
+    .nav-item:hover {
+      color: var(--text);
+      background: #F9FAFB;
+    }
+
+    .nav-item.active {
+      color: var(--red);
+      background: var(--red-bg);
+      border-left-color: var(--red);
+      font-weight: 500;
+    }
+
+    .nav-ico {
+      font-size: 17px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--red);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 9px;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 1.1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sf-agent {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .sf-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .sf-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .btn-logout-sidebar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      background: var(--red-bg);
+      border: 1px solid var(--red-border);
+      color: var(--red);
+      border-radius: 9px;
+      padding: 9px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      text-decoration: none;
+      transition: background .12s;
+      width: 100%;
+    }
+
+    .btn-logout-sidebar:hover {
+      background: #fee2e2;
+    }
+
+    .btn-logout-sidebar svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    /* ── Main ── */
+    .main {
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      background: var(--bg);
+      overflow-y: auto;
+    }
+
+    /* ── Stats ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.2rem 1.3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      border-radius: 14px 14px 0 0;
+    }
+
+    .stat-card.red::before {
+      background: var(--red);
+    }
+
+    .stat-card.green::before {
+      background: var(--green);
+    }
+
+    .stat-card.amber::before {
+      background: var(--amber);
+    }
+
+    .stat-card.blue::before {
+      background: var(--blue);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 7px;
+    }
+
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text);
+    }
+
+    .stat-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── Two col ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 330px;
+      gap: 1.5rem;
+    }
+
+    .sec-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    /* ── Active order ── */
+    .order-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .order-header {
+      background: #FFF8F5;
+      border-bottom: 1px solid #FFE0CC;
+      padding: 1.1rem 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .order-id {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .order-meta {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .badge {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 13px;
+      border-radius: 20px;
+    }
+
+    .badge.pending {
+      background: var(--amber-bg);
+      border: 1px solid var(--amber-border);
+      color: var(--amber);
+    }
+
+    .badge.accepted {
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      color: var(--green);
+    }
+
+    .badge.delivered {
+      background: var(--blue-bg);
+      border: 1px solid var(--blue-border);
+      color: var(--blue);
+    }
+
+    .order-body {
+      padding: 1.4rem;
+    }
+
+    /* ── Timeline ── */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tl-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 1rem;
+      position: relative;
+    }
+
+    .tl-row:last-child {
+      padding-bottom: 0;
+    }
+
+    .tl-row:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 22px;
+      width: 1px;
+      height: calc(100% - 6px);
+      background: var(--border);
+    }
+
+    .tl-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .tl-dot.done {
+      background: var(--green-bg);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .tl-dot.active {
+      background: var(--amber-bg);
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+
+    .tl-dot.wait {
+      background: #F9FAFB;
+      border-color: var(--border);
+      color: var(--subtle);
+    }
+
+    .tl-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .tl-label.active-step {
+      color: var(--amber);
+    }
+
+    .tl-label.wait-step {
+      color: var(--subtle);
+    }
+
+    .tl-time {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ── Customer row ── */
+    .cust-row {
+      border-top: 1px solid var(--border);
+      margin-top: 1.1rem;
+      padding-top: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cust-av {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--blue-bg);
+      border: 1px solid var(--blue-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--blue);
+      flex-shrink: 0;
+    }
+
+    .cust-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .cust-addr {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      text-decoration: none;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg);
+    }
+
+    /* ── Action buttons ── */
+    .action-row {
+      margin-top: 1.1rem;
+      padding-top: 1.1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-deliver {
+      flex: 1;
+      background: var(--green);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: background .15s;
+    }
+
+    .btn-deliver:hover {
+      background: #15803d;
+    }
+
+    .report-link {
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      background: none;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .delivered-banner {
+      margin-top: 1.1rem;
+      border-top: 1px solid var(--border);
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--green);
+    }
+
+    .no-active {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .no-active-icon {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    /* ── Right col ── */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* ── Earnings ── */
+    .earn-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.3rem;
+    }
+
+    .earn-top {
+      text-align: center;
+      padding: .9rem 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+
+    .earn-lbl {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .earn-amt {
+      font-family: 'Syne', sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--green);
+      line-height: 1.2;
+    }
+
+    .earn-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .prog-wrap {
+      background: var(--bg);
+      border-radius: 4px;
+      height: 5px;
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .prog-fill {
+      background: var(--green);
+      height: 100%;
+      border-radius: 4px;
+    }
+
+    .earn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .earn-item {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: .7rem 1rem;
+      border: 1px solid var(--border);
+    }
+
+    .earn-item-lbl {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      margin-bottom: 4px;
+    }
+
+    .earn-item-val {
+      font-size: 17px;
+      font-weight: 600;
+      font-family: 'Syne', sans-serif;
+    }
+
+    /* ── Queue ── */
+    .queue-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.3rem;
+    }
+
+    .queue-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .queue-view-all {
+      font-size: 13px;
+      color: var(--red);
+      font-weight: 500;
+      text-decoration: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .queue-view-all:hover {
+      text-decoration: underline;
+    }
+
+    .queue-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .queue-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .queue-item.ignored {
+      opacity: .4;
+      pointer-events: none;
+    }
+
+    .queue-item.accepted-q {
+      opacity: .5;
+      pointer-events: none;
+    }
+
+    .queue-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .queue-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .queue-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .queue-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .queue-earn {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--green);
+      white-space: nowrap;
+    }
+
+    .queue-dist {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .queue-btns {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .qbtn {
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      border: 1px solid;
+      transition: background .12s;
+    }
+
+    .qbtn.acc {
+      background: var(--green-bg);
+      border-color: var(--green-border);
+      color: var(--green);
+    }
+
+    .qbtn.acc:hover {
+      background: #dcfce7;
+    }
+
+    .qbtn.rej {
+      background: var(--red-bg);
+      border-color: var(--red-border);
+      color: var(--red);
+    }
+
+    .qbtn.rej:hover {
+      background: #fee2e2;
+    }
+
+    .all-clear {
+      text-align: center;
+      padding: 1.2rem;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .agent-dropdown {
+      display: none;
+      flex-direction: column;
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .agent-dropdown.show {
+      display: flex;
+    }
+
+    .dropdown-item {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .dropdown-item:last-child {
+      border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+      background: var(--bg);
+    }
+
+    .sf-agent {
+      cursor: pointer;
+      /* 👈 shows hand cursor */
+      user-select: none;
+      /* 👈 prevents text selection */
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="shell">
+
+    <!-- ── Topbar ── -->
+    <header class="topbar">
+      <a href="/agent/dashboard" class="logo-badge">
+        <span class="logo-badge-main">zomato</span>
+        <span class="logo-badge-sub">Delivery Partner</span>
+      </a>
+      <div class="top-right">
+        <div class="online-pill">
+          <div class="online-dot"></div>
+          <%= user.isOnline ? 'Online' : 'Offline' %>
+        </div>
+        <div class="avatar">
+          <%= user.initials %>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Sidebar ── -->
+    <nav class="sidebar">
+      <div class="nav-label">Menu</div>
+      <a href="/delievery/dashboard" class="nav-item <%= currentPage === 'dashboard' ? 'active' : '' %>">
+        <span class="nav-ico">🏠</span>Dashboard
+      </a>
+      <a href="/delievery/order-queue" class="nav-item <%= currentPage === 'order-queue' ? 'active' : '' %>">
+        <span class="nav-ico">📋</span>Order Queue
+        <% if (queue.length> 0) { %><span class="nav-badge">
+            <%= queue.length %>
+          </span>
+          <% } %>
+      </a>
+      <div class="sidebar-footer">
+        <div class="sf-agent" onclick="toggleAgentMenu()">
+          <div class="avatar">
+            <%= user.initials %>
+          </div>
+          <div>
+            <div class="sf-name">
+              <%= user.name %>
+            </div>
+            <div class="sf-sub">⭐ <%= user.rating %> · <%= user.totalOrders %> orders</div>
+          </div>
+          <span style="margin-left:auto;">▼</span>
+        </div>
+
+        <!-- Dropdown -->
+        <div class="agent-dropdown" id="agentDropdown">
+          <a href="/delievery/profile" class="dropdown-item">👤 Profile</a>
+          <a href="/auth/logout" class="dropdown-item" onclick="return confirmLogout(event)">🚪 Logout</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── Main ── -->
+    <main class="main">
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card red">
+          <div class="stat-label">Today's orders</div>
+          <div class="stat-value" id="stat-orders">
+            <%= stats.todayOrders %>
+          </div>
+          <div class="stat-sub" style="color:var(--green)">+<%= stats.ordersVsYesterday %> vs yesterday</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Earnings today</div>
+          <div class="stat-value" style="color:var(--green)" id="stat-earn">₹<%= stats.todayEarnings %>
+          </div>
+          <div class="stat-sub" style="color:var(--green)">+₹<%= stats.earningsVsAvg %> vs avg</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-label">Avg delivery time</div>
+          <div class="stat-value" style="color:var(--amber)">
+            <%= stats.avgDeliveryTime %><span style="font-size:16px;font-family:'DM Sans'">min</span>
+          </div>
+          <div class="stat-sub">Target: <span style="color:var(--amber)">
+              <%= stats.targetTime %> min
+            </span></div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">Rating</div>
+          <div class="stat-value" style="color:var(--blue)">
+            <%= agent.rating %>
+          </div>
+          <div class="stat-sub">Top <span style="color:var(--blue)">
+              <%= agent.topPercent %>%
+            </span> this week</div>
+        </div>
+      </div>
+
+      <!-- Two Column -->
+      <div class="two-col">
+
+        <!-- Left: Active Order + Order Queue -->
+        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+          <!-- Active Order -->
+          <div>
+            <div class="sec-title">Active order</div>
+
+            <% if (activeOrder) { %>
+              <div class="order-card" id="active-order-card">
+                <div class="order-header">
+                  <div>
+                    <div class="order-id">#<%= activeOrder.orderId %>
+                    </div>
+                    <div class="order-meta">
+                      <%= activeOrder.restaurantName %> · <%= activeOrder.restaurantArea %>
+                    </div>
+                  </div>
+                  <span class="badge <%= activeOrder.status %>" id="order-badge">
+                    <%= activeOrder.statusLabel %>
+                  </span>
+                </div>
+                <div class="order-body">
+
+                  <!-- Timeline -->
+                  <div class="timeline">
+                    <% activeOrder.timeline.forEach(function(step) { %>
+                      <div class="tl-row">
+                        <div class="tl-dot <%= step.state %>">
+                          <% if (step.state==='done' ) { %>✓<% } else if (step.state==='active' ) { %>→<% } else { %>○<%
+                                  } %>
+                        </div>
+                        <div>
+                          <div
+                            class="tl-label <%= step.state === 'active' ? 'active-step' : step.state === 'wait' ? 'wait-step' : '' %>">
+                            <%= step.label %>
+                          </div>
+                          <div class="tl-time">
+                            <%= step.time || '—' %>
+                          </div>
+                        </div>
+                      </div>
+                      <% }) %>
+                  </div>
+
+                  <!-- Customer Info -->
+                  <div class="cust-row">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <div class="cust-av">
+                        <%= activeOrder.customer.initials %>
+                      </div>
+                      <div>
+                        <div class="cust-name">
+                          <%= activeOrder.customer.name %>
+                        </div>
+                        <div class="cust-addr">
+                          <%= activeOrder.customer.address %>
+                        </div>
+                      </div>
+                    </div>
+                    <div style="display:flex;gap:8px">
+                      <a href="tel:<%= activeOrder.customer.phone %>" class="icon-btn">📞</a>
+                      <a href="/agent/chat/<%= activeOrder.orderId %>" class="icon-btn">💬</a>
+                    </div>
+                  </div>
+
+                  <!-- Action -->
+                  <% if (activeOrder.status==='accepted' ) { %>
+                    <div class="action-row" id="pickup-section">
+                      <button class="btn-deliver" onclick="markPicked('<%= activeOrder.orderId %>')">
+                        Picked Up
+                      </button>
+                      <button class="report-link" onclick="reportIssue('<%= activeOrder.orderId %>')">
+                        Report issue
+                      </button>
+                    </div>
+
+                    <% } else if (activeOrder.status==='picked' ) { %>
+                      <div class="action-row" id="deliver-section">
+                        <button class="btn-deliver" onclick="markDelivered('<%= activeOrder.orderId %>')">
+                          Mark as delivered
+                        </button>
+                        <button class="report-link" onclick="reportIssue('<%= activeOrder.orderId %>')">
+                          Report issue
+                        </button>
+                      </div>
+
+                      <% } else if (activeOrder.status==='delivered' ) { %>
+                        <div class="delivered-banner">✓ Order delivered successfully</div>
+                        <% } else if (activeOrder.status==='delivered' ) { %>
+                          <div class="delivered-banner">✓ Order delivered successfully</div>
+                          <% } %>
+
+                </div>
+              </div>
+              <% } else { %>
+                <div class="order-card" id="no-active-card">
+                  <div class="order-body">
+                    <div class="no-active">
+                      <div class="no-active-icon">📦</div>
+                      <div>No active order right now</div>
+                      <div style="font-size:13px;margin-top:6px">Accept an order from the queue below</div>
+                    </div>
+                  </div>
+                </div>
+                <% } %>
+          </div>
+
+          <!-- Order Queue — max 3 shown -->
+          <div>
+            <div class="queue-card">
+              <div class="queue-header">
+                <div class="sec-title" style="margin-bottom:0">
+                  Order queue
+                  <span id="queue-count-label" style="font-weight:400;color:var(--muted);font-size:13px">(<%=
+                      queue.length %> available)</span>
+                </div>
+                <% if (queue.length> 3) { %>
+                  <a href="/agent/order-queue" class="queue-view-all">View all →</a>
+                  <% } %>
+              </div>
+
+              <% if (queue.length===0) { %>
+                <div class="all-clear">No orders in queue right now</div>
+                <% } else { %>
+                  <div id="queue-list">
+                    <% queue.slice(0, 3).forEach(function(order) { %>
+                      <div class="queue-item" id="qi-<%= order._id %>">
+                        <div class="queue-icon">
+                          <%= order.icon %>
+                        </div>
+                        <div class="queue-info">
+                          <div class="queue-name">
+                            <%= order.restaurantName %>
+                          </div>
+                          <div class="queue-meta">
+                            <%= order.itemCount %> items · <%= order.distance %> km
+                          </div>
+                        </div>
+                        <div style="text-align:right;margin-right:8px">
+                          <div class="queue-earn">₹<%= order.earning %>
+                          </div>
+                          <div class="queue-dist">~<%= order.eta %> min</div>
+                        </div>
+                        <div class="queue-btns">
+                          <button class="qbtn acc" onclick="acceptOrder('<%= order._id %>')">Accept</button>
+                          <button class="qbtn rej" onclick="rejectOrder('<%= order._id %>')">Reject</button>
+                        </div>
+                      </div>
+                      <% }) %>
+                  </div>
+                  <% } %>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right col: Earnings only -->
+        <div class="right-col">
+
+          <div class="earn-card">
+            <div class="sec-title">Earnings</div>
+            <div class="earn-top">
+              <div class="earn-lbl">This week</div>
+              <div class="earn-amt">₹<%= earnings.weekTotal %>
+              </div>
+              <div class="earn-sub">Goal ₹<%= earnings.weekGoal %> · <%= earnings.goalPercent %>% reached</div>
+              <div class="prog-wrap">
+                <div class="prog-fill" style="width:<%= earnings.goalPercent %>%"></div>
+              </div>
+            </div>
+            <div class="earn-grid">
+              <div class="earn-item">
+                <div class="earn-item-lbl">Base pay</div>
+                <div class="earn-item-val" style="color:var(--text)">₹<%= earnings.basePay %>
+                </div>
+              </div>
+              <div class="earn-item">
+                <div class="earn-item-lbl">Tips</div>
+                <div class="earn-item-val" style="color:var(--amber)">₹<%= earnings.tips %>
+                </div>
+              </div>
+              <div class="earn-item">
+                <div class="earn-item-lbl">Incentives</div>
+                <div class="earn-item-val" style="color:var(--blue)">₹<%= earnings.incentives %>
+                </div>
+              </div>
+              <div class="earn-item">
+                <div class="earn-item-lbl">Deliveries</div>
+                <div class="earn-item-val" style="color:var(--muted)">
+                  <%= earnings.weekDeliveries %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+<%- include("../partials/footer") %>
+  <script>
+    var hasActive = <%= activeOrder ? 'true' : 'false' %>;
+
+    function updateQueueBadge() {
+      var live = document.querySelectorAll('.queue-item:not(.ignored):not(.accepted-q)').length;
+      var badge = document.querySelector('.nav-item[href*="order-queue"] .nav-badge');
+      var label = document.getElementById('queue-count-label');
+      if (badge) badge.textContent = live;
+      if (label) label.textContent = '(' + live + ' available)';
+    }
+
+    function acceptOrder(id) {
+      var el = document.getElementById('qi-' + id);
+      if (!el) return;
+
+      if (hasActive) {
+        el.classList.add('accepted-q');
+        el.querySelector('.queue-btns').innerHTML = '<span style="font-size:12px;color:var(--muted);font-style:italic">Added to next</span>';
+        updateQueueBadge();
+        return;
+      }
+
+      fetch('/delievery/order/accept/' + id, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success) {
+            el.classList.add('accepted-q');
+            el.querySelector('.queue-btns').innerHTML = '<span style="font-size:12px;color:var(--green);font-weight:600">✓ Accepted</span>';
+            hasActive = true;
+            updateQueueBadge();
+            var statEl = document.getElementById('stat-orders');
+            if (statEl) statEl.textContent = parseInt(statEl.textContent) + 1;
+            window.location.reload();
+          }
+        })
+        .catch(function (err) { console.error('Accept failed', err); });
+    }
+
+    function rejectOrder(id) {
+      fetch('/delievery/order/reject/' + id, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success) {
+            var el = document.getElementById('qi-' + id);
+            if (el) { el.style.transition = 'opacity .3s'; el.style.opacity = '0'; setTimeout(function () { el.remove(); updateQueueBadge(); }, 300); }
+          }
+        })
+        .catch(function (err) { console.error('Reject failed', err); });
+    }
+
+    function markPicked(orderId) {
+      fetch('/delievery/order/pickup/' + orderId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success) {
+            window.location.reload(); // refresh UI
+          }
+        })
+        .catch(function (err) {
+          console.error('Pickup failed', err);
+        });
+    }
+
+    function markDelivered(orderId) {
+      fetch('/delievery/order/deliever/' + orderId, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success) {
+            var badge = document.getElementById('order-badge');
+            if (badge) { badge.className = 'badge delivered'; badge.textContent = 'Delivered'; }
+            var section = document.getElementById('deliver-section');
+            if (section) { section.innerHTML = '<div class="delivered-banner">✓ Order delivered successfully</div>'; }
+            var earnEl = document.getElementById('stat-earn');
+            if (earnEl && data.earning) earnEl.textContent = '₹' + data.newTodayEarnings;
+            hasActive = false;
+            var activePill = document.querySelector('.nav-item[href*="active-order"] .nav-badge');
+            if (activePill) activePill.remove();
+            setTimeout(function () { window.location.reload(); }, 2000);
+          }
+        })
+        .catch(function (err) { console.error('Deliver failed', err); });
+    }
+
+    function reportIssue(orderId) {
+      window.location.href = '/agent/report/' + orderId;
+    }
+
+    function toggleAgentMenu() {
+      const dropdown = document.getElementById("agentDropdown");
+      dropdown.classList.toggle("show");
+    }
+
+    // Optional: close when clicking outside
+    document.addEventListener("click", function (e) {
+      const agentBox = document.querySelector(".sf-agent");
+      const dropdown = document.getElementById("agentDropdown");
+
+      if (!agentBox.contains(e.target)) {
+        dropdown.classList.remove("show");
+      }
+    });
+
+
+    function confirmLogout(e) {
+      e.preventDefault();
+
+      const confirmAction = confirm("Are you sure you want to logout?");
+
+      if (confirmAction) {
+        window.location.href = "/auth/logout";
+      }
+
+      return false;
+    }
+
+  </script>
+
+</body>
+
+</html>
