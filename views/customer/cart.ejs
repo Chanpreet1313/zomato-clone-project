@@ -544,134 +544,440 @@
 
     </div>
 
-    <script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
 
   // ✅ PLACE ORDER
   function proceedToCheckout() {
-    const note = document.querySelector('.note-area')?.value || "";
-    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || "COD";
 
-    fetch('/customer/order/place', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ note, paymentMethod })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (!data.success) {
-        showToast(data.message || "Order failed ❌");
+    const note =
+      document.querySelector('.note-area')?.value || "";
+
+    const paymentMethod =
+      document.querySelector('input[name="paymentMethod"]:checked')?.value || "COD";
+
+
+
+    // ✅ CASH ON DELIVERY
+    if (paymentMethod === "COD") {
+
+      fetch('/customer/order/place', {
+
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+          note,
+          paymentMethod
+        })
+
+      })
+
+      .then(res => res.json())
+
+      .then(data => {
+
+        if (!data.success) {
+
+          showToast(data.message || "Order failed ❌");
+          return;
+        }
+
+        showToast("Order placed successfully ✅");
+
+        setTimeout(() => {
+          window.location.href = '/customer/my-order';
+        }, 1200);
+
+      })
+
+      .catch(err => {
+
+        console.error(err);
+
+        showToast("Something went wrong ❌");
+      });
+    }
+
+
+
+    // ✅ ONLINE PAYMENT
+    else if (paymentMethod === "ONLINE") {
+
+      initiateRazorpayPayment(note);
+    }
+  }
+
+
+
+
+  // ✅ RAZORPAY PAYMENT FLOW
+  async function initiateRazorpayPayment(note) {
+
+    try {
+
+      // STEP 1: CREATE ORDER
+      const res = await fetch('/payment/create-order', {
+
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify({
+          amount: <%= cart ? cart.grandTotal : 0 %>
+        })
+      });
+
+      const order = await res.json();
+
+      console.log("Razorpay Order:", order);
+
+      if (!order.id) {
+
+        showToast("Payment initiation failed ❌");
         return;
       }
 
-      showToast("Order placed successfully ✅");
 
-      setTimeout(() => {
-        window.location.href = '/customer/my-order';
-      }, 1200);
-    })
-    .catch(err => {
-      console.error(err);
+
+      // STEP 2: RAZORPAY OPTIONS
+      const options = {
+
+        key: '<%= key_id %>',
+
+        amount: order.amount,
+
+        currency: 'INR',
+
+        name: 'Zomato Clone',
+
+        description: 'Food Order Payment',
+
+        order_id: order.id,
+
+
+
+        // ✅ PAYMENT SUCCESS
+        handler: async function (response) {
+
+          try {
+
+            // STEP 3: VERIFY PAYMENT
+            const verifyRes = await fetch('/payment/verify-payment', {
+
+              method: 'POST',
+
+              headers: {
+                'Content-Type': 'application/json'
+              },
+
+              body: JSON.stringify({
+
+                razorpay_order_id: response.razorpay_order_id,
+
+                razorpay_payment_id: response.razorpay_payment_id,
+
+                razorpay_signature: response.razorpay_signature
+              })
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (!verifyData.success) {
+
+              showToast("Payment verification failed ❌");
+              return;
+            }
+
+
+
+            // STEP 4: PLACE ORDER AFTER PAYMENT
+            const orderRes = await fetch('/customer/order/place', {
+
+              method: 'POST',
+
+              headers: {
+                'Content-Type': 'application/json'
+              },
+
+              body: JSON.stringify({
+
+                note,
+
+                paymentMethod: 'ONLINE',
+
+                razorpay_order_id: response.razorpay_order_id,
+
+                razorpay_payment_id: response.razorpay_payment_id
+              })
+            });
+
+            const orderData = await orderRes.json();
+
+            if (!orderData.success) {
+
+              showToast(orderData.message || "Order failed ❌");
+              return;
+            }
+
+            showToast("Payment & Order Successful ✅");
+
+            setTimeout(() => {
+
+              window.location.href = '/customer/my-order';
+
+            }, 1500);
+
+          }
+
+          catch (err) {
+
+            console.error("Verification Error:", err);
+
+            showToast("Something went wrong ❌");
+          }
+        },
+
+
+
+        // ✅ PAYMENT WINDOW CLOSED
+        modal: {
+
+          ondismiss: function () {
+
+            showToast("Payment cancelled ❌");
+          }
+        },
+
+
+
+        // ✅ OPTIONAL PREFILL
+        prefill: {
+
+          name: 'Customer',
+
+          email: 'customer@example.com',
+
+          contact: '9999999999'
+        },
+
+
+
+        // ✅ THEME
+        theme: {
+
+          color: '#e23744'
+        }
+      };
+
+
+
+      // STEP 5: OPEN RAZORPAY
+      const rzp = new Razorpay(options);
+
+
+
+      // ✅ PAYMENT FAILED
+      rzp.on('payment.failed', function (response) {
+
+        console.error(response.error);
+
+        showToast(
+          "Payment failed: " +
+          response.error.description +
+          " ❌"
+        );
+      });
+
+
+
+      rzp.open();
+
+    }
+
+    catch (err) {
+
+      console.error("Razorpay Error:", err);
+
       showToast("Something went wrong ❌");
-    });
+    }
   }
+
+
 
 
   // ✅ UPDATE QUANTITY
   async function updateQty(itemId, delta, unitPrice) {
 
     const qtyEl = document.getElementById('qty-' + itemId);
+
     const itemEl = document.getElementById('cart-item-' + itemId);
 
     if (!qtyEl || !itemEl) return;
 
     const current = parseInt(qtyEl.textContent);
+
     const newQty = current + delta;
 
     const buttons = itemEl.querySelectorAll('.qty-btn');
+
     buttons.forEach(b => b.disabled = true);
 
     try {
 
-      // 🔴 REMOVE ITEM
+      // ✅ REMOVE ITEM
       if (newQty <= 0) {
 
         const res = await fetch('/customer/cart/remove', {
+
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+
+          headers: {
+            'Content-Type': 'application/json'
+          },
+
           body: JSON.stringify({ itemId })
         });
 
         const data = await res.json();
 
-        if (!data.success) throw new Error(data.message);
+        if (!data.success)
+          throw new Error(data.message);
 
         itemEl.remove();
+
         updateSummaryUI(data.cart);
+
         checkEmptyCart();
       }
 
-      // 🟢 UPDATE ITEM
+
+
+      // ✅ UPDATE ITEM
       else {
 
         const res = await fetch('/customer/cart/update', {
+
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ itemId, quantity: newQty })
+
+          headers: {
+            'Content-Type': 'application/json'
+          },
+
+          body: JSON.stringify({
+            itemId,
+            quantity: newQty
+          })
         });
 
         const data = await res.json();
 
-        if (!data.success) throw new Error(data.message);
+        if (!data.success)
+          throw new Error(data.message);
 
-        // update qty
         qtyEl.textContent = newQty;
 
-        // update price
-        const priceEl = itemEl.querySelector('.cart-item-price');
-        priceEl.innerHTML = `₹${unitPrice} × ${newQty} = ₹${unitPrice * newQty}`;
+        const priceEl =
+          itemEl.querySelector('.cart-item-price');
+
+        priceEl.innerHTML =
+          `₹${unitPrice} × ${newQty} = ₹${unitPrice * newQty}`;
 
         updateSummaryUI(data.cart);
       }
 
-    } catch (err) {
+    }
+
+    catch (err) {
+
       console.error(err);
+
       showToast("Something went wrong ❌");
-    } finally {
+    }
+
+    finally {
+
       buttons.forEach(b => b.disabled = false);
     }
   }
 
 
+
+
   // ✅ UPDATE SUMMARY
   function updateSummaryUI(cart) {
+
     if (!cart) return;
 
-    // fallback calculation if backend didn't send
-    const subtotal = cart.subtotal || cart.totalAmount || 0;
-    const tax = cart.taxAmount || (subtotal * 0.05);
-    const delivery = cart.deliveryCharge !== undefined ? cart.deliveryCharge : (subtotal > 500 ? 0 : 40);
-    const grand = cart.grandTotal || (subtotal + tax + delivery);
+    const subtotal =
+      cart.subtotal || cart.totalAmount || 0;
 
-    document.querySelector('.sum-row:nth-child(2) span:last-child').textContent = "₹" + subtotal;
-    document.querySelector('.sum-row:nth-child(3) span:last-child').textContent = "₹" + tax;
+    const tax =
+      cart.taxAmount || (subtotal * 0.05);
 
-    const deliveryEl = document.querySelector('.sum-row:nth-child(4) span:last-child');
+    const delivery =
+      cart.deliveryCharge !== undefined
+        ? cart.deliveryCharge
+        : (subtotal > 500 ? 0 : 40);
+
+    const grand =
+      cart.grandTotal || (subtotal + tax + delivery);
+
+
+
+    document.querySelector(
+      '.sum-row:nth-child(2) span:last-child'
+    ).textContent = "₹" + subtotal;
+
+
+
+    document.querySelector(
+      '.sum-row:nth-child(3) span:last-child'
+    ).textContent = "₹" + tax;
+
+
+
+    const deliveryEl =
+      document.querySelector(
+        '.sum-row:nth-child(4) span:last-child'
+      );
+
     if (delivery === 0) {
-      deliveryEl.innerHTML = '<span style="color:#27ae60;font-weight:600;">FREE</span>';
+
+      deliveryEl.innerHTML =
+        '<span style="color:#27ae60;font-weight:600;">FREE</span>';
+
     } else {
+
       deliveryEl.textContent = "₹" + delivery;
     }
 
-    document.querySelector('.sum-row.grand span:last-child').textContent = "₹" + grand;
+
+
+    document.querySelector(
+      '.sum-row.grand span:last-child'
+    ).textContent = "₹" + grand;
   }
+
+
 
 
   // ✅ TOAST
   function showToast(message) {
-    let toast = document.getElementById('orderToast');
+
+    let toast =
+      document.getElementById('orderToast');
 
     if (!toast) {
+
       toast = document.createElement('div');
+
       toast.id = "orderToast";
 
       toast.style.position = "fixed";
@@ -690,17 +996,26 @@
     }
 
     toast.textContent = message;
+
     toast.style.opacity = "1";
 
     setTimeout(() => {
+
       toast.style.opacity = "0";
+
     }, 2000);
   }
 
 
-  // ✅ EMPTY CHECK
+
+
+  // ✅ EMPTY CART CHECK
   function checkEmptyCart() {
-    if (document.querySelectorAll('.cart-item').length === 0) {
+
+    if (
+      document.querySelectorAll('.cart-item').length === 0
+    ) {
+
       location.reload();
     }
   }

@@ -27,197 +27,31 @@
       overflow-x: hidden;
     }
 
-    /* ════════════════════════════════
-       TOP NAV BAR  (Zomato style)
-    ════════════════════════════════ */
-    .top-nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: red;
-      /* border-bottom: 1px solid var(--border); */
-      padding: 0 32px;
-      height: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      flex-shrink: 0;
-    }
-
-    .nav-logo {
-      font-size: 35px;
-      font-weight: 800;
-      color: white;
-      letter-spacing: -1px;
-      text-decoration: none;
-    }
-
-    .nav-location {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 6px 14px;
-      transition: border-color 0.2s;
-      max-width: 260px;
-    }
-    .nav-location:hover { border-color: var(--red); }
-
-    .loc-pin {
-      width: 10px; height: 10px;
-      background: var(--red);
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .loc-texts { display: flex; flex-direction: column; line-height: 1.2; overflow: hidden; }
-    .loc-name  { font-size: 13px; font-weight: 700; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .loc-addr  { font-size: 11px; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .loc-arrow { font-size: 10px; color: white; flex-shrink: 0; }
-
-    .nav-search {
-      flex: 1;
-      max-width: 420px;
-      display: flex;
-      align-items: center;
-      background: #f5f5f5;
-      border-radius: 10px;
-      padding: 9px 16px;
-      gap: 10px;
-    }
-    .nav-search input {
-      flex: 1;
-      border: none;
-      background: transparent;
-      font-size: 14px;
-      font-family: inherit;
-      color: var(--text);
-      outline: none;
-    }
-    .nav-search input::placeholder { color: #aaa; }
-    .nav-search-icon { font-size: 16px; color: var(--muted); flex-shrink: 0; }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      flex-shrink: 0;
-      font-size: 30px;  
-    }
-
-    .nav-gold {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      background: linear-gradient(135deg, #f5c518, #e8a000);
-      border-radius: 20px;
-      padding: 5px 13px;
-      font-size: 12px;
-      font-weight: 700;
-      color: #1a1a1a;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .nav-link {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
-      cursor: pointer;
-      text-decoration: none;
-      transition: color 0.2s;
-      font-size:20px;
-      color: white
-    }
-    .nav-link:hover { color: white; }
-
-    .nav-avatar {
-      width: 34px; height: 34px;
-      border-radius: 50%;
-      background: var(--red);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 700;
-      color: #fff;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    /* ════════════════════════════════
-       HERO  –  sliding background
-    ════════════════════════════════ */
-    .hero {
-      position: relative;
-      height: 450px;
-      overflow: hidden;
-    }
-
+    /* ── Hero ── */
+    .hero { position: relative; height: 450px; overflow: hidden; }
     .hero-slides {
-      display: flex;
-      height: 100%;
-      width: 500%;
+      display: flex; height: 100%; width: 500%;
       transition: transform 0.75s cubic-bezier(0.77, 0, 0.18, 1);
     }
-
-    .hero-slide {
-      flex: 0 0 20%;
-      height: 100%;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-slide video,
-    .hero-slide img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
+    .hero-slide { flex: 0 0 20%; height: 100%; position: relative; overflow: hidden; }
+    .hero-slide video, .hero-slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .hero-slide::after {
-      content: '';
-      position: absolute;
-      inset: 0;
+      content: ''; position: absolute; inset: 0;
       background: linear-gradient(160deg, rgba(0,0,0,0.55) 0%, rgba(226,55,68,0.45) 100%);
     }
-
     .slide-offer {
-      position: absolute;
-      bottom: 60px; left: 28px;
-      z-index: 3;
-      background: rgba(0,0,0,0.72);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 5px 13px;
-      border-radius: 50px;
-      backdrop-filter: blur(6px);
-      border: 1px solid rgba(255,255,255,0.15);
+      position: absolute; bottom: 60px; left: 28px; z-index: 3;
+      background: rgba(0,0,0,0.72); color: #fff; font-size: 12px; font-weight: 600;
+      padding: 5px 13px; border-radius: 50px;
+      backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.15);
     }
     .slide-offer .hi { color: #FFD200; }
-
     .hero-ui {
-      position: absolute;
-      inset: 0;
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      padding: 0 20px;
+      position: absolute; inset: 0; z-index: 10;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 14px; padding: 0 20px;
     }
-
     .hero-text { text-align: center; color: #fff; }
     .hero-text h1 {
       font-size: 40px; font-weight: 800;
@@ -225,50 +59,35 @@
       letter-spacing: -0.5px; margin-bottom: 8px; line-height: 1.15;
     }
     .hero-text p { font-size: 17px; opacity: 0.88; font-weight: 300; }
-
-    /* hero search hidden — using nav search now, keep for mobile fallback */
     .hero-search-wrap {
-      display: none;
-      width: 92%; max-width: 560px;
-      background: #fff;
-      border-radius: 50px;
-      overflow: hidden;
+      display: none; width: 92%; max-width: 560px;
+      background: #fff; border-radius: 50px; overflow: hidden;
       box-shadow: 0 6px 28px rgba(0,0,0,0.22);
     }
     @media (max-width: 768px) {
       .top-nav .nav-search { display: none; }
       .hero-search-wrap { display: flex; }
     }
-
     .hero-search-wrap input {
-      flex: 1; padding: 13px 20px;
-      border: none; outline: none;
+      flex: 1; padding: 13px 20px; border: none; outline: none;
       font-size: 14px; font-family: inherit; color: var(--text);
     }
     .hero-search-wrap button {
-      background: var(--red); color: #fff;
-      border: none; padding: 0 24px;
-      font-size: 13px; font-weight: 700;
+      background: var(--red); color: #fff; border: none;
+      padding: 0 24px; font-size: 13px; font-weight: 700;
       cursor: pointer; font-family: inherit;
     }
-    .hero-search-wrap button:hover { background: var(--red-dark); }
-
     .hero-dots {
-      position: absolute;
-      bottom: 12px; left: 50%;
-      transform: translateX(-50%);
-      z-index: 11; display: flex; gap: 6px;
+      position: absolute; bottom: 12px; left: 50%;
+      transform: translateX(-50%); z-index: 11; display: flex; gap: 6px;
     }
     .h-dot {
       width: 6px; height: 6px; border-radius: 50%;
-      background: rgba(255,255,255,0.4);
-      cursor: pointer; transition: all 0.3s;
+      background: rgba(255,255,255,0.4); cursor: pointer; transition: all 0.3s;
     }
     .h-dot.active { background: #fff; width: 20px; border-radius: 6px; }
 
-    /* ════════════════════════════════
-       BODY WRAPPER
-    ════════════════════════════════ */
+    /* ── Body wrap ── */
     .body-wrap {
       background: var(--surface);
       border-radius: 22px 22px 0 0;
@@ -278,373 +97,362 @@
     }
 
     .section { padding: 20px 32px 0; }
+    .section-label { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 18px; }
 
-    .section-label {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
+    /* ── Categories ── */
+    .cat-scroll {
+      display: flex; gap: 8px; overflow-x: auto;
+      padding-bottom: 6px; scrollbar-width: none; align-items: flex-start;
+    }
+    .cat-scroll::-webkit-scrollbar { display: none; }
+    .cat-promo {
+      flex-shrink: 0; width: 80px; height: 96px; border-radius: 16px;
+      background: linear-gradient(145deg, #e23744, #a01a24);
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; color: #fff; text-align: center;
+      font-size: 10px; font-weight: 700; line-height: 1.3; cursor: pointer;
+      box-shadow: 0 6px 16px rgba(226,55,68,0.32); padding: 8px; margin-right: 6px;
+    }
+    .cat-promo .cp-price { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+    .cat-item {
+      flex-shrink: 0; display: flex; flex-direction: column;
+      align-items: center; gap: 7px; cursor: pointer; padding-bottom: 2px; min-width: 72px;
+    }
+    .cat-icon {
+      width: 68px; height: 68px; border-radius: 16px;
+      background: #f9f9f9; border: 2px solid var(--border);
+      display: grid; place-items: center; font-size: 30px; transition: all 0.2s;
+    }
+    .cat-item.active .cat-icon, .cat-item:hover .cat-icon {
+      border-color: var(--red); box-shadow: 0 4px 14px rgba(226,55,68,0.18); transform: translateY(-3px);
+    }
+    .cat-name { font-size: 12px; font-weight: 500; color: var(--muted); white-space: nowrap; text-align: center; }
+    .cat-item.active .cat-name { color: var(--red); font-weight: 700; }
+    .cat-line { width: 0; height: 2.5px; background: var(--red); border-radius: 2px; transition: width 0.25s; }
+    .cat-item.active .cat-line { width: 20px; }
+    .divider { height: 1px; background: var(--border); margin: 20px 32px 0; }
+
+    /* ── Filter chips ── */
+    .filter-section { background: var(--surface); padding: 14px 32px; border-bottom: 1px solid var(--border); }
+    .filter-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; align-items: center; }
+    .filter-row::-webkit-scrollbar { display: none; }
+    .filter-label { font-size: 12px; font-weight: 700; color: var(--muted); flex-shrink: 0; letter-spacing: 0.04em; }
+    .chip {
+      flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px;
+      padding: 7px 16px; border-radius: 50px; font-size: 13px; font-weight: 500;
+      background: var(--surface); border: 1.5px solid var(--border);
+      cursor: pointer; white-space: nowrap; transition: all 0.18s;
+      color: var(--text); font-family: inherit;
+    }
+    .chip:hover { border-color: var(--red); color: var(--red); }
+    .chip.active { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 0 4px 12px rgba(226,55,68,0.28); }
+    .chip.chip-fast { border-color: var(--red); color: var(--red); font-weight: 600; }
+    .chip.chip-fast.active, .chip.chip-fast:hover { background: var(--red); color: #fff; }
+
+    /* ════════════════════════════════
+       MENU ITEMS BROWSE SECTION ← NEW
+    ════════════════════════════════ */
+    .browse-section {
+      padding: 26px 32px 20px;
+    }
+
+    .browse-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-bottom: 18px;
     }
 
-    /* ════════════════════════════════
-       CATEGORY SCROLL
-    ════════════════════════════════ */
-    .cat-scroll {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-      scrollbar-width: none;
-      align-items: flex-start;
-    }
-    .cat-scroll::-webkit-scrollbar { display: none; }
-
-    .cat-promo {
-      flex-shrink: 0;
-      width: 80px; height: 96px;
-      border-radius: 16px;
-      background: linear-gradient(145deg, #e23744, #a01a24);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      text-align: center;
-      font-size: 10px;
+    .browse-title {
+      font-size: 18px;
       font-weight: 700;
-      line-height: 1.3;
-      cursor: pointer;
-      box-shadow: 0 6px 16px rgba(226,55,68,0.32);
-      padding: 8px;
-      margin-right: 6px;
-    }
-    .cat-promo .cp-price { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
-
-    .cat-item {
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 7px;
-      cursor: pointer;
-      padding-bottom: 2px;
-      min-width: 72px;
-    }
-
-    .cat-icon {
-      width: 68px; height: 68px;
-      border-radius: 16px;
-      background: #f9f9f9;
-      border: 2px solid var(--border);
-      display: grid;
-      place-items: center;
-      font-size: 30px;
-      transition: all 0.2s;
-    }
-
-    .cat-item.active .cat-icon,
-    .cat-item:hover .cat-icon {
-      border-color: var(--red);
-      box-shadow: 0 4px 14px rgba(226,55,68,0.18);
-      transform: translateY(-3px);
-    }
-
-    .cat-name {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--muted);
-      white-space: nowrap;
-      text-align: center;
-    }
-    .cat-item.active .cat-name { color: var(--red); font-weight: 700; }
-
-    .cat-line {
-      width: 0; height: 2.5px;
-      background: var(--red);
-      border-radius: 2px;
-      transition: width 0.25s;
-    }
-    .cat-item.active .cat-line { width: 20px; }
-
-    .divider { height: 1px; background: var(--border); margin: 20px 32px 0; }
-
-    /* ════════════════════════════════
-       FILTER CHIPS
-    ════════════════════════════════ */
-    .filter-section {
-      background: var(--surface);
-      padding: 14px 32px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .filter-row {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      align-items: center;
-    }
-    .filter-row::-webkit-scrollbar { display: none; }
-
-    .filter-label {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--muted);
-      flex-shrink: 0;
-      letter-spacing: 0.04em;
-    }
-
-    .chip {
-      flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 7px 16px;
-      border-radius: 50px;
-      font-size: 13px;
-      font-weight: 500;
-      background: var(--surface);
-      border: 1.5px solid var(--border);
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.18s;
       color: var(--text);
+    }
+
+    .browse-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Category filter tabs for menu items */
+    .browse-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 4px;
+    }
+    .browse-tabs::-webkit-scrollbar { display: none; }
+
+    .browse-tab {
+      flex-shrink: 0;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
       font-family: inherit;
     }
-    .chip:hover { border-color: var(--red); color: var(--red); }
-    .chip.active {
-      background: var(--red);
-      border-color: var(--red);
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(226,55,68,0.28);
-    }
+    .browse-tab:hover  { border-color: var(--red); color: var(--red); }
+    .browse-tab.active { background: var(--red); border-color: var(--red); color: #fff; }
 
-    .chip.chip-fast {
-      border-color: var(--red);
-      color: var(--red);
-      font-weight: 600;
-    }
-    .chip.chip-fast.active,
-    .chip.chip-fast:hover {
-      background: var(--red);
-      color: #fff;
-    }
-
-    /* ════════════════════════════════
-       SECTION HEADER
-    ════════════════════════════════ */
-    .section-header {
+    /* Scrollable row */
+    .menu-items-row {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 22px 32px 8px;
+      gap: 14px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 6px;
     }
-    .section-header h2 {
-      font-size: 20px; font-weight: 700; letter-spacing: -0.3px;
+    .menu-items-row::-webkit-scrollbar { display: none; }
+
+    /* Individual menu item card */
+    .mi-card {
+      flex-shrink: 0;
+      width: 160px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
     }
-    .section-header #resultCount {
-      font-size: 13px; color: var(--red); font-weight: 600;
+    .mi-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.10);
     }
 
-    /* ════════════════════════════════
-       RESTAURANT GRID
-    ════════════════════════════════ */
+    .mi-img-wrap {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      overflow: hidden;
+      background: #f5f5f5;
+    }
+
+    .mi-img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform 0.3s;
+    }
+    .mi-card:hover .mi-img { transform: scale(1.06); }
+
+    .mi-img-placeholder {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px;
+      background: linear-gradient(135deg, #f9f9f9, #f0f0f0);
+    }
+
+    /* veg / nonveg indicator on image */
+    .mi-food-badge {
+      position: absolute;
+      top: 7px; left: 7px;
+      width: 16px; height: 16px;
+      border-radius: 3px;
+      border: 1.5px solid;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mi-food-badge.veg    { border-color: #2e7d32; background: #fff; }
+    .mi-food-badge.nonveg { border-color: var(--red); background: #fff; }
+    .mi-food-badge::after {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      display: block;
+    }
+    .mi-food-badge.veg::after    { background: #2e7d32; }
+    .mi-food-badge.nonveg::after { background: var(--red); }
+
+    .mi-info { padding: 10px 11px 12px; }
+
+    .mi-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 3px;
+    }
+
+    .mi-restaurant {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 8px;
+    }
+
+    .mi-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .mi-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .mi-price .mi-price-from {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .mi-category-tag {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--red);
+      background: var(--red-light);
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    /* Scroll arrow buttons */
+    .browse-scroll-wrap {
+      position: relative;
+    }
+
+    .scroll-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 5;
+      font-size: 14px;
+      transition: box-shadow 0.2s;
+    }
+    .scroll-arrow:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.16); }
+    .scroll-arrow.left  { left: -14px; }
+    .scroll-arrow.right { right: -14px; }
+
+    .browse-divider { height: 1px; background: var(--border); margin: 0 32px; }
+
+    /* ── Section header ── */
+    .section-header {
+      display: flex; justify-content: space-between;
+      align-items: center; padding: 22px 32px 8px;
+    }
+    .section-header h2 { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+    .section-header #resultCount { font-size: 13px; color: var(--red); font-weight: 600; }
+
+    /* ── Restaurant grid ── */
     .restaurant-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
       gap: 20px;
       padding: 12px 48px 60px;
     }
-
-    /* ── Card ── */
     .restaurant-card {
-      background: var(--surface);
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      cursor: pointer;
+      background: var(--surface); border-radius: 16px; overflow: hidden;
+      border: 1px solid var(--border); cursor: pointer;
       transition: transform 0.22s ease, box-shadow 0.22s ease;
       animation: cardIn 0.4s ease both;
     }
-    .restaurant-card:nth-child(1)  { animation-delay: 0.04s }
-    .restaurant-card:nth-child(2)  { animation-delay: 0.08s }
-    .restaurant-card:nth-child(3)  { animation-delay: 0.12s }
-    .restaurant-card:nth-child(4)  { animation-delay: 0.16s }
-    .restaurant-card:nth-child(5)  { animation-delay: 0.20s }
-    .restaurant-card:nth-child(6)  { animation-delay: 0.24s }
-    .restaurant-card:nth-child(7)  { animation-delay: 0.28s }
-    .restaurant-card:nth-child(8)  { animation-delay: 0.32s }
-
+    .restaurant-card:nth-child(1) { animation-delay: 0.04s }
+    .restaurant-card:nth-child(2) { animation-delay: 0.08s }
+    .restaurant-card:nth-child(3) { animation-delay: 0.12s }
+    .restaurant-card:nth-child(4) { animation-delay: 0.16s }
+    .restaurant-card:nth-child(5) { animation-delay: 0.20s }
+    .restaurant-card:nth-child(6) { animation-delay: 0.24s }
+    .restaurant-card:nth-child(7) { animation-delay: 0.28s }
+    .restaurant-card:nth-child(8) { animation-delay: 0.32s }
     @keyframes cardIn {
       from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
-    .restaurant-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
-    }
-
-    .card-img-wrap {
-      position: relative;
-      width: 100%; height: 160px;
-      overflow: hidden; background: #f0f0f0;
-    }
-    .card-img-wrap img {
-      width: 100%; height: 100%;
-      object-fit: cover; display: block;
-      transition: transform 0.35s ease;
-    }
+    .restaurant-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.10); }
+    .card-img-wrap { position: relative; width: 100%; height: 160px; overflow: hidden; background: #f0f0f0; }
+    .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.35s ease; }
     .restaurant-card:hover .card-img-wrap img { transform: scale(1.06); }
-
-    /* offer gradient overlay on image bottom */
     .card-offer-overlay {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
+      position: absolute; bottom: 0; left: 0; right: 0;
       background: linear-gradient(0deg, rgba(0,0,0,0.72) 0%, transparent 100%);
       padding: 24px 10px 8px;
     }
-    .card-offer-text {
-      font-size: 11px;
-      font-weight: 700;
-      color: #fff;
-    }
+    .card-offer-text { font-size: 11px; font-weight: 700; color: #fff; }
     .card-offer-text .hi { color: #FFD200; }
-
     .img-badge {
-      position: absolute;
-      top: 9px; left: 9px;
-      background: rgba(0,0,0,0.65);
-      color: #fff;
+      position: absolute; top: 9px; left: 9px;
+      background: rgba(0,0,0,0.65); color: #fff;
       font-size: 10px; font-weight: 600;
       padding: 3px 9px; border-radius: 8px;
-      backdrop-filter: blur(4px);
-      line-height: 1.4;
+      backdrop-filter: blur(4px); line-height: 1.4;
     }
-    .img-badge .hi { color: #FFD200; display: block; }
     .img-badge.red-badge { background: var(--red); }
-
     .fav-btn {
-      position: absolute;
-      top: 9px; right: 9px;
+      position: absolute; top: 9px; right: 9px;
       width: 30px; height: 30px;
-      background: rgba(255,255,255,0.92);
-      border-radius: 50%;
+      background: rgba(255,255,255,0.92); border-radius: 50%;
       display: grid; place-items: center;
-      font-size: 14px; cursor: pointer;
-      border: none; transition: transform 0.2s;
+      font-size: 14px; cursor: pointer; border: none; transition: transform 0.2s;
     }
     .fav-btn:hover { transform: scale(1.15); }
-
-    /* free delivery badge */
     .free-del-badge {
-      display: inline-block;
-      background: #fff0f1;
-      color: var(--red);
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 4px;
-      margin-bottom: 5px;
-      letter-spacing: 0.02em;
+      display: inline-block; background: #fff0f1; color: var(--red);
+      font-size: 10px; font-weight: 700; padding: 2px 8px;
+      border-radius: 4px; margin-bottom: 5px; letter-spacing: 0.02em;
     }
-
     .card-info { padding: 12px 14px 14px; }
-
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 4px;
-    }
-
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
     .card-info h3 {
-      font-size: 15px; font-weight: 700;
-      color: #1a1a1a;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      max-width: 155px;
+      font-size: 15px; font-weight: 700; color: #1a1a1a;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 155px;
     }
-
-    /* rating — green badge (kept as is, standard across food apps) */
     .rating {
       display: inline-flex; align-items: center; gap: 3px;
       background: #e8f5e9; color: #1b6e29;
       font-size: 11px; font-weight: 700;
-      padding: 3px 8px; border-radius: 6px;
-      white-space: nowrap; flex-shrink: 0;
+      padding: 3px 8px; border-radius: 6px; white-space: nowrap; flex-shrink: 0;
     }
     .rating.amber { background: #fff8e1; color: #b45309; }
-    .rating.red-r  { background: #fff0f1; color: var(--red); }
-
-    .card-meta {
-      font-size: 12px; color: var(--muted); margin-bottom: 5px;
-    }
-
-    /* near & fast indicator */
+    .rating.red-r { background: #fff0f1; color: var(--red); }
+    .card-meta { font-size: 12px; color: var(--muted); margin-bottom: 5px; }
     .near-fast {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 12px;
-      color: var(--red);
-      font-weight: 600;
-      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 5px;
+      font-size: 12px; color: var(--red); font-weight: 600; margin-bottom: 10px;
     }
     .bolt {
-      display: inline-block;
-      width: 9px; height: 12px;
-      background: var(--red);
+      display: inline-block; width: 9px; height: 12px; background: var(--red);
       clip-path: polygon(55% 0%, 100% 40%, 65% 40%, 70% 100%, 0% 55%, 35% 55%);
       flex-shrink: 0;
     }
-
-    .delivery-time {
-      font-size: 12px; color: var(--muted);
-      font-weight: 500; margin-bottom: 10px;
-      display: flex; align-items: center; gap: 4px;
-    }
-    .delivery-time .dt-sep { margin: 0 4px; }
-
-    .card-footer {
-      display: flex; align-items: center; justify-content: space-between;
-    }
-
+    .card-footer { display: flex; align-items: center; justify-content: space-between; }
     .menu-btn {
       display: inline-flex; align-items: center; gap: 5px;
-      background: var(--red); color: #fff;
-      padding: 8px 16px; border-radius: 8px;
-      font-size: 12px; font-weight: 600;
-      text-decoration: none; font-family: inherit;
-      transition: background 0.2s, transform 0.15s;
-      border: none; cursor: pointer;
+      background: var(--red); color: #fff; padding: 8px 16px; border-radius: 8px;
+      font-size: 12px; font-weight: 600; text-decoration: none; font-family: inherit;
+      transition: background 0.2s, transform 0.15s; border: none; cursor: pointer;
     }
     .menu-btn:hover { background: var(--red-dark); transform: translateY(-1px); }
-
-    .menu-btn-disabled {
-      font-size: 12px; color: #bbb;
-      font-weight: 600; padding: 8px 0;
-    }
-
-    /* closed overlay */
+    .menu-btn-disabled { font-size: 12px; color: #bbb; font-weight: 600; padding: 8px 0; }
     .closed-overlay {
-      position: absolute; inset: 0;
-      background: rgba(0,0,0,0.45);
+      position: absolute; inset: 0; background: rgba(0,0,0,0.45);
       display: flex; align-items: center; justify-content: center;
     }
-    .closed-tag {
-      background: #fff;
-      color: var(--red);
-      font-size: 12px; font-weight: 700;
-      padding: 6px 14px; border-radius: 8px;
-    }
-
-    /* ── No Results ── */
+    .closed-tag { background: #fff; color: var(--red); font-size: 12px; font-weight: 700; padding: 6px 14px; border-radius: 8px; }
     .no-results {
-      display: none;
-      text-align: center;
-      padding: 50px 20px;
-      color: #aaa; font-size: 14px;
-      grid-column: 1 / -1;
+      display: none; text-align: center; padding: 50px 20px;
+      color: #aaa; font-size: 14px; grid-column: 1 / -1;
     }
     .no-results svg { display: block; margin: 0 auto 12px; opacity: 0.3; }
   </style>
@@ -653,14 +461,9 @@
 
   <%- include("../partials/header") %>
 
- 
-  <!-- ═══════════════════════════════
-       HERO  –  auto-sliding images
-  ═══════════════════════════════ -->
+  <!-- ═══════════ HERO ═══════════ -->
   <section class="hero">
-
     <div class="hero-slides" id="heroSlides">
-
       <div class="hero-slide">
         <video autoplay muted loop playsinline
           poster="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80">
@@ -668,41 +471,33 @@
         </video>
         <div class="slide-offer"><span class="hi">50% OFF</span> + FREE Delivery on 1st order</div>
       </div>
-
       <div class="hero-slide">
         <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1200&q=80" alt="Pizza"/>
         <div class="slide-offer"><span class="hi">₹100 OFF</span> above ₹299 on Pizza</div>
       </div>
-
       <div class="hero-slide">
         <img src="https://media.istockphoto.com/id/1387143017/photo/the-juicy-lucy-stuffed-cheeseburger.jpg?s=612x612&w=0&k=20&c=VRl4iRCkj5HFzoOekqQhl8EsKroJ6z6R67HwK6tC1bo=" alt="Burger"/>
         <div class="slide-offer"><span class="hi">60% OFF</span> up to ₹120 on Burgers</div>
       </div>
-
       <div class="hero-slide">
         <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=1200&q=80" alt="Indian"/>
         <div class="slide-offer"><span class="hi">30% OFF</span> select North Indian items</div>
       </div>
-
       <div class="hero-slide">
         <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=1200&q=80" alt="Dessert"/>
         <div class="slide-offer"><span class="hi">₹50 OFF</span> on Desserts above ₹149</div>
       </div>
-
     </div>
-
     <div class="hero-ui">
       <div class="hero-text">
         <h1>Hungry? We've got you covered.</h1>
         <p>Discover restaurants, cuisines &amp; more near you</p>
       </div>
-      
       <form action="/customer/search" method="GET" class="hero-search-wrap">
         <input type="text" name="query" placeholder="Search restaurants or cuisines…" autocomplete="off"/>
         <button type="submit">Search</button>
       </form>
     </div>
-
     <div class="hero-dots" id="heroDots">
       <div class="h-dot active" onclick="heroGoTo(0)"></div>
       <div class="h-dot" onclick="heroGoTo(1)"></div>
@@ -710,72 +505,50 @@
       <div class="h-dot" onclick="heroGoTo(3)"></div>
       <div class="h-dot" onclick="heroGoTo(4)"></div>
     </div>
-
   </section>
 
-  <!-- ═══════════════════════════════
-       BODY CONTENT
-  ═══════════════════════════════ -->
+  <!-- ═══════════ BODY ═══════════ -->
   <div class="body-wrap">
 
-    <!-- ①  CATEGORIES -->
+    <!-- ① CATEGORIES -->
     <div class="section" style="padding-top:26px;">
       <div class="section-label">What's on your mind?</div>
       <div class="cat-scroll">
-
         <div class="cat-promo">
           <div style="font-size:9px;letter-spacing:0.05em;">MEALS UNDER</div>
           <div class="cp-price">₹250</div>
           <div style="font-size:9px;opacity:.85;margin-top:3px;">Explore »</div>
         </div>
-
         <div class="cat-item active" onclick="catClick(this,'all')">
-          <div class="cat-icon">🍽️</div>
-          <div class="cat-name">All</div>
-          <div class="cat-line"></div>
+          <div class="cat-icon">🍽️</div><div class="cat-name">All</div><div class="cat-line"></div>
         </div>
         <div class="cat-item" onclick="catClick(this,'indian')">
-          <div class="cat-icon">🫘</div>
-          <div class="cat-name">Indian</div>
-          <div class="cat-line"></div>
+          <div class="cat-icon">🫘</div><div class="cat-name">Indian</div><div class="cat-line"></div>
         </div>
         <div class="cat-item" onclick="catClick(this,'chinese')">
-          <div class="cat-icon">🍜</div>
-          <div class="cat-name">Chinese</div>
-          <div class="cat-line"></div>
+          <div class="cat-icon">🍜</div><div class="cat-name">Chinese</div><div class="cat-line"></div>
         </div>
         <div class="cat-item" onclick="catClick(this,'italian')">
-          <div class="cat-icon">🍕</div>
-          <div class="cat-name">Italian</div>
-          <div class="cat-line"></div>
+          <div class="cat-icon">🍕</div><div class="cat-name">Italian</div><div class="cat-line"></div>
         </div>
         <div class="cat-item" onclick="catClick(this,'fast food')">
-          <div class="cat-icon">🍔</div>
-          <div class="cat-name">Fast Food</div>
-          <div class="cat-line"></div>
+          <div class="cat-icon">🍔</div><div class="cat-name">Fast Food</div><div class="cat-line"></div>
         </div>
         <div class="cat-item" onclick="catClick(this,'desserts')">
-          <div class="cat-icon">🍰</div>
-          <div class="cat-name">Desserts</div>
-          <div class="cat-line"></div>
+          <div class="cat-icon">🍰</div><div class="cat-name">Desserts</div><div class="cat-line"></div>
         </div>
         <div class="cat-item" onclick="catClick(this,'biryani')">
-          <div class="cat-icon">🫕</div>
-          <div class="cat-name">Biryani</div>
-          <div class="cat-line"></div>
+          <div class="cat-icon">🫕</div><div class="cat-name">Biryani</div><div class="cat-line"></div>
         </div>
         <div class="cat-item" onclick="catClick(this,'cafe')">
-          <div class="cat-icon">☕</div>
-          <div class="cat-name">Cafe</div>
-          <div class="cat-line"></div>
+          <div class="cat-icon">☕</div><div class="cat-name">Cafe</div><div class="cat-line"></div>
         </div>
-
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <!-- ②  FILTER CHIPS -->
+    <!-- ② FILTER CHIPS -->
     <div class="filter-section">
       <div class="filter-row">
         <span class="filter-label">Filters:</span>
@@ -794,15 +567,92 @@
       </div>
     </div>
 
-    <!-- ③  SECTION HEADER -->
+    <!-- ══════════════════════════════════════
+         ③  MENU ITEMS BROWSE SECTION  ← NEW
+    ══════════════════════════════════════ -->
+    <% if (locals.menuItems && menuItems.length > 0) { %>
+    <div class="browse-section">
+
+      <div class="browse-header">
+        <div>
+          <div class="browse-title">🍴 Browse Dishes</div>
+          <div class="browse-subtitle">Explore items from all restaurants</div>
+        </div>
+      </div>
+
+      <!-- Category filter tabs -->
+      <div class="browse-tabs" id="browseTabs">
+        <button class="browse-tab active" onclick="filterMenuItems('all', this)">All</button>
+        <button class="browse-tab" onclick="filterMenuItems('Starters', this)">🥗 Starters</button>
+        <button class="browse-tab" onclick="filterMenuItems('Main Course', this)">🍛 Main Course</button>
+        <button class="browse-tab" onclick="filterMenuItems('Breads', this)">🫓 Breads</button>
+        <button class="browse-tab" onclick="filterMenuItems('Rice & Biryani', this)">🍚 Rice &amp; Biryani</button>
+        <button class="browse-tab" onclick="filterMenuItems('Fast-Food', this)">🍔 Fast-Food</button>
+        <button class="browse-tab" onclick="filterMenuItems('Desserts', this)">🍰 Desserts</button>
+        <button class="browse-tab" onclick="filterMenuItems('Beverages', this)">☕ Beverages</button>
+      </div>
+
+      <!-- Scrollable items row -->
+      <div class="browse-scroll-wrap">
+        <button class="scroll-arrow left"  onclick="scrollMenuRow(-1)">‹</button>
+        <button class="scroll-arrow right" onclick="scrollMenuRow(1)">›</button>
+
+        <div class="menu-items-row" id="menuItemsRow">
+          <% menuItems.forEach(function(item) { %>
+          <a class="mi-card"
+             href="/customer/menu/<%= item.restaurantId ? item.restaurantId._id : '' %>"
+             data-category="<%= item.category %>">
+
+            <div class="mi-img-wrap">
+              <% if (item.image) { %>
+                <img class="mi-img" src="<%= item.image %>" alt="<%= item.itemName %>"
+                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="mi-img-placeholder" style="display:none;">
+                  <%= item.foodType === 'nonveg' ? '🍗' : '🥗' %>
+                </div>
+              <% } else { %>
+                <div class="mi-img-placeholder">
+                  <%= item.foodType === 'nonveg' ? '🍗' : '🥗' %>
+                </div>
+              <% } %>
+              <div class="mi-food-badge <%= item.foodType === 'nonveg' ? 'nonveg' : 'veg' %>"></div>
+            </div>
+
+            <div class="mi-info">
+              <div class="mi-name"><%= item.itemName %></div>
+              <div class="mi-restaurant">
+                <%= item.restaurantId ? item.restaurantId.restaurantName : 'Restaurant' %>
+              </div>
+              <div class="mi-footer">
+                <div class="mi-price">
+                  <% if (item.hasHalfFullOption) { %>
+                    <span class="mi-price-from">from </span>₹<%= item.halfPrice %>
+                  <% } else { %>
+                    ₹<%= item.price %>
+                  <% } %>
+                </div>
+                <div class="mi-category-tag"><%= item.category %></div>
+              </div>
+            </div>
+
+          </a>
+          <% }); %>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="browse-divider"></div>
+    <% } %>
+
+    <!-- ④ SECTION HEADER -->
     <div class="section-header">
       <h2>Restaurants near you</h2>
       <span id="resultCount"></span>
     </div>
 
-    <!-- ④  RESTAURANT GRID -->
+    <!-- ⑤ RESTAURANT GRID -->
     <section class="restaurant-grid" id="restaurantGrid">
-
       <div class="no-results" id="noResults">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="#aaa">
           <path d="M11 2a9 9 0 100 18A9 9 0 0011 2zm1 13H10v-2h2v2zm0-4H10V7h2v4z"/>
@@ -822,9 +672,7 @@
                onerror="this.src='https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=80'"/>
 
           <% if (!r.isOpen) { %>
-            <div class="closed-overlay">
-              <div class="closed-tag">⛔ Currently Closed</div>
-            </div>
+            <div class="closed-overlay"><div class="closed-tag">⛔ Currently Closed</div></div>
           <% } else if (r.isNew) { %>
             <div class="img-badge red-badge">🆕 New</div>
           <% } else if (r.isTrending) { %>
@@ -834,7 +682,6 @@
               <div class="card-offer-text"><span class="hi"><%= r.offer %></span><%= r.offerSub || '' %></div>
             </div>
           <% } %>
-
           <% if (r.isOpen) { %>
             <button class="fav-btn" onclick="toggleFav(this, event)">🤍</button>
           <% } %>
@@ -844,7 +691,6 @@
           <% if (r.freeDelivery && r.isOpen) { %>
             <div class="free-del-badge">FREE DELIVERY</div>
           <% } %>
-
           <div class="card-top">
             <h3 style="<%= !r.isOpen ? 'color:#aaa' : '' %>"><%= r.restaurantName %></h3>
             <% if (r.rating && r.isOpen) { %>
@@ -859,23 +705,19 @@
               <span style="font-size:11px;color:var(--red);font-weight:600;background:#fff0f1;padding:3px 8px;border-radius:6px;">Closed</span>
             <% } %>
           </div>
-
           <p class="card-meta" style="<%= !r.isOpen ? 'color:#bbb' : '' %>">
             <%= r.foodType %> &bull; <%= r.location %>
           </p>
-
           <% if (r.deliveryTime && r.isOpen) { %>
             <div class="near-fast">
               <span class="bolt"></span>
               <%= r.deliveryTime %> mins
-              <% if (r.distance) { %><span class="dt-sep">·</span><%= r.distance %><% } %>
+              <% if (r.distance) { %><span style="margin:0 4px">·</span><%= r.distance %><% } %>
             </div>
           <% } %>
-
           <% if (!r.isOpen) { %>
             <p style="font-size:11px;color:#bbb;margin-bottom:12px;">Opens later today</p>
           <% } %>
-
           <div class="card-footer">
             <% if (r.isOpen) { %>
               <a href="/customer/menu/<%= r._id %>" class="menu-btn">View Menu →</a>
@@ -884,13 +726,12 @@
             <% } %>
           </div>
         </div>
-
       </div>
       <% }) %>
-
     </section>
 
-  </div><!-- /body-wrap -->
+  </div>
+
   <%- include("../partials/footer") %>
 
   <script>
@@ -898,20 +739,40 @@
     var hCur = 0, hTotal = 5;
     var hSlides = document.getElementById('heroSlides');
     var hDots   = document.querySelectorAll('.h-dot');
-
     function heroGoTo(n) {
       hCur = (n + hTotal) % hTotal;
       hSlides.style.transform = 'translateX(-' + (hCur * 20) + '%)';
       hDots.forEach(function(d, i){ d.classList.toggle('active', i === hCur); });
     }
-
     var heroTimer = setInterval(function(){ heroGoTo(hCur + 1); }, 4500);
     hSlides.addEventListener('mouseenter', function(){ clearInterval(heroTimer); });
     hSlides.addEventListener('mouseleave', function(){
       heroTimer = setInterval(function(){ heroGoTo(hCur + 1); }, 4500);
     });
 
-    /* ══ Category click ══ */
+    /* ══ Menu items category filter ══ */
+    function filterMenuItems(category, btn) {
+      // Update active tab
+      document.querySelectorAll('.browse-tab').forEach(function(t){ t.classList.remove('active'); });
+      btn.classList.add('active');
+
+      // Show/hide cards
+      document.querySelectorAll('.mi-card').forEach(function(card) {
+        if (category === 'all' || card.dataset.category === category) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    /* ══ Scroll arrows for menu row ══ */
+    function scrollMenuRow(dir) {
+      var row = document.getElementById('menuItemsRow');
+      if (row) row.scrollBy({ left: dir * 520, behavior: 'smooth' });
+    }
+
+    /* ══ Category click (restaurants) ══ */
     function catClick(el, filter) {
       document.querySelectorAll('.cat-item').forEach(function(c){ c.classList.remove('active'); });
       el.classList.add('active');
@@ -922,41 +783,29 @@
       updateCards();
     }
 
-    /* ══ Filter & Search logic ══ */
-    var cards        = document.querySelectorAll('.restaurant-card');
-    var searchInput  = document.getElementById('searchInput');
-    var noResults    = document.getElementById('noResults');
-    var resultCount  = document.getElementById('resultCount');
+    /* ══ Filter & Search (restaurants) ══ */
+    var cards       = document.querySelectorAll('.restaurant-card');
+    var searchInput = document.getElementById('searchInput');
+    var noResults   = document.getElementById('noResults');
+    var resultCount = document.getElementById('resultCount');
     var activeFilter = 'all';
-function updateCards() {
-  var query   = searchInput ? searchInput.value.toLowerCase().trim() : '';
-  var visible = 0;
 
-  cards.forEach(function(card) {
-    var name   = (card.dataset.name || '').toLowerCase();
-    var type   = (card.dataset.type || '').toLowerCase();
-    var items  = (card.dataset.items || '').toLowerCase(); // ✅ NEW
-
-    var matchF = activeFilter === 'all' || type.includes(activeFilter);
-
-    // ✅ Updated search logic (includes food items)
-    var matchS = !query ||
-                 name.includes(query) ||
-                 type.includes(query) ||
-                 items.includes(query);   // 🔥 THIS IS THE KEY
-
-    if (matchF && matchS) {
-      card.style.display = 'block';
-      visible++;
-    } else {
-      card.style.display = 'none';
+    function updateCards() {
+      var query   = searchInput ? searchInput.value.toLowerCase().trim() : '';
+      var visible = 0;
+      cards.forEach(function(card) {
+        var name  = (card.dataset.name  || '').toLowerCase();
+        var type  = (card.dataset.type  || '').toLowerCase();
+        var items = (card.dataset.items || '').toLowerCase();
+        var matchF = activeFilter === 'all' || type.includes(activeFilter);
+        var matchS = !query || name.includes(query) || type.includes(query) || items.includes(query);
+        if (matchF && matchS) { card.style.display = 'block'; visible++; }
+        else                  { card.style.display = 'none'; }
+      });
+      noResults.style.display = visible === 0 ? 'block' : 'none';
+      resultCount.textContent = visible + ' restaurant' + (visible !== 1 ? 's' : '') + ' found';
     }
-  });
 
-  noResults.style.display = visible === 0 ? 'block' : 'none';
-  resultCount.textContent =
-    visible + ' restaurant' + (visible !== 1 ? 's' : '') + ' found';
-}
     document.querySelectorAll('.chip').forEach(function(chip) {
       chip.addEventListener('click', function() {
         if (!chip.classList.contains('chip-fast')) {

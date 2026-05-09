@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {customerDashboard,searchRestaurants,getMenu,getCart,postCart,placeOrder, getOrder,updateCart,removeCartItem } from "../controllers/customercontroller.js";
+import {customerDashboard,searchRestaurants,getMenu,getCart,postCart,placeOrder, getOrder,updateCart,removeCartItem,getProfile,updateProfile,changePassword } from "../controllers/customercontroller.js";
 
 export const customerRouter = Router();
 customerRouter.get("/customer-dashboard",customerDashboard);
@@ -11,3 +11,6 @@ customerRouter.post("/order/place",placeOrder);
 customerRouter.get("/my-order",getOrder);
 customerRouter.post('/cart/update', updateCart);
 customerRouter.post('/cart/remove', removeCartItem);
+customerRouter.get("/profile",getProfile);
+customerRouter.post("/profile/update",updateProfile);
+customerRouter.post("/profile/change-password",changePassword);

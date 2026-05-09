@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Restaurants</title>
+    <link rel="stylesheet" href="/css/main.css">
+
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .profile-page {
+            background: #f5f5f5;
+            min-height: calc(100vh - 60px);
+            padding: 2rem 2rem;
+            font-family: 'Outfit', 'Segoe UI', sans-serif;
+        }
+
+        /* Flash messages */
+        .flash {
+            max-width: 100%;
+            margin: 0 0 1rem;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .flash.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .flash.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Layout */
+        .profile-layout {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        /* Sidebar */
+        .profile-sidebar {
+            background: #fff;
+            border-radius: 12px;
+            border: 0.5px solid #e0e0e0;
+            overflow: hidden;
+            position: sticky;
+            top: 80px;
+            height: 100%;
+        }
+
+        .sidebar-header {
+            background: linear-gradient(135deg, #e23744 0%, #c62030 100%);
+            padding: 1.5rem;
+            text-align: center;
+            color: #fff;
+        }
+
+        .sidebar-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0 auto 10px;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-email {
+            font-size: 12px;
+            opacity: 0.75;
+            word-break: break-all;
+        }
+
+        .sidebar-nav {
+            padding: 0.5rem 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.75rem 1.25rem;
+            font-size: 14px;
+            color: #444;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .sidebar-nav a:hover {
+            background: #fff5f6;
+            color: #e23744;
+        }
+
+        .sidebar-nav a.active {
+            background: #fff5f6;
+            color: #e23744;
+            border-left-color: #e23744;
+            font-weight: 600;
+        }
+
+        .sidebar-nav a.logout-nav {
+            color: #e23744;
+            font-size: 13px;
+        }
+
+        .sidebar-nav a.logout-nav:hover {
+            background: #fff5f6;
+        }
+
+        .sidebar-divider {
+            height: 0.5px;
+            background: #f0f0f0;
+            margin: 0.25rem 0;
+        }
+
+        /* Main card */
+        .profile-main {
+            background: #fff;
+            border-radius: 12px;
+            border: 0.5px solid #e0e0e0;
+            overflow: hidden;
+        }
+
+        .panel {
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        .panel-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 0.5px solid #f0f0f0;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .panel-sub {
+            font-size: 13px;
+            color: #888;
+            margin-top: 3px;
+        }
+
+        .panel-body {
+            padding: 1.5rem;
+        }
+
+        /* Form */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #1a1a1a;
+            background: #fff;
+            outline: none;
+            font-family: inherit;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            width: 100%;
+        }
+
+        .form-input:focus {
+            border-color: #e23744;
+            box-shadow: 0 0 0 3px rgba(226, 55, 68, 0.08);
+        }
+
+        .form-input:disabled {
+            background: #f8f8f8;
+            color: #999;
+            cursor: not-allowed;
+            border-color: #ebebeb;
+        }
+
+        .email-note {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Password eye toggle */
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap .form-input {
+            padding-right: 42px;
+        }
+
+        .eye-btn {
+            position: absolute;
+            right: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #aaa;
+            font-size: 15px;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .eye-btn:hover {
+            color: #666;
+        }
+
+        /* Strength bar */
+        .strength-wrap {
+            height: 3px;
+            background: #eee;
+            border-radius: 2px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            border-radius: 2px;
+            width: 0;
+            transition: width 0.3s, background 0.3s;
+        }
+
+        .strength-label {
+            font-size: 11px;
+            color: #aaa;
+            margin-top: 4px;
+        }
+
+        /* Buttons */
+        .btn-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1.5rem;
+            padding-top: 1.25rem;
+            border-top: 0.5px solid #f0f0f0;
+        }
+
+        .btn-primary {
+            background: #e23744;
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .btn-primary:hover {
+            background: #c62030;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: #fff;
+            color: #555;
+            border: 1px solid #ddd;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: inherit;
+            text-decoration: none;
+            display: inline-block;
+            transition: background 0.15s;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f5f5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-sidebar {
+                position: static;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <%- include('../partials/header') %>
+        <div class="profile-page">
+
+            <!-- Flash messages -->
+            <% if (locals.success) { %>
+                <div class="flash success" id="flash-msg">✓ &nbsp;<%= success %>
+                </div>
+                <% } %>
+                    <% if (locals.error) { %>
+                        <div class="flash error" id="flash-msg">✕ &nbsp;<%= error %>
+                        </div>
+                        <% } %>
+
+                            <div class="profile-layout">
+
+                                <!-- ═══════════════════════
+         SIDEBAR
+    ═══════════════════════ -->
+                                <aside class="profile-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-avatar">
+          <%= user.name.charAt(0).toUpperCase() + (user.name.split(' ')[1] ? user.name.split(' ')[1].charAt(0).toUpperCase() : '') %>
+        </div>
+        <div class="sidebar-name"><%= user.name %></div>
+        <div class="sidebar-email"><%= user.email %></div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="javascript:void(0)" onclick="showPanel('personal', this)" id="tab-personal" class="active">
+          👤 &nbsp; Personal Info
+        </a>
+        <a href="javascript:void(0)" onclick="showPanel('password', this)" id="tab-password">
+          🔒 &nbsp; Change Password
+        </a>
+        <div class="sidebar-divider"></div>
+        <a href="/auth/logout" class="logout-nav">
+          🚪 &nbsp; Logout
+        </a>
+      </nav>
+    </aside>
+
+
+                                <!-- ═══════════════════════
+         MAIN PANEL
+    ═══════════════════════ -->
+                                <main class="profile-main">
+
+                                    <!-- Personal Info -->
+                                    <div class="panel active" id="panel-personal">
+                                        <div class="panel-header">
+                                            <div class="panel-title">Personal Information</div>
+                                            <div class="panel-sub">Update your name, phone and personal details</div>
+                                        </div>
+                                        <div class="panel-body">
+                                            <form method="POST" action="/customer/profile/update">
+
+                                                <div class="form-row">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Full Name</label>
+                                                        <input class="form-input" type="text" name="name"
+                                                            value="<%= user.name %>" placeholder="Your full name"
+                                                            required>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="form-label">Phone Number</label>
+                                                        <input class="form-input" type="tel" name="phone"
+                                                            value="<%= user.phone || '' %>"
+                                                            placeholder="+91 XXXXX XXXXX">
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-row full">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Email Address</label>
+                                                        <input class="form-input" type="email" value="<%= user.email %>"
+                                                            disabled>
+                                                        <div class="email-note">🔒 Email cannot be changed for account
+                                                            security</div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="btn-row">
+                                                    <button type="submit" class="btn-primary">Save Changes</button>
+                                                    <a href="/customer/profile" class="btn-secondary">Cancel</a>
+                                                </div>
+
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    <!-- Change Password -->
+                                    <div class="panel" id="panel-password">
+                                        <div class="panel-header">
+                                            <div class="panel-title">Change Password</div>
+                                            <div class="panel-sub">Use a strong password you haven't used before</div>
+                                        </div>
+                                        <div class="panel-body">
+                                            <form method="POST" action="/customer/profile/change-password">
+
+                                                <div class="form-row full">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Current Password</label>
+                                                        <div class="input-wrap">
+                                                            <input class="form-input" type="password"
+                                                                name="currentPassword" id="curPwd"
+                                                                placeholder="Enter current password" required>
+                                                            <button type="button" class="eye-btn"
+                                                                onclick="toggleEye('curPwd', this)">👁</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-row full">
+                                                    <div class="form-group">
+                                                        <label class="form-label">New Password</label>
+                                                        <div class="input-wrap">
+                                                            <input class="form-input" type="password" name="newPassword"
+                                                                id="newPwd" placeholder="Minimum 8 characters" required
+                                                                oninput="checkStrength(this.value)">
+                                                            <button type="button" class="eye-btn"
+                                                                onclick="toggleEye('newPwd', this)">👁</button>
+                                                        </div>
+                                                        <div class="strength-wrap">
+                                                            <div class="strength-fill" id="strengthBar"></div>
+                                                        </div>
+                                                        <div class="strength-label" id="strengthLabel">Enter a password
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-row full">
+                                                    <div class="form-group">
+                                                        <label class="form-label">Confirm New Password</label>
+                                                        <div class="input-wrap">
+                                                            <input class="form-input" type="password"
+                                                                name="confirmPassword" id="confPwd"
+                                                                placeholder="Re-enter new password" required>
+                                                            <button type="button" class="eye-btn"
+                                                                onclick="toggleEye('confPwd', this)">👁</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="btn-row">
+                                                    <button type="submit" class="btn-primary">Update Password</button>
+                                                    <button type="reset" class="btn-secondary"
+                                                        onclick="checkStrength('')">Clear</button>
+                                                </div>
+
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </main>
+                            </div>
+        </div>
+
+        <script>
+            // Auto-hide flash after 4s
+            const flashEl = document.getElementById('flash-msg');
+            if (flashEl) setTimeout(() => flashEl.style.display = 'none', 4000);
+
+  // Open password tab automatically when error is from password form
+  <% if (locals.error && locals.activeTab === 'password') { %>
+                document.getElementById('panel-personal').classList.remove('active');
+                document.getElementById('panel-password').classList.add('active');
+                document.getElementById('tab-personal').classList.remove('active');
+                document.getElementById('tab-password').classList.add('active');
+  <% } %>
+
+                // Tab switching
+                function showPanel(name, el) {
+                    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                    document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+                    document.getElementById('panel-' + name).classList.add('active');
+                    el.classList.add('active');
+                }
+
+            // Password eye toggle
+            function toggleEye(id, btn) {
+                const inp = document.getElementById(id);
+                const isHidden = inp.type === 'password';
+                inp.type = isHidden ? 'text' : 'password';
+                btn.textContent = isHidden ? '🙈' : '👁';
+            }
+
+            // Password strength meter
+            function checkStrength(val) {
+                const bar = document.getElementById('strengthBar');
+                const label = document.getElementById('strengthLabel');
+                if (!bar) return;
+                if (!val) {
+                    bar.style.width = '0%';
+                    label.textContent = 'Enter a password';
+                    label.style.color = '#aaa';
+                    return;
+                }
+                let score = 0;
+                if (val.length >= 8) score++;
+                if (/[A-Z]/.test(val)) score++;
+                if (/[0-9]/.test(val)) score++;
+                if (/[^A-Za-z0-9]/.test(val)) score++;
+                const levels = [
+                    { pct: '20%', color: '#e23744', text: 'Very weak' },
+                    { pct: '40%', color: '#ff7043', text: 'Weak' },
+                    { pct: '60%', color: '#ffa726', text: 'Fair' },
+                    { pct: '80%', color: '#66bb6a', text: 'Strong' },
+                    { pct: '100%', color: '#2e7d32', text: 'Very strong' },
+                ];
+                const l = levels[Math.min(score, 4)];
+                bar.style.width = l.pct;
+                bar.style.background = l.color;
+                label.textContent = l.text;
+                label.style.color = l.color;
+            }
+        </script>
+
+        <%- include('../partials/footer') %>
+</body>
+
+</html>

@@ -1,8 +1,10 @@
 import path from "path";
+import bcrypt from "bcrypt";
 import Restaurant from "../model/Restaurant.js";
 import menuItem from "../model/menuItem.js";
 import Cart from "../model/cart.js";
 import Order from "../model/order.js"; 
+import User from "../model/user.js";
 
 export async function customerDashboard(req, res) {
   try {
@@ -11,7 +13,16 @@ export async function customerDashboard(req, res) {
 
     const restaurants = await Restaurant.find();
 
-    res.render(path.join("customer", "customerDashboard"), { msg, user, restaurants });
+    const menuItems = await menuItem.find({ available: true })
+      .populate('restaurantId', 'restaurantName')
+      .limit(30); // limit to keep it clean
+
+    res.render(path.join("customer", "customerDashboard"), { 
+      msg, 
+      user, 
+      restaurants,
+      menuItems: menuItems || []
+    });
   } catch (err) {
     console.error("Error loading customer dashboard:", err);
     res.status(500).send("Error loading customer dashboard");
@@ -72,9 +83,20 @@ export async function searchRestaurants(req, res) {
 export async function getProfile(req, res) {
   try {
     const user = await User.findById(req.session.user._id).lean();
-    res.render(path.join("customer", "profile"), { user });
+
+    res.render(path.join("customer","profile"), {
+      user,
+      success: req.session.success,
+      error: req.session.error,
+      activeTab: req.session.activeTab
+    });
+
+    // 🧹 Clear flash after showing
+    req.session.success = null;
+    req.session.error = null;
+    req.session.activeTab = null;
+
   } catch (err) {
-    console.error("Profile error:", err);
     res.status(500).send("Error loading profile");
   }
 }
@@ -123,111 +145,293 @@ export async function getMenu(req, res) {
 }
 export async function getCart(req, res) {
   try {
+
     const currentUser = req.user || req.session.user;
-    const userId = currentUser?._id || currentUser?.id;
+
+    const userId =
+      currentUser?._id || currentUser?.id;
 
     if (!userId) {
+
       req.session.message = "Login again";
+
       return res.redirect("/auth/login");
     }
 
     const cart = await Cart.findOne({
       customerId: userId
-    }).populate("restaurantId", "restaurantName logoImage address");
+    })
+
+    .populate(
+      "restaurantId",
+      "restaurantName logoImage address"
+    );
 
     const user = req.session.user || null;
 
     if (cart && cart.items.length > 0) {
+
       const subtotal = cart.totalAmount;
+
       const taxRate = 5;
-      const taxAmount = (subtotal * taxRate) / 100;
-      const deliveryCharge = subtotal > 500 ? 0 : 40;
+
+      const taxAmount =
+        (subtotal * taxRate) / 100;
+
+      const deliveryCharge =
+        subtotal > 500 ? 0 : 40;
+
       const discount = 0;
 
       cart.subtotal = subtotal;
+
       cart.taxRate = taxRate;
+
       cart.taxAmount = taxAmount;
+
       cart.deliveryCharge = deliveryCharge;
+
       cart.discount = discount;
-      cart.grandTotal = subtotal + taxAmount + deliveryCharge - discount;
+
+      cart.grandTotal =
+        subtotal +
+        taxAmount +
+        deliveryCharge -
+        discount;
     }
 
-    res.render("customer/cart", { cart: cart || null, user });
+    res.render("customer/cart", {
 
-  } catch (err) {
+      cart: cart || null,
+
+      user,
+
+      key_id: process.env.RAZORPAY_KEY_ID
+    });
+
+  }
+
+  catch (err) {
+
     console.error("getCart error:", err);
-    res.status(500).render("error", { message: err.message });
+
+    res.status(500).render("error", {
+      message: err.message
+    });
   }
 }
-
 export async function postCart(req, res) {
+
   try {
+
     const user = req.user || req.session.user;
+
     const customerId = user?._id;
-    const { restaurantId, items } = req.body;
+
+    const {
+
+      restaurantId,
+
+      items,
+
+      paymentMethod
+
+    } = req.body;
+
 
     if (!customerId) {
-      return res.status(401).json({ message: 'Please login first' });
+
+      return res.status(401).json({
+
+        message: 'Please login first'
+      });
     }
 
     if (!items || !items.length) {
-      return res.status(400).json({ message: 'No items in cart' });
+
+      return res.status(400).json({
+
+        message: 'No items in cart'
+      });
     }
 
-    const enrichedItems = await Promise.all(items.map(async (item) => {
-      const foundItem = await menuItem.findById(item.foodId);
-      console.log('menuItem from DB:', foundItem); // check terminal for field names
-      return {
-        foodId: item.foodId,
-        name: foundItem?.name || foundItem?.itemName || item.name || 'Item',
-        image: foundItem?.image || item.image || '',
-        foodType: foundItem?.foodType || item.foodType || 'veg',
-        category: foundItem?.category || item.category || 'Other',
-        portion: item.portion || 'regular',
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-        totalPrice: item.totalPrice
-      };
-    }));
+    const enrichedItems = await Promise.all(
 
-    let cart = await Cart.findOne({ customerId, restaurantId });
+      items.map(async (item) => {
 
+        const foundItem =
+          await menuItem.findById(item.foodId);
+
+        return {
+
+          foodId: item.foodId,
+
+          name:
+            foundItem?.name ||
+            foundItem?.itemName ||
+            item.name ||
+            'Item',
+
+          image:
+            foundItem?.image ||
+            item.image ||
+            '',
+
+          foodType:
+            foundItem?.foodType ||
+            item.foodType ||
+            'veg',
+
+          category:
+            foundItem?.category ||
+            item.category ||
+            'Other',
+
+          portion:
+            item.portion || 'regular',
+
+          quantity:
+            item.quantity,
+
+          unitPrice:
+            item.unitPrice,
+
+          totalPrice:
+            item.totalPrice
+        };
+      })
+    );
+
+
+
+    // ✅ FIND EXISTING CART
+    let cart = await Cart.findOne({
+
+      customerId,
+
+      restaurantId
+    });
+
+
+
+    // ✅ UPDATE CART
     if (cart) {
+
       enrichedItems.forEach(newItem => {
-        const existing = cart.items.find(
-          i => i.foodId.toString() === newItem.foodId &&
-            i.portion === newItem.portion
-        );
+
+        const existing =
+          cart.items.find(
+
+            i =>
+              i.foodId.toString() ===
+              newItem.foodId &&
+              i.portion === newItem.portion
+          );
+
         if (existing) {
+
           existing.quantity += newItem.quantity;
-          existing.totalPrice = existing.unitPrice * existing.quantity;
-        } else {
+
+          existing.totalPrice =
+            existing.unitPrice *
+            existing.quantity;
+
+        }
+
+        else {
+
           cart.items.push(newItem);
         }
       });
-      cart.totalAmount = cart.items.reduce((sum, i) => sum + i.totalPrice, 0);
-      await cart.save();
 
-    } else {
+
+
+      // ✅ UPDATE TOTAL
+      cart.totalAmount =
+        cart.items.reduce(
+
+          (sum, i) =>
+            sum + i.totalPrice,
+
+          0
+        );
+
+
+
+      // ✅ SAVE PAYMENT METHOD
+      cart.paymentMethod =
+        paymentMethod || "COD";
+
+
+
+      await cart.save();
+    }
+
+
+
+    // ✅ CREATE NEW CART
+    else {
+
       cart = await Cart.create({
+
         customerId,
+
         restaurantId,
+
         items: enrichedItems,
-        totalAmount: enrichedItems.reduce((sum, i) => sum + i.totalPrice, 0)
+
+        totalAmount:
+          enrichedItems.reduce(
+
+            (sum, i) =>
+              sum + i.totalPrice,
+
+            0
+          ),
+
+
+
+        // ✅ SAVE PAYMENT METHOD
+        paymentMethod:
+          paymentMethod || "COD"
       });
     }
 
-    console.log('Cart saved successfully:', cart);
-    return res.status(200).json({ success: true, cart });
 
-  } catch (err) {
-    console.error('postCart error:', err);
-    return res.status(500).json({ message: 'Failed to save cart' });
+
+    console.log(
+      'Cart saved successfully:',
+      cart
+    );
+
+
+
+    return res.status(200).json({
+
+      success: true,
+
+      cart
+    });
+
+  }
+
+  catch (err) {
+
+    console.error(
+      'postCart error:',
+      err
+    );
+
+    return res.status(500).json({
+
+      message: 'Failed to save cart'
+    });
   }
 }
 
 export async function placeOrder(req, res) {
   try {
+
     const user = req.user || req.session.user;
     const customerId = user?._id;
 
@@ -238,26 +442,35 @@ export async function placeOrder(req, res) {
       });
     }
 
-    // ✅ Get cart
+    // ✅ GET CART
     const cart = await Cart.findOne({ customerId });
 
     if (!cart || cart.items.length === 0) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "No items in cart"
       });
     }
 
-    // ✅ CALCULATE BILL
+    // ✅ BILL CALCULATION
     const subtotal = cart.totalAmount;
+
     const taxRate = 5;
+
     const taxAmount = (subtotal * taxRate) / 100;
-    const deliveryCharge = subtotal > 500 ? 0 : 40;
+
+    const deliveryCharge =
+      subtotal > 500 ? 0 : 40;
+
     const discount = 0;
 
-    const grandTotal = subtotal + taxAmount + deliveryCharge - discount;
+    const grandTotal =
+      subtotal +
+      taxAmount +
+      deliveryCharge -
+      discount;
 
-    // ✅ MAP CART ITEMS → ORDER ITEMS
+    // ✅ MAP ITEMS
     const orderItems = cart.items.map(item => ({
       foodId: item.foodId,
       name: item.name,
@@ -269,22 +482,25 @@ export async function placeOrder(req, res) {
       totalPrice: item.totalPrice
     }));
 
-    // ✅ PAYMENT HANDLING
-    const paymentMethod = (req.body.paymentMethod || "COD").toUpperCase();
 
-    let paymentStatus = "pending";
+    // ✅ PAYMENT DATA
+    const paymentMethod =
+      (req.body.paymentMethod || "COD").toUpperCase();
 
-    if (paymentMethod === "COD") {
-      paymentStatus = "pending"; // paid on delivery
-    } 
-    else if (paymentMethod === "ONLINE") {
-      paymentStatus = "pending"; // will update after payment success
-    }
+    // ✅ PAYMENT STATUS
+    let paymentStatus =
+      paymentMethod === "ONLINE"
+        ? "paid"
+        : "pending";
+
 
     // ✅ CREATE ORDER
     const newOrder = await Order.create({
+
       userId: customerId,
+
       restaurantId: cart.restaurantId,
+
       items: orderItems,
 
       subtotal,
@@ -295,42 +511,49 @@ export async function placeOrder(req, res) {
       grandTotal,
 
       address: req.body.address || {},
+
       note: req.body.note || "",
 
-      // ✅ PAYMENT FIELDS
+      // ✅ PAYMENT
       paymentMethod,
-      paymentStatus
+      paymentStatus,
+
+      // ✅ RAZORPAY DETAILS
+      razorpay_order_id:
+        req.body.razorpay_order_id || null,
+
+      razorpay_payment_id:
+        req.body.razorpay_payment_id || null,
+
+      orderStatus: "placed"
     });
 
     console.log("Order saved:", newOrder);
 
-    // ❗ IMPORTANT:
-    // For ONLINE → DON'T delete cart yet (wait for payment success)
-    if (paymentMethod === "COD") {
-      await Cart.deleteOne({ _id: cart._id });
-    }
+    // ✅ CLEAR CART
+    // COD → immediately
+    // ONLINE → after successful payment
+    await Cart.deleteOne({
+      _id: cart._id
+    });
 
-    // ✅ RESPONSE HANDLING
-
-    // 🟢 ONLINE PAYMENT FLOW
-    if (paymentMethod === "ONLINE") {
-      return res.json({
-        success: true,
-        message: "Proceed to payment",
-        orderId: newOrder._id,
-        paymentUrl: `/payment/${newOrder._id}` // future Razorpay redirect
-      });
-    }
-
-    // 🟢 COD FLOW
-    return res.json({
+    // ✅ RESPONSE
+    return res.status(200).json({
       success: true,
-      message: "Order placed successfully",
-      orderId: newOrder._id
+      message:
+        paymentMethod === "ONLINE"
+          ? "Payment & Order Successful"
+          : "Order placed successfully",
+
+      orderId: newOrder._id,
+
+      order: newOrder
     });
 
   } catch (err) {
+
     console.error("Order error:", err);
+
     return res.status(500).json({
       success: false,
       message: "Order failed"
@@ -436,5 +659,102 @@ export async function removeCartItem(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Remove failed" });
+  }
+}
+
+export async function updateProfile(req, res) {
+  try {
+    const sessionUser = req.session.user;
+
+    if (!sessionUser) {
+      return res.redirect("/auth/login");
+    }
+
+    const { name, phone } = req.body;
+
+    // 🔒 Validation
+    if (!name) {
+      req.session.error = "Name is required";
+      return res.redirect("/customer/profile");
+    }
+
+    // ✅ Update DB
+    const updatedUser = await User.findByIdAndUpdate(
+      sessionUser._id,
+      { name, phone },
+      { new: true }
+    );
+
+    // ✅ Update session
+    req.session.user.name = updatedUser.name;
+
+    // ✅ Flash message
+    req.session.success = "Profile updated successfully";
+
+    // 🔥 REDIRECT (IMPORTANT)
+    return res.redirect("/customer/profile");
+
+  } catch (err) {
+    console.error("Update profile error:", err);
+
+    req.session.error = "Something went wrong";
+    return res.redirect("/customer/profile");
+  }
+}
+
+export async function changePassword(req, res) {
+  try {
+    const sessionUser = req.session.user;
+
+    if (!sessionUser) {
+      return res.redirect("/auth/login");
+    }
+
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    const user = await User.findById(sessionUser._id);
+
+    // 🔒 Validation
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      req.session.error = "All fields are required";
+      req.session.activeTab = "password";
+      return res.redirect("/customer/profile");
+    }
+
+    if (newPassword !== confirmPassword) {
+      req.session.error = "Passwords do not match";
+      req.session.activeTab = "password";
+      return res.redirect("/customer/profile");
+    }
+
+    if (newPassword.length < 6) {
+      req.session.error = "Password must be at least 6 characters";
+      req.session.activeTab = "password";
+      return res.redirect("/customer/profile");
+    }
+
+    // 🔐 Check current password
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+
+    if (!isMatch) {
+      req.session.error = "Incorrect current password";
+      req.session.activeTab = "password";
+      return res.redirect("/customer/profile");
+    }
+
+    // 🔐 Update password
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    req.session.success = "Password updated successfully";
+
+    return res.redirect("/customer/profile");
+
+  } catch (err) {
+    console.error("Password change error:", err);
+
+    req.session.error = "Something went wrong";
+    req.session.activeTab = "password";
+    return res.redirect("/customer/profile");
   }
 }

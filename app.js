@@ -8,7 +8,8 @@ import { customerRouter } from "./routes/customerRoutes.js";
 import { ownerRouter } from "./routes/ownerRoutes.js";
 import {homeRouter} from "./routes/homeRoutes.js"
 import { delieveryRouter } from "./routes/delieveryRoutes.js";
-import { authmiddleware} from "./middlewares/authmiddleware.js"
+import { authmiddleware} from "./middlewares/authmiddleware.js";
+import { paymentRouter } from "./routes/paymentRoutes.js";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 dotenv.config();
@@ -43,6 +44,7 @@ app.use("/auth",authRouter);
 app.use("/customer",authmiddleware,customerRouter);
 app.use("/owner",authmiddleware,ownerRouter);
 app.use("/delievery",authmiddleware,delieveryRouter);
+app.use("/payment",authmiddleware,paymentRouter);
 
 
 

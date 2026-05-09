@@ -3,10 +3,6 @@ import path from "path";
 import mongoose from "mongoose";
 import User from "../model/user.js";
 
-
-/* ───────────────────────────────────────────── */
-/* DELIVERY DASHBOARD */
-/* ───────────────────────────────────────────── */
 export async function delieveryDashboard(req, res) {
     try {
         const user = req.session.user;
@@ -24,9 +20,8 @@ export async function delieveryDashboard(req, res) {
             topPercent: 10
         };
 
-        /* ✅ ACTIVE ORDER */
         const activeOrderData = await Order.findOne({
-            deliveryAgentId: user._id, // ✅ FIXED
+            deliveryAgentId: user._id,
             orderStatus: { $in: ["accepted", "picked"] }
         })
             .populate("restaurantId")
@@ -37,13 +32,8 @@ export async function delieveryDashboard(req, res) {
         if (activeOrderData) {
             activeOrder = {
                 orderId: activeOrderData._id,
-
-                restaurantName:
-                    activeOrderData.restaurantId?.restaurantName || "Restaurant",
-
-                restaurantArea:
-                    activeOrderData.restaurantId?.address || "N/A",
-
+                restaurantName: activeOrderData.restaurantId?.restaurantName || "Restaurant",
+                restaurantArea: activeOrderData.restaurantId?.address || "N/A",
                 status: activeOrderData.orderStatus,
                 statusLabel: activeOrderData.orderStatus,
 
@@ -54,17 +44,13 @@ export async function delieveryDashboard(req, res) {
                     initials: activeOrderData.userId?.name?.[0] || "C"
                 },
 
-                /* ✅ IMPROVED TIMELINE */
                 timeline: [
                     { label: "Order placed", state: "done" },
-
                     { label: "Preparing", state: "done" },
-
                     {
                         label: "Ready",
                         state: activeOrderData.orderStatus === "accepted" ? "active" : "done"
                     },
-
                     {
                         label: "Out for delivery",
                         state: activeOrderData.orderStatus === "picked" ? "active" : "wait"
@@ -73,7 +59,6 @@ export async function delieveryDashboard(req, res) {
             };
         }
 
-        /* ✅ ORDER QUEUE */
         const queueOrders = await Order.find({
             orderStatus: "ready",
             deliveryAgentId: null
@@ -83,40 +68,43 @@ export async function delieveryDashboard(req, res) {
 
         const queue = queueOrders.map(order => ({
             _id: order._id,
-
-            restaurantName:
-                order.restaurantId?.restaurantName || "Restaurant",
-
+            restaurantName: order.restaurantId?.restaurantName || "Restaurant",
             itemCount: order.items?.length || 1,
-
             distance: order.distance || "N/A",
-
             earning: order.grandTotal
                 ? Math.round(order.grandTotal * 0.1)
                 : (order.deliveryCharge || 40),
-
             eta: order.estimatedTime || 20,
-
             icon: order.items?.[0]?.name
                 ? order.items[0].name[0]
                 : "🍽️"
         }));
 
-        /* ✅ TODAY STATS */
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const totalDeliveredOrders = await Order.countDocuments({
+        const weekStart = new Date();
+        weekStart.setDate(weekStart.getDate() - 7);
+
+        const dateFilterToday = {
+            $or: [
+                { deliveredAt: { $gte: today } },
+                { updatedAt: { $gte: today } } // fallback if deliveredAt missing
+            ]
+        };
+
+        const todayDeliveredOrders = await Order.countDocuments({
             deliveryAgentId: user._id,
-            orderStatus: "delivered"
+            orderStatus: "delivered",
+            ...dateFilterToday
         });
 
-        const earningsAgg = await Order.aggregate([
+        const todayAgg = await Order.aggregate([
             {
                 $match: {
                     deliveryAgentId: user._id,
                     orderStatus: "delivered",
-                    updatedAt: { $gte: today }
+                    ...dateFilterToday
                 }
             },
             {
@@ -127,25 +115,19 @@ export async function delieveryDashboard(req, res) {
             }
         ]);
 
-        const stats = {
-            totalDeliveredOrders,
-            ordersVsYesterday: 0,
-            todayEarnings: earningsAgg[0]?.total || 0,
-            earningsVsAvg: 0,
-            avgDeliveryTime: 25,
-            targetTime: 30
+        const dateFilterWeek = {
+            $or: [
+                { deliveredAt: { $gte: weekStart } },
+                { updatedAt: { $gte: weekStart } }
+            ]
         };
-
-        /* ✅ WEEKLY EARNINGS */
-        const weekStart = new Date();
-        weekStart.setDate(weekStart.getDate() - 7);
 
         const weeklyAgg = await Order.aggregate([
             {
                 $match: {
                     deliveryAgentId: user._id,
                     orderStatus: "delivered",
-                    updatedAt: { $gte: weekStart }
+                    ...dateFilterWeek
                 }
             },
             {
@@ -157,14 +139,25 @@ export async function delieveryDashboard(req, res) {
             }
         ]);
 
+        const stats = {
+            todayOrders: todayDeliveredOrders,
+            ordersVsYesterday: 0,
+            todayEarnings: todayAgg.length ? todayAgg[0].total : 0,
+            earningsVsAvg: 0,
+            avgDeliveryTime: 25,
+            targetTime: 30
+        };
+
+        const weekTotal = weeklyAgg.length ? weeklyAgg[0].total : 0;
+        const weekDeliveries = weeklyAgg.length ? weeklyAgg[0].deliveries : 0;
         const earnings = {
-            weekTotal: weeklyAgg[0]?.total || 0,
+            weekTotal,
             weekGoal: 3000,
-            goalPercent: Math.min(((weeklyAgg[0]?.total || 0) / 3000) * 100, 100),
-            basePay: (weeklyAgg[0]?.total || 0) * 0.7,
-            tips: 200,
-            incentives: 300,
-            weekDeliveries: weeklyAgg[0]?.deliveries || 0
+            goalPercent: Math.min(Math.round((weekTotal / 3000) * 100), 100),
+            basePay: weekTotal * 0.7,
+            tips: weekTotal * 0.2,
+            incentives: weekTotal * 0.1,
+            weekDeliveries
         };
 
         return res.render(
@@ -186,9 +179,6 @@ export async function delieveryDashboard(req, res) {
     }
 }
 
-/* ───────────────────────────────────────────── */
-/* ACCEPT ORDER */
-/* ───────────────────────────────────────────── */
 export async function acceptOrder(req, res) {
     try {
         const user = req.session.user;
@@ -204,10 +194,9 @@ export async function acceptOrder(req, res) {
             return res.json({ success: false, message: "Order not found" });
         }
 
-        /* ✅ ASSIGN AGENT */
+        
         order.deliveryAgentId = user._id;
 
-        /* ✅ SAVE SNAPSHOT */
         order.deliveryAgentSnapshot = {
             name: user.name,
             phone: user.phone,
@@ -226,9 +215,6 @@ export async function acceptOrder(req, res) {
     }
 }
 
-/* ───────────────────────────────────────────── */
-/* REJECT ORDER */
-/* ───────────────────────────────────────────── */
 export async function rejectOrder(req, res) {
     try {
         const orderId = req.params.id;
@@ -245,9 +231,6 @@ export async function rejectOrder(req, res) {
     }
 }
 
-/* ───────────────────────────────────────────── */
-/* DELIVER ORDER */
-/* ───────────────────────────────────────────── */
 export async function delieverOrder(req, res) {
     try {
         const orderId = req.params.id;
@@ -258,14 +241,40 @@ export async function delieverOrder(req, res) {
             return res.json({ success: false });
         }
 
+        // Update order
         order.orderStatus = "delivered";
+        order.deliveredAt = new Date();
 
         await order.save();
+
+        // Today's date start
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Calculate today's total earnings
+        const todayAgg = await Order.aggregate([
+            {
+                $match: {
+                    deliveryAgentId: order.deliveryAgentId,
+                    orderStatus: "delivered",
+                    deliveredAt: { $gte: today }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    total: { $sum: "$deliveryCharge" }
+                }
+            }
+        ]);
+
+        const totalTodayEarnings =
+            todayAgg.length > 0 ? todayAgg[0].total : 0;
 
         res.json({
             success: true,
             earning: order.deliveryCharge || 40,
-            newTodayEarnings: order.deliveryCharge || 40
+            newTodayEarnings: totalTodayEarnings
         });
 
     } catch (err) {
@@ -284,7 +293,7 @@ export async function pickupOrder(req, res) {
             return res.json({ success: false });
         }
 
-        // ✅ Update status to picked
+        
         order.orderStatus = "picked";
 
         await order.save();
@@ -300,53 +309,53 @@ export async function pickupOrder(req, res) {
 export async function getOrderQueue(req, res) {
     try {
 
-        const sessionUser = req.session.user;        
+        const sessionUser = req.session.user;
         const user = {
-    ...sessionUser,
-    initials: sessionUser.name
-        ? sessionUser.name.split(" ").map(n => n[0]).join("").toUpperCase()
-        : "U"
-};
+            ...sessionUser,
+            initials: sessionUser.name
+                ? sessionUser.name.split(" ").map(n => n[0]).join("").toUpperCase()
+                : "U"
+        };
 
         if (!user) {
             return res.redirect("/auth/login");
         }
 
         const activeOrderData = await Order.findOne({
-    deliveryAgentId: user._id,
-    orderStatus: { $in: ["accepted", "picked"] }
-})
-.populate("restaurantId")
-.populate("userId");
+            deliveryAgentId: user._id,
+            orderStatus: { $in: ["accepted", "picked"] }
+        })
+            .populate("restaurantId")
+            .populate("userId");
 
-let activeOrder = null;
+        let activeOrder = null;
 
-if (activeOrderData) {
-    activeOrder = {
-        _id: activeOrderData._id, // ✅ IMPORTANT (use real ID)
+        if (activeOrderData) {
+            activeOrder = {
+                _id: activeOrderData._id, // ✅ IMPORTANT (use real ID)
 
-        id: activeOrderData._id.toString().slice(-6).toUpperCase(),
+                id: activeOrderData._id.toString().slice(-6).toUpperCase(),
 
-        restaurant: activeOrderData.restaurantId?.restaurantName || "Restaurant",
+                restaurant: activeOrderData.restaurantId?.restaurantName || "Restaurant",
 
-        customerName: activeOrderData.userId?.name || "Customer",
+                customerName: activeOrderData.userId?.name || "Customer",
 
-        deliveryAddress: activeOrderData.userId?.address || "Address not provided",
+                deliveryAddress: activeOrderData.userId?.address || "Address not provided",
 
-        items: activeOrderData.items.map(i => ({
-            name: i.name,
-            qty: i.quantity || 1
-        })),
+                items: activeOrderData.items.map(i => ({
+                    name: i.name,
+                    qty: i.quantity || 1
+                })),
 
-        earnings: activeOrderData.grandTotal
-            ? Math.round(activeOrderData.grandTotal * 0.1)
-            : 40,
+                earnings: activeOrderData.grandTotal
+                    ? Math.round(activeOrderData.grandTotal * 0.1)
+                    : 40,
 
-        orderValue: activeOrderData.grandTotal || 0,
+                orderValue: activeOrderData.grandTotal || 0,
 
-        status: activeOrderData.orderStatus
-    };
-}
+                status: activeOrderData.orderStatus
+            };
+        }
 
         // 1. Fetch Pending Queue
         const queueOrders = await Order.find({
@@ -355,24 +364,24 @@ if (activeOrderData) {
         }).populate("restaurantId").populate("userId");
 
         const queue = queueOrders.map(order => ({
-    id: order._id.toString().slice(-6).toUpperCase(),
-    restaurant: order.restaurantId?.restaurantName || "Restaurant",
-    customerName: order.userId?.name || "Customer",
-    deliveryAddress: order.userId?.address || "Address not provided",
+            id: order._id.toString().slice(-6).toUpperCase(),
+            restaurant: order.restaurantId?.restaurantName || "Restaurant",
+            customerName: order.userId?.name || "Customer",
+            deliveryAddress: order.userId?.address || "Address not provided",
 
-    items: order.items.map(i => ({
-        name: i.name,
-        qty: i.quantity || 1
-    })),
+            items: order.items.map(i => ({
+                name: i.name,
+                qty: i.quantity || 1
+            })),
 
-    earnings: order.grandTotal
-        ? Math.round(order.grandTotal * 0.1)
-        : 40,
+            earnings: order.grandTotal
+                ? Math.round(order.grandTotal * 0.1)
+                : 40,
 
-    orderValue: order.grandTotal || 0,
-    distance: order.distance || "N/A",
-    estTime: order.estimatedTime || 20
-}));
+            orderValue: order.grandTotal || 0,
+            distance: order.distance || "N/A",
+            estTime: order.estimatedTime || 20
+        }));
 
         // 2. Fetch Delivered Orders (Crucial: Population happens here)
         const deliveredOrdersData = await Order.find({
@@ -381,44 +390,44 @@ if (activeOrderData) {
         }).populate("userId").populate("restaurantId");
 
         const deliveredOrders = deliveredOrdersData.map(order => {
-    const deliveredDate = new Date(order.updatedAt);
+            const deliveredDate = new Date(order.updatedAt);
 
-    return {
-        id: order._id.toString().slice(-6).toUpperCase(),
+            return {
+                id: order._id.toString().slice(-6).toUpperCase(),
 
-        customerName: order.userId?.name || "Customer",
-        deliveryAddress: order.userId?.address || "Address not provided",
-        restaurant: order.restaurantId?.restaurantName || "Restaurant",
+                customerName: order.userId?.name || "Customer",
+                deliveryAddress: order.userId?.address || "Address not provided",
+                restaurant: order.restaurantId?.restaurantName || "Restaurant",
 
-        items: order.items.map(i => ({
-            name: i.name,
-            qty: i.quantity || 1
-        })),
+                items: order.items.map(i => ({
+                    name: i.name,
+                    qty: i.quantity || 1
+                })),
 
-        earnings: order.grandTotal
-            ? Math.round(order.grandTotal * 0.1)
-            : 40,
+                earnings: order.grandTotal
+                    ? Math.round(order.grandTotal * 0.1)
+                    : 40,
 
-        orderValue: order.grandTotal || 0,
-        timeTaken: order.estimatedTime || 20,
+                orderValue: order.grandTotal || 0,
+                timeTaken: order.estimatedTime || 20,
 
-        // 👇 UI display
-        deliveredAt: deliveredDate.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-        }),
+                // 👇 UI display
+                deliveredAt: deliveredDate.toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }),
 
-        // 👇 FILTERING (IMPORTANT)
-        deliveredAtISO: deliveredDate.getTime(),  // ✅ FIXED
+                // 👇 FILTERING (IMPORTANT)
+                deliveredAtISO: deliveredDate.getTime(),  // ✅ FIXED
 
-        tip: 0
-    };
-});
+                tip: 0
+            };
+        });
         // 3. Stats & Earnings Calculations
-       const todayEarningsValue = deliveredOrders.reduce(
-    (acc, curr) => acc + curr.earnings,
-    0
-);
+        const todayEarningsValue = deliveredOrders.reduce(
+            (acc, curr) => acc + curr.earnings,
+            0
+        );
         const weeklyGoal = 5000;
 
         return res.render(path.join("delievery", "orderQueue"), {

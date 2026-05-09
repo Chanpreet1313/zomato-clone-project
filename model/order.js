@@ -49,7 +49,10 @@ const orderSchema = new mongoose.Schema({
     phone: String,
     rating: Number
   },
-  
+  deliveredAt: {
+    type: Date,
+    default: null
+  },
   address: {
     fullName: String,
     phone: String,

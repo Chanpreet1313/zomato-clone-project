@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #fff5f5, #ffe3e6);
+      min-height: 100vh;
+      color: #1a1a1a;
+    }
+
+    .checkout-page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 20px 16px 60px;
+    }
+
+    /* BACK */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #e23744;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-bottom: 16px;
+    }
+
+    .back-link:hover { opacity: 0.8; }
+
+    /* PAGE TITLE */
+    .page-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    /* SECTION CARD */
+    .section-card {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+      margin-bottom: 16px;
+    }
+
+    .section-card h3 {
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed #f0f0f0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* RESTAURANT BADGE */
+    .rest-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+    }
+
+    .rest-badge img {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .rest-badge-info h3 {
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .rest-badge-info p {
+      font-size: 12px;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    /* ORDER ITEMS */
+    .order-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f9f9f9;
+    }
+
+    .order-item:last-child { border-bottom: none; }
+
+    .order-item img {
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #f5f5f5;
+    }
+
+    .order-item-info { flex: 1; }
+
+    .order-item-name {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .order-item-meta {
+      font-size: 12px;
+      color: #999;
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .veg-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .veg-dot.veg { background: #27ae60; }
+    .veg-dot.nonveg { background: #e23744; }
+
+    .order-item-price {
+      font-size: 14px;
+      font-weight: 800;
+      color: #e23744;
+    }
+
+    /* DELIVERY ADDRESS */
+    .address-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .input-field {
+      width: 100%;
+      border: 1.5px solid #f0f0f0;
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-size: 13px;
+      outline: none;
+      font-family: inherit;
+      background: #fafafa;
+      color: #1a1a1a;
+      transition: 0.2s;
+    }
+
+    .input-field:focus { border-color: #e23744; }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    /* NOTE */
+    .note-area {
+      width: 100%;
+      border: 1.5px solid #f0f0f0;
+      border-radius: 12px;
+      padding: 11px 14px;
+      font-size: 13px;
+      outline: none;
+      resize: none;
+      font-family: inherit;
+      background: #fafafa;
+      color: #1a1a1a;
+    }
+
+    .note-area:focus { border-color: #e23744; }
+
+    /* PAYMENT METHOD */
+    .payment-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .payment-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1.5px solid #f0f0f0;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .payment-option:hover { border-color: #e23744; }
+
+    .payment-option.selected {
+      border-color: #e23744;
+      background: #fff0f0;
+    }
+
+    .payment-option input[type="radio"] {
+      accent-color: #e23744;
+      width: 16px;
+      height: 16px;
+    }
+
+    .payment-icon { font-size: 22px; }
+
+    .payment-label {
+      flex: 1;
+    }
+
+    .payment-label span {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .payment-label small {
+      font-size: 12px;
+      color: #999;
+    }
+
+    /* BILL SUMMARY */
+    .sum-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: #555;
+      padding: 8px 0;
+      border-bottom: 1px solid #f9f9f9;
+    }
+
+    .sum-row:last-of-type { border-bottom: none; }
+
+    .sum-row.discount { color: #27ae60; }
+
+    .sum-row.grand {
+      font-size: 17px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-top: 10px;
+      padding-top: 14px;
+      border-top: 2px solid #f0f0f0;
+      border-bottom: none;
+    }
+
+    .sum-row.grand span:last-child { color: #e23744; }
+
+    .savings-pill {
+      display: inline-block;
+      background: #eafaf2;
+      color: #27ae60;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+
+    /* PLACE ORDER BTN */
+    .place-order-btn {
+      width: 100%;
+      margin-top: 8px;
+      padding: 15px;
+      background: linear-gradient(135deg, #ff4d5a, #e23744);
+      border: none;
+      border-radius: 20px;
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+
+    .place-order-btn:hover { opacity: 0.92; }
+
+    .place-order-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* SECURE BADGE */
+    .secure-badge {
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <%- include("../partials/header") %>
+
+  <div class="checkout-page">
+
+    <a class="back-link" href="/customer/cart">
+      &#8592; Back to Cart
+    </a>
+
+    <div class="page-title">Checkout</div>
+
+    <!-- RESTAURANT BADGE -->
+    <div class="rest-badge">
+      <img src="<%= cart.restaurantId.logoImage %>"
+           alt="<%= cart.restaurantId.restaurantName %>"
+           onerror="this.src='/images/placeholder-food.png'">
+      <div class="rest-badge-info">
+        <h3><%= cart.restaurantId.restaurantName %></h3>
+        <p><%= cart.items.length %> item<%= cart.items.length > 1 ? 's' : '' %> · ₹<%= cart.grandTotal %> total</p>
+      </div>
+    </div>
+
+    <!-- ORDER ITEMS -->
+    <div class="section-card">
+      <h3>🛍️ Order Summary</h3>
+      <% cart.items.forEach(item => { %>
+        <div class="order-item">
+          <img src="<%= item.image %>"
+               alt="<%= item.name %>"
+               onerror="this.src='/images/placeholder-food.png'">
+          <div class="order-item-info">
+            <div class="order-item-name"><%= item.name %></div>
+            <div class="order-item-meta">
+              <span class="veg-dot <%= item.foodType === 'veg' ? 'veg' : 'nonveg' %>"></span>
+              <%= item.foodType === 'veg' ? 'Veg' : 'Non-Veg' %>
+              &nbsp;·&nbsp; Qty: <%= item.quantity %>
+            </div>
+          </div>
+          <div class="order-item-price">₹<%= item.totalPrice %></div>
+        </div>
+      <% }) %>
+    </div>
+
+    <!-- DELIVERY ADDRESS -->
+    <div class="section-card">
+      <h3>📍 Delivery Address</h3>
+      <div class="address-box">
+        <input class="input-field"
+               type="text"
+               id="fullAddress"
+               placeholder="House No. / Flat / Building"
+               required />
+        <input class="input-field"
+               type="text"
+               id="landmark"
+               placeholder="Landmark (optional)" />
+        <div class="input-row">
+          <input class="input-field"
+                 type="text"
+                 id="city"
+                 placeholder="City"
+                 required />
+          <input class="input-field"
+                 type="text"
+                 id="pincode"
+                 placeholder="Pincode"
+                 required />
+        </div>
+      </div>
+    </div>
+
+    <!-- SPECIAL NOTE -->
+    <div class="section-card">
+      <h3>📝 Special Instructions</h3>
+      <textarea class="note-area"
+                id="orderNote"
+                rows="3"
+                placeholder="E.g. No onions, extra spicy, ring the bell..."></textarea>
+    </div>
+
+    <!-- PAYMENT METHOD -->
+    <div class="section-card">
+      <h3>💳 Payment Method</h3>
+      <div class="payment-options">
+
+        <label class="payment-option selected" id="label-cod">
+          <input type="radio"
+                 name="paymentMethod"
+                 value="COD"
+                 checked
+                 onchange="selectPayment(this)">
+          <span class="payment-icon">💵</span>
+          <div class="payment-label">
+            <span>Cash on Delivery</span>
+            <small>Pay when your order arrives</small>
+          </div>
+        </label>
+
+        <label class="payment-option" id="label-online">
+          <input type="radio"
+                 name="paymentMethod"
+                 value="ONLINE"
+                 onchange="selectPayment(this)">
+          <span class="payment-icon">📱</span>
+          <div class="payment-label">
+            <span>Pay Online</span>
+            <small>UPI · Cards · Net Banking · Wallets</small>
+          </div>
+        </label>
+
+      </div>
+    </div>
+
+    <!-- BILL SUMMARY -->
+    <div class="section-card">
+      <h3>🧾 Bill Summary</h3>
+
+      <% if (cart.discount > 0) { %>
+        <div class="savings-pill">
+          You save ₹<%= cart.discount %> on this order!
+        </div>
+      <% } %>
+
+      <div class="sum-row">
+        <span>Subtotal (<%= cart.items.length %> items)</span>
+        <span>₹<%= cart.subtotal %></span>
+      </div>
+
+      <div class="sum-row">
+        <span>GST (<%= cart.taxRate %>%)</span>
+        <span>₹<%= cart.taxAmount %></span>
+      </div>
+
+      <div class="sum-row">
+        <span>Delivery charge</span>
+        <span>
+          <% if (cart.deliveryCharge === 0) { %>
+            <span style="color:#27ae60; font-weight:600;">FREE</span>
+          <% } else { %>
+            ₹<%= cart.deliveryCharge %>
+          <% } %>
+        </span>
+      </div>
+
+      <% if (cart.discount > 0) { %>
+        <div class="sum-row discount">
+          <span>Discount</span>
+          <span>− ₹<%= cart.discount %></span>
+        </div>
+      <% } %>
+
+      <div class="sum-row grand">
+        <span>Grand Total</span>
+        <span>₹<%= cart.grandTotal %></span>
+      </div>
+
+      <!-- PLACE ORDER BUTTON -->
+      <button class="place-order-btn"
+              id="placeOrderBtn"
+              onclick="proceedToCheckout()">
+        🛒 Place Order · ₹<%= cart.grandTotal %>
+      </button>
+
+      <div class="secure-badge">
+        🔒 100% Secure Payments powered by Razorpay
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Razorpay SDK -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+  <script>
+
+    // ✅ HIGHLIGHT SELECTED PAYMENT OPTION
+    function selectPayment(radio) {
+      document.querySelectorAll('.payment-option').forEach(el => {
+        el.classList.remove('selected');
+      });
+      radio.closest('.payment-option').classList.add('selected');
+    }
+
+
+    // ✅ PLACE ORDER
+    function proceedToCheckout() {
+
+      const note        = document.getElementById('orderNote')?.value || "";
+      const fullAddress = document.getElementById('fullAddress')?.value.trim();
+      const city        = document.getElementById('city')?.value.trim();
+      const pincode     = document.getElementById('pincode')?.value.trim();
+      const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || "COD";
+
+      // Basic validation
+      if (!fullAddress || !city || !pincode) {
+        showToast("Please fill in your delivery address ❌");
+        return;
+      }
+
+      const address = { fullAddress, city, pincode,
+                        landmark: document.getElementById('landmark')?.value || "" };
+
+      // 🟢 COD
+      if (paymentMethod === "COD") {
+        placeOrder({ note, address, paymentMethod });
+      }
+
+      // 🔴 ONLINE
+      else if (paymentMethod === "ONLINE") {
+        initiateRazorpayPayment(note, address);
+      }
+    }
+
+
+    // ✅ RAZORPAY FLOW
+    async function initiateRazorpayPayment(note, address) {
+
+      const btn = document.getElementById('placeOrderBtn');
+      btn.disabled = true;
+      btn.textContent = "Initiating Payment...";
+
+      try {
+
+        // Step 1: Create Razorpay order
+        const res = await fetch('/payment/create-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: <%= cart.grandTotal %> })
+        });
+
+        const order = await res.json();
+
+        if (!order.id) {
+          showToast("Payment initiation failed ❌");
+          btn.disabled = false;
+          btn.textContent = "🛒 Place Order · ₹<%= cart.grandTotal %>";
+          return;
+        }
+
+        // Step 2: Open Razorpay popup
+        const options = {
+          key: '<%= key_id %>',
+          amount: order.amount,
+          currency: 'INR',
+          name: 'Zomato Clone',
+          description: 'Food Order Payment',
+          order_id: order.id,
+          image: '/images/logo.png',
+
+          // Step 3: On success
+          handler: async function (response) {
+            try {
+
+              // Step 4: Verify payment
+              const verifyRes = await fetch('/payment/verify-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  razorpay_order_id:  response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature:  response.razorpay_signature
+                })
+              });
+
+              const verifyData = await verifyRes.json();
+
+              if (!verifyData.success) {
+                showToast("Payment verification failed ❌");
+                btn.disabled = false;
+                btn.textContent = "🛒 Place Order · ₹<%= cart.grandTotal %>";
+                return;
+              }
+
+              // Step 5: Save order in DB
+              placeOrder({
+                note,
+                address,
+                paymentMethod: 'ONLINE',
+                razorpay_order_id:  response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id
+              });
+
+            } catch (err) {
+              console.error(err);
+              showToast("Something went wrong ❌");
+              btn.disabled = false;
+              btn.textContent = "🛒 Place Order · ₹<%= cart.grandTotal %>";
+            }
+          },
+
+          modal: {
+            ondismiss: function () {
+              showToast("Payment cancelled ❌");
+              btn.disabled = false;
+              btn.textContent = "🛒 Place Order · ₹<%= cart.grandTotal %>";
+            }
+          },
+
+          prefill: {
+            name: 'Customer',
+            email: 'customer@example.com',
+            contact: '9999999999'
+          },
+
+          theme: { color: '#e23744' }
+        };
+
+        const rzp = new Razorpay(options);
+
+        rzp.on('payment.failed', function (response) {
+          showToast("Payment failed ❌ " + response.error.description);
+          btn.disabled = false;
+          btn.textContent = "🛒 Place Order · ₹<%= cart.grandTotal %>";
+        });
+
+        rzp.open();
+
+      } catch (err) {
+        console.error(err);
+        showToast("Something went wrong ❌");
+        btn.disabled = false;
+        btn.textContent = "🛒 Place Order · ₹<%= cart.grandTotal %>";
+      }
+    }
+
+
+    // ✅ PLACE ORDER IN DB
+    function placeOrder(payload) {
+      const btn = document.getElementById('placeOrderBtn');
+      btn.disabled = true;
+      btn.textContent = "Placing Order...";
+
+      fetch('/customer/order/place', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.success) {
+          showToast(data.message || "Order failed ❌");
+          btn.disabled = false;
+          btn.textContent = "🛒 Place Order · ₹<%= cart.grandTotal %>";
+          return;
+        }
+        showToast("Order placed successfully ✅");
+        setTimeout(() => {
+          window.location.href = '/customer/my-order';
+        }, 1200);
+      })
+      .catch(err => {
+        console.error(err);
+        showToast("Something went wrong ❌");
+        btn.disabled = false;
+        btn.textContent = "🛒 Place Order · ₹<%= cart.grandTotal %>";
+      });
+    }
+
+
+    // ✅ TOAST
+    function showToast(message) {
+      let toast = document.getElementById('checkoutToast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = "checkoutToast";
+        toast.style.cssText = `
+          position: fixed; bottom: 20px; left: 50%;
+          transform: translateX(-50%);
+          background: #333; color: #fff;
+          padding: 10px 20px; border-radius: 8px;
+          z-index: 9999; opacity: 0;
+          transition: 0.3s; font-size: 14px;
+        `;
+        document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      toast.style.opacity = "1";
+      setTimeout(() => { toast.style.opacity = "0"; }, 2500);
+    }
+
+  </script>
+
+</body>
+</html>

@@ -446,7 +446,7 @@ export async function updateProfileInfo(req, res) {
 
 export async function getOrder(req, res) {
   try {
-    const ownerId = req.user._id;
+    const ownerId = req.user.id || req.user._id;
 
     // Step 1: Find all restaurants belonging to this owner
     const ownerRestaurants = await Restaurant.find({ ownerId: ownerId })
