@@ -6,6 +6,8 @@
   <title>Explore Restaurants</title>
   <link rel="stylesheet" href="/css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -509,6 +511,18 @@
 
   <!-- ═══════════ BODY ═══════════ -->
   <div class="body-wrap">
+    <section style="padding:30px 32px;">
+  <h2 style="margin-bottom:15px;">📍 Restaurants Near You</h2>
+
+  <div id="map"
+       style="
+         height:400px;
+         width:100%;
+         border-radius:18px;
+         overflow:hidden;
+         border:1px solid #ebebeb;">
+  </div>
+</section>
 
     <!-- ① CATEGORIES -->
     <div class="section" style="padding-top:26px;">
@@ -733,105 +747,368 @@
   </div>
 
   <%- include("../partials/footer") %>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    /* ══ Hero slider ══ */
-    var hCur = 0, hTotal = 5;
+
+    /* ═════════ Hero slider ═════════ */
+
+    var hCur = 0,
+        hTotal = 5;
+
     var hSlides = document.getElementById('heroSlides');
-    var hDots   = document.querySelectorAll('.h-dot');
+    var hDots = document.querySelectorAll('.h-dot');
+
     function heroGoTo(n) {
-      hCur = (n + hTotal) % hTotal;
-      hSlides.style.transform = 'translateX(-' + (hCur * 20) + '%)';
-      hDots.forEach(function(d, i){ d.classList.toggle('active', i === hCur); });
+        hCur = (n + hTotal) % hTotal;
+
+        hSlides.style.transform =
+            'translateX(-' + (hCur * 20) + '%)';
+
+        hDots.forEach(function(d, i) {
+            d.classList.toggle('active', i === hCur);
+        });
     }
-    var heroTimer = setInterval(function(){ heroGoTo(hCur + 1); }, 4500);
-    hSlides.addEventListener('mouseenter', function(){ clearInterval(heroTimer); });
-    hSlides.addEventListener('mouseleave', function(){
-      heroTimer = setInterval(function(){ heroGoTo(hCur + 1); }, 4500);
+
+    var heroTimer = setInterval(function() {
+        heroGoTo(hCur + 1);
+    }, 4500);
+
+    hSlides.addEventListener('mouseenter', function() {
+        clearInterval(heroTimer);
     });
 
-    /* ══ Menu items category filter ══ */
+    hSlides.addEventListener('mouseleave', function() {
+        heroTimer = setInterval(function() {
+            heroGoTo(hCur + 1);
+        }, 4500);
+    });
+
+
+    /* ═════════ Menu Items Filter ═════════ */
+
     function filterMenuItems(category, btn) {
-      // Update active tab
-      document.querySelectorAll('.browse-tab').forEach(function(t){ t.classList.remove('active'); });
-      btn.classList.add('active');
 
-      // Show/hide cards
-      document.querySelectorAll('.mi-card').forEach(function(card) {
-        if (category === 'all' || card.dataset.category === category) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
-      });
+        document.querySelectorAll('.browse-tab')
+        .forEach(function(tab){
+            tab.classList.remove('active');
+        });
+
+        btn.classList.add('active');
+
+        document.querySelectorAll('.mi-card')
+        .forEach(function(card){
+
+            if(
+                category === 'all' ||
+                card.dataset.category === category
+            ){
+                card.style.display='block';
+            } else {
+                card.style.display='none';
+            }
+
+        });
     }
 
-    /* ══ Scroll arrows for menu row ══ */
+
+    /* ═════════ Scroll Menu Row ═════════ */
+
     function scrollMenuRow(dir) {
-      var row = document.getElementById('menuItemsRow');
-      if (row) row.scrollBy({ left: dir * 520, behavior: 'smooth' });
-    }
 
-    /* ══ Category click (restaurants) ══ */
-    function catClick(el, filter) {
-      document.querySelectorAll('.cat-item').forEach(function(c){ c.classList.remove('active'); });
-      el.classList.add('active');
-      document.querySelectorAll('.chip').forEach(function(c){ c.classList.remove('active'); });
-      var chip = document.querySelector('.chip[data-filter="' + filter + '"]:not(.chip-fast)');
-      if (chip) chip.classList.add('active');
-      activeFilter = filter;
-      updateCards();
-    }
+        var row = document.getElementById('menuItemsRow');
 
-    /* ══ Filter & Search (restaurants) ══ */
-    var cards       = document.querySelectorAll('.restaurant-card');
-    var searchInput = document.getElementById('searchInput');
-    var noResults   = document.getElementById('noResults');
-    var resultCount = document.getElementById('resultCount');
-    var activeFilter = 'all';
-
-    function updateCards() {
-      var query   = searchInput ? searchInput.value.toLowerCase().trim() : '';
-      var visible = 0;
-      cards.forEach(function(card) {
-        var name  = (card.dataset.name  || '').toLowerCase();
-        var type  = (card.dataset.type  || '').toLowerCase();
-        var items = (card.dataset.items || '').toLowerCase();
-        var matchF = activeFilter === 'all' || type.includes(activeFilter);
-        var matchS = !query || name.includes(query) || type.includes(query) || items.includes(query);
-        if (matchF && matchS) { card.style.display = 'block'; visible++; }
-        else                  { card.style.display = 'none'; }
-      });
-      noResults.style.display = visible === 0 ? 'block' : 'none';
-      resultCount.textContent = visible + ' restaurant' + (visible !== 1 ? 's' : '') + ' found';
-    }
-
-    document.querySelectorAll('.chip').forEach(function(chip) {
-      chip.addEventListener('click', function() {
-        if (!chip.classList.contains('chip-fast')) {
-          document.querySelectorAll('.chip:not(.chip-fast)').forEach(function(c){ c.classList.remove('active'); });
-          chip.classList.add('active');
-          activeFilter = chip.dataset.filter;
-          document.querySelectorAll('.cat-item').forEach(function(c){ c.classList.remove('active'); });
-          var cat = document.querySelector('.cat-item[onclick*="\'' + activeFilter + '\'"]');
-          if (cat) cat.classList.add('active');
-          updateCards();
-        } else {
-          chip.classList.toggle('active');
+        if(row){
+            row.scrollBy({
+                left: dir * 520,
+                behavior:'smooth'
+            });
         }
-      });
+
+    }
+
+
+    /* ═════════ Restaurant Categories ═════════ */
+
+    var activeFilter='all';
+
+    function catClick(el, filter){
+
+        document.querySelectorAll('.cat-item')
+        .forEach(function(c){
+            c.classList.remove('active');
+        });
+
+        el.classList.add('active');
+
+        document.querySelectorAll('.chip')
+        .forEach(function(c){
+            c.classList.remove('active');
+        });
+
+        var chip = document.querySelector(
+            '.chip[data-filter="' +
+            filter +
+            '"]:not(.chip-fast)'
+        );
+
+        if(chip){
+            chip.classList.add('active');
+        }
+
+        activeFilter=filter;
+
+        updateCards();
+    }
+
+
+    /* ═════════ Restaurant Search + Filters ═════════ */
+
+    var cards=document.querySelectorAll('.restaurant-card');
+
+    var searchInput =
+    document.getElementById('searchInput');
+
+    var noResults =
+    document.getElementById('noResults');
+
+    var resultCount =
+    document.getElementById('resultCount');
+
+
+    function updateCards(){
+
+        var query=
+        searchInput ?
+        searchInput.value.toLowerCase().trim()
+        : '';
+
+        var visible=0;
+
+        cards.forEach(function(card){
+
+            var name =
+            (card.dataset.name || '')
+            .toLowerCase();
+
+            var type =
+            (card.dataset.type || '')
+            .toLowerCase();
+
+            var items =
+            (card.dataset.items || '')
+            .toLowerCase();
+
+            var matchF =
+            activeFilter==='all' ||
+            type.includes(activeFilter);
+
+            var matchS =
+            !query ||
+            name.includes(query) ||
+            type.includes(query) ||
+            items.includes(query);
+
+            if(matchF && matchS){
+
+                card.style.display='block';
+
+                visible++;
+
+            }else{
+
+                card.style.display='none';
+
+            }
+
+        });
+
+        noResults.style.display =
+        visible===0 ? 'block':'none';
+
+        resultCount.textContent =
+        visible +
+        ' restaurant' +
+        (visible!==1 ? 's':'') +
+        ' found';
+    }
+
+
+    document.querySelectorAll('.chip')
+    .forEach(function(chip){
+
+        chip.addEventListener('click',function(){
+
+            if(
+                !chip.classList.contains('chip-fast')
+            ){
+
+                document
+                .querySelectorAll(
+                    '.chip:not(.chip-fast)'
+                )
+                .forEach(function(c){
+                    c.classList.remove('active');
+                });
+
+                chip.classList.add('active');
+
+                activeFilter=
+                chip.dataset.filter;
+
+                updateCards();
+
+            }else{
+
+                chip.classList.toggle('active');
+
+            }
+
+        });
+
     });
 
-    if (searchInput) searchInput.addEventListener('input', updateCards);
 
-    /* ══ Favourite toggle ══ */
-    function toggleFav(btn, e) {
-      e.preventDefault(); e.stopPropagation();
-      btn.textContent = btn.textContent === '🤍' ? '❤️' : '🤍';
+    if(searchInput){
+        searchInput.addEventListener(
+            'input',
+            updateCards
+        );
     }
+
+
+    /* ═════════ Favourite Button ═════════ */
+
+    function toggleFav(btn,e){
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        btn.textContent =
+        btn.textContent==='🤍'
+        ? '❤️'
+        : '🤍';
+
+    }
+
 
     updateCards();
-  </script>
+
+
+    /* ═════════ Leaflet Map + User Location ═════════ */
+
+    if(navigator.geolocation){
+
+        navigator.geolocation.getCurrentPosition(
+
+            function(position){
+
+                const lat =
+                position.coords.latitude;
+
+                const lng =
+                position.coords.longitude;
+
+
+                const map =
+                L.map('map')
+                .setView([lat,lng],13);
+
+
+                L.tileLayer(
+                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                {
+                    attribution:
+                    '&copy; OpenStreetMap contributors'
+                })
+                .addTo(map);
+
+
+                L.marker([lat,lng])
+                .addTo(map)
+                .bindPopup(
+                    "📍 You are here"
+                )
+                .openPopup();
+
+            },
+
+
+            function(error){
+
+                console.log(
+                    "Location error:",
+                    error.message
+                );
+
+                /* fallback location */
+
+                const map =
+                L.map('map')
+                .setView([28.6139,77.2090],13);
+
+                L.tileLayer(
+                'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                {
+                    attribution:
+                    '&copy; OpenStreetMap contributors'
+                })
+                .addTo(map);
+
+                L.marker([28.6139,77.2090])
+                .addTo(map)
+                .bindPopup(
+                    "Default Location"
+                )
+                .openPopup();
+
+            }
+
+        );
+
+    }
+    navigator.geolocation.getCurrentPosition(
+
+    function(position){
+
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        console.log("Latitude:", lat);
+        console.log("Longitude:", lng);
+
+        const map = L.map('map')
+            .setView([lat, lng], 15);
+
+        L.tileLayer(
+            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                attribution:'&copy; OpenStreetMap contributors'
+            }
+        ).addTo(map);
+
+        L.marker([lat,lng])
+            .addTo(map)
+            .bindPopup("📍 Your current location")
+            .openPopup();
+
+    },
+
+    function(error){
+        console.log(error.message);
+    },
+
+    {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+    }
+
+);
+
+</script>
+  
 
 </body>
 </html>
