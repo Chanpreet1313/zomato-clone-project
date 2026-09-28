@@ -9,7 +9,7 @@ export function getLogin(req, res) {
 export function getSignup(req, res) {
   let msg = req.session.message;
   req.session.message = "";
-  res.render("Signup", { msg })
+  res.render("auth/Signup", { msg })
 }
 export async function postSignup(req, res) {
   try {
