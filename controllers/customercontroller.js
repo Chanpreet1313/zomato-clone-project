@@ -17,7 +17,7 @@ export async function customerDashboard(req, res) {
       .populate('restaurantId', 'restaurantName')
       .limit(30); // limit to keep it clean
 
-    res.render(path.join("customer", "customerDashboard"), { 
+    res.render(path.join("customer", "customerdashboard"), { 
       msg, 
       user, 
       restaurants,
@@ -68,7 +68,7 @@ export async function searchRestaurants(req, res) {
       new Map(allRestaurants.map(r => [r._id.toString(), r])).values()
     );
 
-    res.render(path.join("customer", "customerDashboard"), {
+    res.render(path.join("customer", "customerdashboard"), {
       msg,
       user,
       restaurants: uniqueRestaurants
