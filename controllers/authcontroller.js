@@ -4,12 +4,12 @@ import bcrypt from "bcrypt";
 export function getLogin(req, res) {
   let msg = req.session.message;
   // req.session.message = "";
-  res.render("auth/Login", { msg })
+  res.render("Login", { msg })
 }
 export function getSignup(req, res) {
   let msg = req.session.message;
   req.session.message = "";
-  res.render("auth/Signup", { msg })
+  res.render("Signup", { msg })
 }
 export async function postSignup(req, res) {
   try {
