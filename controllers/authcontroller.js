@@ -67,8 +67,6 @@ export async function postLogin(req, res) {
       role: user.role
     };
 
-    console.log("✅ Logged in user:", req.session.user);
-
     // ✅ ROLE BASED REDIRECT
     if (user.role === "restaurantOwner") {
       return res.redirect("/owner/owner-dashboard");
