@@ -508,16 +508,19 @@
 
     /* ─── Popular Dishes ─── */
     .dishes-row {
-  display: flex;              /* change from grid */
-  gap: 16px;
-  overflow-x: auto;           /* enable horizontal scroll */
-  scroll-behavior: smooth;    /* smooth scrolling */
-  padding-bottom: 6px;
-}
+      display: flex;
+      /* change from grid */
+      gap: 16px;
+      overflow-x: auto;
+      /* enable horizontal scroll */
+      scroll-behavior: smooth;
+      /* smooth scrolling */
+      padding-bottom: 6px;
+    }
 
-.dishes-row::-webkit-scrollbar {
-  display: none;
-}
+    .dishes-row::-webkit-scrollbar {
+      display: none;
+    }
 
     .dish-card {
       background: var(--surface);
@@ -1562,7 +1565,9 @@
               <div class="restaurant-card <%= isOpen ? '' : 'closed' %>" id="card-<%= r._id %>">
 
                 <div class="card-img-wrap">
-                  <img src="<%= r.logoImage %>" alt="<%= r.restaurantName %>" loading="lazy"
+                  <img
+                    src="<%= r.logoImage ? '/owner/image/' + r.logoImage : 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&q=80' %>"
+                    alt="<%= r.restaurantName %>" loading="lazy"
                     onerror="this.src='https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=500&q=80'" />
                   <span class="food-type-badge">
                     <%= r.foodType %>
@@ -1727,7 +1732,7 @@
                       No items in this order
                     </div>
                     <% } %>
-                  </div>
+          </div>
 
           <!-- Bill Summary -->
           <div class="bill-row">

@@ -17,6 +17,18 @@ export async function customerDashboard(req, res) {
       .populate('restaurantId', 'restaurantName')
       .limit(30); // limit to keep it clean
 
+      restaurants.forEach(restaurant => {
+  if (restaurant.logoImage) {
+    restaurant.logoImage = `/owner/image/${restaurant.logoImage}`;
+  }
+});
+
+menuItems.forEach(item => {
+  if (item.image) {
+    item.image = `/owner/image/${item.image}`;
+  }
+});
+
     res.render(path.join("customer", "customerdashboard"), { 
       msg, 
       user, 

@@ -1,9 +1,12 @@
 import path from "path";
+import { uploadToGridFS } from "../utils/gridfsUpload.js";
 import mongoose from "mongoose";
+
 import Restaurant from "../model/Restaurant.js";
 import menu from "../model/menuItem.js";
 import User from "../model/user.js";
 import Order from "../model/order.js";
+import bcrypt from "bcrypt";
 
 export async function ownerDashboard(req, res) {
   try {
@@ -35,7 +38,9 @@ export async function ownerDashboard(req, res) {
           item.category,
           {
             name: item.category,
-            image: item.image || "https://cdn-icons-png.flaticon.com/128/1046/1046784.png"
+            image: item.image
+              ? `/owner/image/${item.image}`
+              : "https://cdn-icons-png.flaticon.com/128/1046/1046784.png"
           }
         ])
       ).values()
@@ -153,8 +158,15 @@ export async function postRestaurant(req, res) {
   try {
     const { restaurantName, foodType, location } = req.body;
     const user = req.user;
+    if (!user) {
+      return res.redirect("/auth/login");
+    }
     const ownerId = user.id || user._id;
-    const logoImage = req.file ? `/restaurant-uploads/${req.file.filename}` : null;
+    let logoImage = null;
+
+    if (req.file) {
+      logoImage = await uploadToGridFS(req.file);
+    }
 
     const restaurant = new Restaurant({
       ownerId,
@@ -210,7 +222,11 @@ export async function postMenu(req, res) {
     } = req.body;
 
     const isHalfFull = hasHalfFullOption === "true";
-    const image = req.file ? `/menu-uploads/${req.file.filename}` : null;
+    let image = null;
+
+    if (req.file) {
+      image = await uploadToGridFS(req.file);
+    }
 
     const menuItem = new menu({
       restaurantId,
@@ -295,7 +311,10 @@ export async function postEditMenu(req, res) {
       fullPrice: isHalfFull && fullPrice ? Number(fullPrice) : null,
       price: !isHalfFull && price ? Number(price) : null,
     };
-    if (req.file) updateData.image = `/menu-uploads/${req.file.filename}`;
+    if (req.file) {
+      const imageId = await uploadToGridFS(req.file);
+      updateData.image = imageId;
+    }
     await menu.findByIdAndUpdate(req.params.id, updateData);
     const updated = await menu.findById(req.params.id);
     res.redirect(`/owner/show-menu/${updated.restaurantId}`);
