@@ -1,25 +1,29 @@
-
 import mongoose from "mongoose";
-import dns from "node:dns";
+
+let connectionPromise = null;
 
 export async function connectdb(url) {
   if (!url) {
-    throw new Error("MONGODB_URL is missing from .env");
+    throw new Error("MONGODB_URL is missing");
   }
 
-  // Apply the DNS workaround before connecting
-  dns.setServers(["8.8.8.8"]);
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
 
-  console.log("Connecting to MongoDB...");
+  if (!connectionPromise) {
+    connectionPromise = mongoose.connect(url, {
+      serverSelectionTimeoutMS: 10000,
+      maxPoolSize: 10,
+    });
+  }
 
   try {
-    await mongoose.connect(url, {
-      serverSelectionTimeoutMS: 10000
-    });
-
+    await connectionPromise;
     console.log("MongoDB connected successfully!");
     return mongoose.connection;
   } catch (error) {
+    connectionPromise = null;
     console.error("MongoDB connection failed:", error.message);
     throw error;
   }
