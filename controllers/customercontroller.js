@@ -3,40 +3,80 @@ import bcrypt from "bcrypt";
 import Restaurant from "../model/Restaurant.js";
 import menuItem from "../model/menuItem.js";
 import Cart from "../model/cart.js";
-import Order from "../model/order.js"; 
+import Order from "../model/order.js";
 import User from "../model/user.js";
 
 export async function customerDashboard(req, res) {
+
+
   try {
-    let msg = req.session.message;
+
+
+    const msg = req.session.message;
     const user = req.session.user;
 
-    const restaurants = await Restaurant.find();
+
+
+    const restaurants = await Restaurant.find().lean();
+
+
 
     const menuItems = await menuItem.find({ available: true })
-      .populate('restaurantId', 'restaurantName')
-      .limit(30); // limit to keep it clean
+      .populate("restaurantId", "restaurantName")
+      .limit(30)
+      .lean();
 
-      restaurants.forEach(restaurant => {
-  if (restaurant.logoImage) {
-    restaurant.logoImage = `/owner/image/${restaurant.logoImage}`;
-  }
-});
 
-menuItems.forEach(item => {
-  if (item.image) {
-    item.image = `/owner/image/${item.image}`;
-  }
-});
 
-    res.render(path.join("customer", "customerdashboard"), { 
-      msg, 
-      user, 
-      restaurants,
-      menuItems: menuItems || []
+    // Convert restaurant GridFS IDs
+    restaurants.forEach(restaurant => {
+      if (restaurant.logoImage) {
+        const imageId = String(restaurant.logoImage);
+
+        if (!imageId.startsWith("/owner/image/")) {
+          restaurant.logoImage = `/owner/image/${imageId}`;
+        }
+      }
     });
+
+    // Convert menu item GridFS IDs
+    menuItems.forEach(item => {
+      if (item.image) {
+        const imageId = String(item.image);
+
+        if (!imageId.startsWith("/owner/image/")) {
+          item.image = `/owner/image/${imageId}`;
+        }
+      }
+    });
+
+
+    menuItems.forEach(item => {
+      console.log({
+        itemName: item.itemName,
+        image: item.image
+      });
+    });
+
+
+    restaurants.forEach(restaurant => {
+      console.log({
+        restaurantName: restaurant.restaurantName,
+        logoImage: restaurant.logoImage
+      });
+    });
+
+
+
+    res.render(path.join("customer", "customerdashboard"), {
+      msg,
+      user,
+      restaurants,
+      menuItems
+    });
+
   } catch (err) {
-    console.error("Error loading customer dashboard:", err);
+
     res.status(500).send("Error loading customer dashboard");
   }
 }
@@ -96,7 +136,7 @@ export async function getProfile(req, res) {
   try {
     const user = await User.findById(req.session.user._id).lean();
 
-    res.render(path.join("customer","profile"), {
+    res.render(path.join("customer", "profile"), {
       user,
       success: req.session.success,
       error: req.session.error,
@@ -155,6 +195,7 @@ export async function getMenu(req, res) {
     res.status(500).send("Error loading menu");
   }
 }
+
 export async function getCart(req, res) {
   try {
 
@@ -162,7 +203,9 @@ export async function getCart(req, res) {
 
     const userId =
       currentUser?._id || currentUser?.id;
-
+    console.log("========== GET CART ==========");
+    console.log("Current User:", currentUser);
+    console.log("User ID:", userId);
     if (!userId) {
 
       req.session.message = "Login again";
@@ -174,10 +217,10 @@ export async function getCart(req, res) {
       customerId: userId
     })
 
-    .populate(
-      "restaurantId",
-      "restaurantName logoImage address"
-    );
+      .populate(
+        "restaurantId",
+        "restaurantName logoImage address"
+      );
 
     const user = req.session.user || null;
 
@@ -232,14 +275,18 @@ export async function getCart(req, res) {
     });
   }
 }
+
 export async function postCart(req, res) {
 
   try {
 
     const user = req.user || req.session.user;
 
-    const customerId = user?._id;
-
+    const customerId = user?._id || user?.id;
+    console.log("========== POST CART ==========");
+    console.log("User:", user);
+    console.log("Customer ID:", customerId);
+    console.log("Request body:", req.body);
     const {
 
       restaurantId,
@@ -331,26 +378,29 @@ export async function postCart(req, res) {
 
       enrichedItems.forEach(newItem => {
 
-        const existing =
-          cart.items.find(
-
-            i =>
-              i.foodId.toString() ===
-              newItem.foodId &&
-              i.portion === newItem.portion
-          );
+        const existing = cart.items.find(
+          i =>
+            i.foodId.toString() === newItem.foodId.toString() &&
+            i.portion === newItem.portion
+        );
 
         if (existing) {
 
-          existing.quantity += newItem.quantity;
+          existing.quantity = Number(newItem.quantity);
+
+          existing.unitPrice = Number(newItem.unitPrice);
 
           existing.totalPrice =
-            existing.unitPrice *
-            existing.quantity;
+            existing.unitPrice * existing.quantity;
 
-        }
+        } else {
 
-        else {
+          newItem.quantity = Number(newItem.quantity);
+
+          newItem.unitPrice = Number(newItem.unitPrice);
+
+          newItem.totalPrice =
+            newItem.unitPrice * newItem.quantity;
 
           cart.items.push(newItem);
         }
@@ -588,7 +638,7 @@ export async function getOrder(req, res) {
       .sort({ createdAt: -1 })
       .lean();
 
-    
+
     const formattedOrders = orders.map(order => {
       return {
         ...order,
@@ -612,65 +662,175 @@ export async function getOrder(req, res) {
 export async function updateCart(req, res) {
   try {
     const user = req.user || req.session.user;
-    const customerId = user?._id;
+    const customerId = user?._id || user?.id;
+    console.log("Update cart request:", req.body);
+    if (!customerId) {
+      return res.status(401).json({
+        success: false,
+        message: "Login required"
+      });
+    }
 
     const { itemId, quantity } = req.body;
 
-    const cart = await Cart.findOne({ customerId });
+    const newQuantity = Number(quantity);
+
+    if (!Number.isInteger(newQuantity) || newQuantity < 1) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid quantity"
+      });
+    }
+
+    const cart = await Cart.findOne({
+      customerId
+    });
 
     if (!cart) {
-      return res.json({ success: false, message: "Cart not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Cart not found"
+      });
     }
 
     const item = cart.items.find(
-      i => i._id.toString() === itemId || i.foodId.toString() === itemId
+      i =>
+        i._id.toString() === String(itemId) ||
+        i.foodId.toString() === String(itemId)
     );
 
     if (!item) {
-      return res.json({ success: false, message: "Item not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Item not found"
+      });
     }
 
-    item.quantity = quantity;
-    item.totalPrice = item.unitPrice * quantity;
+    // Set the quantity to the NEW quantity
+    item.quantity = newQuantity;
 
-    cart.totalAmount = cart.items.reduce((sum, i) => sum + i.totalPrice, 0);
+    // Recalculate this item's total
+    item.totalPrice =
+      Number(item.unitPrice) * newQuantity;
+
+    // Recalculate complete cart
+    cart.totalAmount = cart.items.reduce(
+      (sum, item) =>
+        sum + Number(item.totalPrice),
+      0
+    );
 
     await cart.save();
 
-    res.json({ success: true, cart });
+    console.log("Cart updated:");
+    console.log("Item:", item.name);
+    console.log("Quantity:", item.quantity);
+    console.log("Item total:", item.totalPrice);
+    console.log("Cart total:", cart.totalAmount);
+
+    return res.json({
+      success: true,
+      cart
+    });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Update failed" });
+    console.error("Update cart error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Update failed"
+    });
   }
 }
+
 
 export async function removeCartItem(req, res) {
   try {
     const user = req.user || req.session.user;
-    const customerId = user?._id;
-
+    const customerId = user?._id || user?.id;
     const { itemId } = req.body;
+
+    if (!customerId) {
+      return res.status(401).json({
+        success: false,
+        message: "Please log in first."
+      });
+    }
+
+    if (!itemId) {
+      return res.status(400).json({
+        success: false,
+        message: "Item ID is required."
+      });
+    }
 
     const cart = await Cart.findOne({ customerId });
 
     if (!cart) {
-      return res.json({ success: false, message: "Cart not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Cart not found."
+      });
     }
 
-    cart.items = cart.items.filter(
-      i => i._id.toString() !== itemId && i.foodId.toString() !== itemId
-    );
+    // Match either the cart subdocument ID or the food/menu item ID.
+    const initialLength = cart.items.length;
 
-    cart.totalAmount = cart.items.reduce((sum, i) => sum + i.totalPrice, 0);
+    cart.items = cart.items.filter(item => {
+      const cartItemId = item._id?.toString();
+      const foodId = item.foodId?.toString();
+      const menuItemId = item.menuItemId?.toString();
+
+      return (
+        cartItemId !== String(itemId) &&
+        foodId !== String(itemId) &&
+        menuItemId !== String(itemId)
+      );
+    });
+
+    if (cart.items.length === initialLength) {
+      return res.status(404).json({
+        success: false,
+        message: "Item not found in cart."
+      });
+    }
+
+    // IMPORTANT: Delete the document if the cart is now empty.
+    if (cart.items.length === 0) {
+      await Cart.deleteOne({ _id: cart._id });
+
+      return res.json({
+        success: true,
+        cartEmpty: true,
+        message: "Last item removed; cart deleted."
+      });
+    }
+
+    // Recalculate totals for the remaining items.
+    cart.totalAmount = cart.items.reduce((sum, item) => {
+      const quantity = Number(item.quantity) || 0;
+      const unitPrice = Number(item.unitPrice) || 0;
+
+      item.totalPrice = quantity * unitPrice;
+
+      return sum + item.totalPrice;
+    }, 0);
 
     await cart.save();
 
-    res.json({ success: true, cart });
+    return res.json({
+      success: true,
+      cartEmpty: false,
+      cart
+    });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Remove failed" });
+    console.error("Remove cart item error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to remove cart item."
+    });
   }
 }
 

@@ -410,67 +410,92 @@
 
           <!-- RESTAURANT BADGE -->
           <div class="rest-badge">
-            <img src="<%= cart.restaurantId.logoImage %>" alt="<%= cart.restaurantId.restaurantName %>">
+            <img src="<%= cart.restaurantId?.logoImage || '/images/placeholder-restaurant.png' %>"
+              alt="<%= cart.restaurantId?.restaurantName || 'Restaurant' %>"
+              onerror="this.onerror=null; this.src='/images/placeholder-restaurant.png';">
+
             <div class="rest-badge-info">
               <h3>
-                <%= cart.restaurantId.restaurantName %>
+                <%= cart.restaurantId?.restaurantName || 'Restaurant' %>
               </h3>
+
               <p>
                 <%= cart.items.length %> item<%= cart.items.length> 1 ? 's' : '' %> in your cart
               </p>
             </div>
           </div>
 
+
           <!-- CART ITEMS -->
+
           <div class="cart-items">
             <% cart.items.forEach(item=> { %>
-              <div class="cart-item" id="cart-item-<%= item.menuItemId || item._id %>">
+              <% const itemId=String(item.menuItemId || item._id); const quantity=Number(item.quantity) || 1; const
+                unitPrice=Number(item.unitPrice) || 0; const totalPrice=Number(item.totalPrice) || unitPrice * quantity;
+                const foodType=String(item.foodType || "nonveg" ).toLowerCase(); const portion=String(item.portion
+                || "regular" ); %>
 
-                <img class="cart-item-img" src="<%= item.image %>" alt="<%= item.name %>"
-                  onerror="this.src='/images/placeholder-food.png'">
+                <div class="cart-item" id="cart-item-<%= itemId %>">
 
-                <div class="cart-item-info">
+                  <!-- Food image with fallback -->
+                  <img class="cart-item-img" src="<%= item.image || '/images/placeholder-food.png' %>"
+                    alt="<%= item.name || 'Food item' %>"
+                    onerror="this.onerror=null; this.src='/images/placeholder-food.png';">
 
-                  <div class="cart-item-name">
-                    <%= item.name %>
-                  </div>
+                  <div class="cart-item-info">
 
-                  <div class="cart-item-meta">
-                    <span class="veg-dot <%= item.foodType === 'veg' ? 'veg' : 'nonveg' %>"></span>
-                    <%= item.foodType==='veg' ? 'Veg' : 'Non-Veg' %>
+                    <!-- Food name -->
+                    <div class="cart-item-name">
+                      <%= item.name %>
+                    </div>
 
-                      <% if (item.portion !=='regular' ) { %>
-                        &nbsp;·&nbsp;
-                        <span class="portion-badge">
-                          <%= item.portion.charAt(0).toUpperCase() + item.portion.slice(1) %> Plate
+                    <!-- Food details -->
+                    <div class="cart-item-meta">
+                      <span class="veg-dot <%= foodType === 'veg' ? 'veg' : 'nonveg' %>"></span>
+                      <%= foodType==='veg' ? 'Veg' : 'Non-Veg' %>
+
+                        <% if (portion !=='regular' ) { %>
+                          &nbsp;·&nbsp;
+                          <span class="portion-badge">
+                            <%= portion.charAt(0).toUpperCase() + portion.slice(1) %> Plate
+                          </span>
+                          <% } %>
+
+                            &nbsp;·&nbsp; Qty:
+                            <span id="qty-<%= itemId %>">
+                              <%= quantity %>
+                            </span>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="cart-item-price">
+                      ₹<%= unitPrice.toFixed(2) %> ×
+                        <span id="price-qty-<%= itemId %>">
+                          <%= quantity %>
                         </span>
-                        <% } %>
+                        = ₹<span id="item-total-<%= itemId %>">
+                          <%= totalPrice.toFixed(2) %>
+                        </span>
+                    </div>
 
-                          &nbsp;·&nbsp; Qty: <%= item.quantity %>
+                    <!-- Quantity controls -->
+                    <div class="qty-stepper">
+                      <button type="button" class="qty-btn" aria-label="Decrease quantity"
+                        onclick="updateQty('<%= itemId %>', -1, <%= unitPrice %>)">−</button>
+
+                      <span class="qty-num" id="stepper-qty-<%= itemId %>">
+                        <%= quantity %>
+                      </span>
+
+                      <button type="button" class="qty-btn" aria-label="Increase quantity"
+                        onclick="updateQty('<%= itemId %>', 1, <%= unitPrice %>)">+</button>
+                    </div>
+
                   </div>
-
-                  <div class="cart-item-price">
-                    ₹<%= item.unitPrice %> &times; <%= item.quantity %>
-                        = ₹<%= item.totalPrice %>
-                  </div>
-                  <div class="qty-stepper">
-                    <button class="qty-btn"
-                      onclick='updateQty(`<%= item.menuItemId || item._id %>`, -1, <%= item.unitPrice %>)'>−</button>
-
-                    <span class="qty-num" id="qty-<%= item.menuItemId || item._id %>">
-                      <%= item.quantity %>
-                    </span>
-
-                    <button class="qty-btn"
-                      onclick="updateQty('<%= item.menuItemId || item._id %>', +1, <%= item.unitPrice %>)">+</button>
-                  </div>
-
-
                 </div>
-
-              </div>
-              <% }) %>
+                <% }) %>
           </div>
+
 
           <div class="summary-box">
 
@@ -544,483 +569,465 @@
 
     </div>
 
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-<script>
+    <script>
 
-  // ✅ PLACE ORDER
-  function proceedToCheckout() {
+      // ✅ PLACE ORDER
+      function proceedToCheckout() {
 
-    const note =
-      document.querySelector('.note-area')?.value || "";
+        const note =
+          document.querySelector('.note-area')?.value || "";
 
-    const paymentMethod =
-      document.querySelector('input[name="paymentMethod"]:checked')?.value || "COD";
+        const paymentMethod =
+          document.querySelector('input[name="paymentMethod"]:checked')?.value || "COD";
 
 
 
-    // ✅ CASH ON DELIVERY
-    if (paymentMethod === "COD") {
+        // ✅ CASH ON DELIVERY
+        if (paymentMethod === "COD") {
 
-      fetch('/customer/order/place', {
+          fetch('/customer/order/place', {
 
-        method: 'POST',
+            method: 'POST',
 
-        headers: {
-          'Content-Type': 'application/json'
-        },
+            headers: {
+              'Content-Type': 'application/json'
+            },
 
-        body: JSON.stringify({
-          note,
-          paymentMethod
-        })
+            body: JSON.stringify({
+              note,
+              paymentMethod
+            })
 
-      })
+          })
 
-      .then(res => res.json())
+            .then(res => res.json())
 
-      .then(data => {
+            .then(data => {
 
-        if (!data.success) {
+              if (!data.success) {
 
-          showToast(data.message || "Order failed ❌");
-          return;
+                showToast(data.message || "Order failed ❌");
+                return;
+              }
+
+              showToast("Order placed successfully ✅");
+
+              setTimeout(() => {
+                window.location.href = '/customer/my-order';
+              }, 1200);
+
+            })
+
+            .catch(err => {
+
+              console.error(err);
+
+              showToast("Something went wrong ❌");
+            });
         }
 
-        showToast("Order placed successfully ✅");
+
+
+        // ✅ ONLINE PAYMENT
+        else if (paymentMethod === "ONLINE") {
+
+          initiateRazorpayPayment(note);
+        }
+      }
+
+
+
+
+      // ✅ RAZORPAY PAYMENT FLOW
+      async function initiateRazorpayPayment(note) {
+
+        try {
+
+          // STEP 1: CREATE ORDER
+          const res = await fetch('/payment/create-order', {
+
+            method: 'POST',
+
+            headers: {
+              'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify({
+              amount: <%= cart? cart.grandTotal : 0 %>
+        })
+          });
+
+          const order = await res.json();
+
+          console.log("Razorpay Order:", order);
+
+          if (!order.id) {
+
+            showToast("Payment initiation failed ❌");
+            return;
+          }
+
+
+
+          // STEP 2: RAZORPAY OPTIONS
+          const options = {
+
+            key: '<%= key_id %>',
+
+            amount: order.amount,
+
+            currency: 'INR',
+
+            name: 'Zomato Clone',
+
+            description: 'Food Order Payment',
+
+            order_id: order.id,
+
+
+
+            // ✅ PAYMENT SUCCESS
+            handler: async function (response) {
+
+              try {
+
+                // STEP 3: VERIFY PAYMENT
+                const verifyRes = await fetch('/payment/verify-payment', {
+
+                  method: 'POST',
+
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+
+                  body: JSON.stringify({
+
+                    razorpay_order_id: response.razorpay_order_id,
+
+                    razorpay_payment_id: response.razorpay_payment_id,
+
+                    razorpay_signature: response.razorpay_signature
+                  })
+                });
+
+                const verifyData = await verifyRes.json();
+
+                if (!verifyData.success) {
+
+                  showToast("Payment verification failed ❌");
+                  return;
+                }
+
+
+
+                // STEP 4: PLACE ORDER AFTER PAYMENT
+                const orderRes = await fetch('/customer/order/place', {
+
+                  method: 'POST',
+
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+
+                  body: JSON.stringify({
+
+                    note,
+
+                    paymentMethod: 'ONLINE',
+
+                    razorpay_order_id: response.razorpay_order_id,
+
+                    razorpay_payment_id: response.razorpay_payment_id
+                  })
+                });
+
+                const orderData = await orderRes.json();
+
+                if (!orderData.success) {
+
+                  showToast(orderData.message || "Order failed ❌");
+                  return;
+                }
+
+                showToast("Payment & Order Successful ✅");
+
+                setTimeout(() => {
+
+                  window.location.href = '/customer/my-order';
+
+                }, 1500);
+
+              }
+
+              catch (err) {
+
+                console.error("Verification Error:", err);
+
+                showToast("Something went wrong ❌");
+              }
+            },
+
+
+
+            // ✅ PAYMENT WINDOW CLOSED
+            modal: {
+
+              ondismiss: function () {
+
+                showToast("Payment cancelled ❌");
+              }
+            },
+
+
+
+            // ✅ OPTIONAL PREFILL
+            prefill: {
+
+              name: 'Customer',
+
+              email: 'customer@example.com',
+
+              contact: '9999999999'
+            },
+
+
+
+            // ✅ THEME
+            theme: {
+
+              color: '#e23744'
+            }
+          };
+
+
+
+          // STEP 5: OPEN RAZORPAY
+          const rzp = new Razorpay(options);
+
+
+
+          // ✅ PAYMENT FAILED
+          rzp.on('payment.failed', function (response) {
+
+            console.error(response.error);
+
+            showToast(
+              "Payment failed: " +
+              response.error.description +
+              " ❌"
+            );
+          });
+
+
+
+          rzp.open();
+
+        }
+
+        catch (err) {
+
+          console.error("Razorpay Error:", err);
+
+          showToast("Something went wrong ❌");
+        }
+      }
+
+
+
+
+      // ✅ UPDATE QUANTITY
+
+      async function updateQty(itemId, delta, unitPrice) {
+        const qtyEl = document.getElementById("qty-" + itemId);
+        const itemEl = document.getElementById("cart-item-" + itemId);
+
+        if (!qtyEl || !itemEl) return;
+
+        const currentQty = Number(qtyEl.textContent);
+        const newQty = currentQty + delta;
+        const buttons = itemEl.querySelectorAll(".qty-btn");
+
+        buttons.forEach(button => button.disabled = true);
+
+        try {
+          let response;
+          let data;
+
+          if (newQty <= 0) {
+            // Remove item when quantity reaches zero
+            response = await fetch("/customer/cart/remove", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ itemId })
+            });
+          } else {
+            // Update quantity
+            response = await fetch("/customer/cart/update", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                itemId,
+                quantity: newQty
+              })
+            });
+          }
+
+          data = await response.json();
+
+          if (!response.ok || !data.success) {
+            throw new Error(data.message || "Could not update cart.");
+          }
+
+          if (newQty <= 0) {
+            itemEl.remove();
+          } else {
+            qtyEl.textContent = newQty;
+
+            const priceEl = itemEl.querySelector(".cart-item-price");
+
+            if (priceEl) {
+              priceEl.innerHTML =
+                `₹${unitPrice} × ${newQty} = ₹${unitPrice * newQty}`;
+            }
+          }
+
+          // Update totals only when the server provides a cart.
+          if (data.cart) {
+            updateSummaryUI(data.cart);
+          }
+
+          // Reload to display the correct empty-cart state and totals.
+          if (
+            data.cartEmpty === true ||
+            document.querySelectorAll(".cart-item").length === 0
+          ) {
+            window.location.reload();
+          }
+
+        } catch (error) {
+          console.error("Cart update error:", error);
+          showToast(error.message || "Something went wrong.");
+        } finally {
+          buttons.forEach(button => button.disabled = false);
+        }
+      }
+
+
+
+
+      // ✅ UPDATE SUMMARY
+      function updateSummaryUI(cart) {
+
+        if (!cart) return;
+
+        const subtotal =
+          cart.subtotal || cart.totalAmount || 0;
+
+        const tax =
+          cart.taxAmount || (subtotal * 0.05);
+
+        const delivery =
+          cart.deliveryCharge !== undefined
+            ? cart.deliveryCharge
+            : (subtotal > 500 ? 0 : 40);
+
+        const grand =
+          cart.grandTotal || (subtotal + tax + delivery);
+
+
+
+        document.querySelector(
+          '.sum-row:nth-child(2) span:last-child'
+        ).textContent = "₹" + subtotal;
+
+
+
+        document.querySelector(
+          '.sum-row:nth-child(3) span:last-child'
+        ).textContent = "₹" + tax;
+
+
+
+        const deliveryEl =
+          document.querySelector(
+            '.sum-row:nth-child(4) span:last-child'
+          );
+
+        if (delivery === 0) {
+
+          deliveryEl.innerHTML =
+            '<span style="color:#27ae60;font-weight:600;">FREE</span>';
+
+        } else {
+
+          deliveryEl.textContent = "₹" + delivery;
+        }
+
+
+
+        document.querySelector(
+          '.sum-row.grand span:last-child'
+        ).textContent = "₹" + grand;
+      }
+
+
+
+
+      // ✅ TOAST
+      function showToast(message) {
+
+        let toast =
+          document.getElementById('orderToast');
+
+        if (!toast) {
+
+          toast = document.createElement('div');
+
+          toast.id = "orderToast";
+
+          toast.style.position = "fixed";
+          toast.style.bottom = "20px";
+          toast.style.left = "50%";
+          toast.style.transform = "translateX(-50%)";
+          toast.style.background = "#333";
+          toast.style.color = "#fff";
+          toast.style.padding = "10px 16px";
+          toast.style.borderRadius = "8px";
+          toast.style.zIndex = "999";
+          toast.style.opacity = "0";
+          toast.style.transition = "0.3s";
+
+          document.body.appendChild(toast);
+        }
+
+        toast.textContent = message;
+
+        toast.style.opacity = "1";
 
         setTimeout(() => {
-          window.location.href = '/customer/my-order';
-        }, 1200);
 
-      })
+          toast.style.opacity = "0";
 
-      .catch(err => {
-
-        console.error(err);
-
-        showToast("Something went wrong ❌");
-      });
-    }
-
-
-
-    // ✅ ONLINE PAYMENT
-    else if (paymentMethod === "ONLINE") {
-
-      initiateRazorpayPayment(note);
-    }
-  }
-
-
-
-
-  // ✅ RAZORPAY PAYMENT FLOW
-  async function initiateRazorpayPayment(note) {
-
-    try {
-
-      // STEP 1: CREATE ORDER
-      const res = await fetch('/payment/create-order', {
-
-        method: 'POST',
-
-        headers: {
-          'Content-Type': 'application/json'
-        },
-
-        body: JSON.stringify({
-          amount: <%= cart ? cart.grandTotal : 0 %>
-        })
-      });
-
-      const order = await res.json();
-
-      console.log("Razorpay Order:", order);
-
-      if (!order.id) {
-
-        showToast("Payment initiation failed ❌");
-        return;
+        }, 2000);
       }
 
 
 
-      // STEP 2: RAZORPAY OPTIONS
-      const options = {
 
-        key: '<%= key_id %>',
+      // ✅ EMPTY CART CHECK
+      function checkEmptyCart() {
 
-        amount: order.amount,
+        if (
+          document.querySelectorAll('.cart-item').length === 0
+        ) {
 
-        currency: 'INR',
-
-        name: 'Zomato Clone',
-
-        description: 'Food Order Payment',
-
-        order_id: order.id,
-
-
-
-        // ✅ PAYMENT SUCCESS
-        handler: async function (response) {
-
-          try {
-
-            // STEP 3: VERIFY PAYMENT
-            const verifyRes = await fetch('/payment/verify-payment', {
-
-              method: 'POST',
-
-              headers: {
-                'Content-Type': 'application/json'
-              },
-
-              body: JSON.stringify({
-
-                razorpay_order_id: response.razorpay_order_id,
-
-                razorpay_payment_id: response.razorpay_payment_id,
-
-                razorpay_signature: response.razorpay_signature
-              })
-            });
-
-            const verifyData = await verifyRes.json();
-
-            if (!verifyData.success) {
-
-              showToast("Payment verification failed ❌");
-              return;
-            }
-
-
-
-            // STEP 4: PLACE ORDER AFTER PAYMENT
-            const orderRes = await fetch('/customer/order/place', {
-
-              method: 'POST',
-
-              headers: {
-                'Content-Type': 'application/json'
-              },
-
-              body: JSON.stringify({
-
-                note,
-
-                paymentMethod: 'ONLINE',
-
-                razorpay_order_id: response.razorpay_order_id,
-
-                razorpay_payment_id: response.razorpay_payment_id
-              })
-            });
-
-            const orderData = await orderRes.json();
-
-            if (!orderData.success) {
-
-              showToast(orderData.message || "Order failed ❌");
-              return;
-            }
-
-            showToast("Payment & Order Successful ✅");
-
-            setTimeout(() => {
-
-              window.location.href = '/customer/my-order';
-
-            }, 1500);
-
-          }
-
-          catch (err) {
-
-            console.error("Verification Error:", err);
-
-            showToast("Something went wrong ❌");
-          }
-        },
-
-
-
-        // ✅ PAYMENT WINDOW CLOSED
-        modal: {
-
-          ondismiss: function () {
-
-            showToast("Payment cancelled ❌");
-          }
-        },
-
-
-
-        // ✅ OPTIONAL PREFILL
-        prefill: {
-
-          name: 'Customer',
-
-          email: 'customer@example.com',
-
-          contact: '9999999999'
-        },
-
-
-
-        // ✅ THEME
-        theme: {
-
-          color: '#e23744'
+          location.reload();
         }
-      };
-
-
-
-      // STEP 5: OPEN RAZORPAY
-      const rzp = new Razorpay(options);
-
-
-
-      // ✅ PAYMENT FAILED
-      rzp.on('payment.failed', function (response) {
-
-        console.error(response.error);
-
-        showToast(
-          "Payment failed: " +
-          response.error.description +
-          " ❌"
-        );
-      });
-
-
-
-      rzp.open();
-
-    }
-
-    catch (err) {
-
-      console.error("Razorpay Error:", err);
-
-      showToast("Something went wrong ❌");
-    }
-  }
-
-
-
-
-  // ✅ UPDATE QUANTITY
-  async function updateQty(itemId, delta, unitPrice) {
-
-    const qtyEl = document.getElementById('qty-' + itemId);
-
-    const itemEl = document.getElementById('cart-item-' + itemId);
-
-    if (!qtyEl || !itemEl) return;
-
-    const current = parseInt(qtyEl.textContent);
-
-    const newQty = current + delta;
-
-    const buttons = itemEl.querySelectorAll('.qty-btn');
-
-    buttons.forEach(b => b.disabled = true);
-
-    try {
-
-      // ✅ REMOVE ITEM
-      if (newQty <= 0) {
-
-        const res = await fetch('/customer/cart/remove', {
-
-          method: 'POST',
-
-          headers: {
-            'Content-Type': 'application/json'
-          },
-
-          body: JSON.stringify({ itemId })
-        });
-
-        const data = await res.json();
-
-        if (!data.success)
-          throw new Error(data.message);
-
-        itemEl.remove();
-
-        updateSummaryUI(data.cart);
-
-        checkEmptyCart();
       }
 
-
-
-      // ✅ UPDATE ITEM
-      else {
-
-        const res = await fetch('/customer/cart/update', {
-
-          method: 'POST',
-
-          headers: {
-            'Content-Type': 'application/json'
-          },
-
-          body: JSON.stringify({
-            itemId,
-            quantity: newQty
-          })
-        });
-
-        const data = await res.json();
-
-        if (!data.success)
-          throw new Error(data.message);
-
-        qtyEl.textContent = newQty;
-
-        const priceEl =
-          itemEl.querySelector('.cart-item-price');
-
-        priceEl.innerHTML =
-          `₹${unitPrice} × ${newQty} = ₹${unitPrice * newQty}`;
-
-        updateSummaryUI(data.cart);
-      }
-
-    }
-
-    catch (err) {
-
-      console.error(err);
-
-      showToast("Something went wrong ❌");
-    }
-
-    finally {
-
-      buttons.forEach(b => b.disabled = false);
-    }
-  }
-
-
-
-
-  // ✅ UPDATE SUMMARY
-  function updateSummaryUI(cart) {
-
-    if (!cart) return;
-
-    const subtotal =
-      cart.subtotal || cart.totalAmount || 0;
-
-    const tax =
-      cart.taxAmount || (subtotal * 0.05);
-
-    const delivery =
-      cart.deliveryCharge !== undefined
-        ? cart.deliveryCharge
-        : (subtotal > 500 ? 0 : 40);
-
-    const grand =
-      cart.grandTotal || (subtotal + tax + delivery);
-
-
-
-    document.querySelector(
-      '.sum-row:nth-child(2) span:last-child'
-    ).textContent = "₹" + subtotal;
-
-
-
-    document.querySelector(
-      '.sum-row:nth-child(3) span:last-child'
-    ).textContent = "₹" + tax;
-
-
-
-    const deliveryEl =
-      document.querySelector(
-        '.sum-row:nth-child(4) span:last-child'
-      );
-
-    if (delivery === 0) {
-
-      deliveryEl.innerHTML =
-        '<span style="color:#27ae60;font-weight:600;">FREE</span>';
-
-    } else {
-
-      deliveryEl.textContent = "₹" + delivery;
-    }
-
-
-
-    document.querySelector(
-      '.sum-row.grand span:last-child'
-    ).textContent = "₹" + grand;
-  }
-
-
-
-
-  // ✅ TOAST
-  function showToast(message) {
-
-    let toast =
-      document.getElementById('orderToast');
-
-    if (!toast) {
-
-      toast = document.createElement('div');
-
-      toast.id = "orderToast";
-
-      toast.style.position = "fixed";
-      toast.style.bottom = "20px";
-      toast.style.left = "50%";
-      toast.style.transform = "translateX(-50%)";
-      toast.style.background = "#333";
-      toast.style.color = "#fff";
-      toast.style.padding = "10px 16px";
-      toast.style.borderRadius = "8px";
-      toast.style.zIndex = "999";
-      toast.style.opacity = "0";
-      toast.style.transition = "0.3s";
-
-      document.body.appendChild(toast);
-    }
-
-    toast.textContent = message;
-
-    toast.style.opacity = "1";
-
-    setTimeout(() => {
-
-      toast.style.opacity = "0";
-
-    }, 2000);
-  }
-
-
-
-
-  // ✅ EMPTY CART CHECK
-  function checkEmptyCart() {
-
-    if (
-      document.querySelectorAll('.cart-item').length === 0
-    ) {
-
-      location.reload();
-    }
-  }
-
-</script>
+    </script>
 </body>
 
 </html>

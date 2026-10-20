@@ -1,3 +1,244 @@
+<style>
+/* ==========================
+   RESPONSIVE NAVBAR
+   Existing design preserved
+========================== */
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.navbar a {
+  text-decoration: none;
+}
+
+.logo,
+.logo a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+  min-width: 0;
+}
+
+.nav-link,
+.cart-btn,
+.solid-btn,
+.outline-btn {
+  white-space: nowrap;
+}
+
+.profile {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.username {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 140px;
+}
+
+/* ==========================
+   TABLETS: 768px–1024px
+========================== */
+
+@media screen and (max-width: 1024px) {
+  .navbar {
+    gap: 12px;
+  }
+
+  .nav-right {
+    gap: 14px;
+  }
+
+  .username {
+    max-width: 100px;
+  }
+
+  .nav-link,
+  .cart-btn,
+  .solid-btn,
+  .outline-btn {
+    font-size: 14px;
+  }
+}
+
+/* ==========================
+   SMALL TABLETS / LARGE PHONES
+   481px–768px
+========================== */
+
+@media screen and (max-width: 768px) {
+  .navbar {
+    padding: 12px 16px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .logo a {
+    gap: 6px;
+  }
+
+  .logo svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .logo span {
+    font-size: 20px;
+  }
+
+  .nav-right {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .nav-link,
+  .cart-btn,
+  .solid-btn,
+  .outline-btn {
+    font-size: 13px;
+  }
+
+  .username {
+    max-width: 85px;
+  }
+
+  .cart-btn {
+    gap: 6px;
+  }
+
+  .avatar-wrap {
+    gap: 5px;
+  }
+}
+
+/* ==========================
+   MOBILE PHONES: 480px AND BELOW
+========================== */
+
+@media screen and (max-width: 480px) {
+  .navbar {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .logo span {
+    font-size: 18px;
+  }
+
+  .logo svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .nav-right {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .nav-link,
+  .cart-btn,
+  .solid-btn,
+  .outline-btn {
+    font-size: 12px;
+  }
+
+  .nav-link {
+    padding: 6px 0;
+  }
+
+  .cart-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .cart-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .avatar-wrap {
+    gap: 5px;
+  }
+
+  .username {
+    max-width: 75px;
+    font-size: 12px;
+  }
+
+  .avatar {
+    flex-shrink: 0;
+  }
+
+  .solid-btn,
+  .outline-btn {
+    padding: 8px 12px;
+  }
+
+  .dropdown {
+    right: 0;
+    left: auto;
+    max-width: calc(100vw - 24px);
+  }
+}
+
+/* ==========================
+   VERY SMALL PHONES: 360px AND BELOW
+========================== */
+
+@media screen and (max-width: 360px) {
+  .navbar {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .nav-right {
+    gap: 8px;
+  }
+
+  .nav-link,
+  .cart-btn,
+  .solid-btn,
+  .outline-btn {
+    font-size: 11px;
+  }
+
+  .username {
+    max-width: 55px;
+  }
+
+  .solid-btn,
+  .outline-btn {
+    padding: 7px 9px;
+  }
+}
+
+</style>
+
 <header>
   <nav class="navbar">
 

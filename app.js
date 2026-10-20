@@ -1,11 +1,12 @@
+
 import express from "express";
 import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import { connectdb } from "./config/connection.js";
+
 import { authRouter } from "./routes/authRoutes.js";
 import { customerRouter } from "./routes/customerRoutes.js";
 import { ownerRouter } from "./routes/ownerRoutes.js";
@@ -15,8 +16,6 @@ import { paymentRouter } from "./routes/paymentRoutes.js";
 import { authmiddleware } from "./middlewares/authmiddleware.js";
 
 dotenv.config();
-
-await connectdb(process.env.MONGODB_URL);
 
 const app = express();
 

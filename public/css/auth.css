@@ -148,3 +148,125 @@ a:hover {
   text-decoration: underline;
 }
 
+/* ================================
+   RESPONSIVE DESIGN
+   ================================ */
+
+/* Tablets */
+@media (max-width: 768px) {
+
+  .video-container {
+    padding: 15px;
+  }
+
+  .auth-container {
+  width: 480px;
+  padding: 35px;
+  border-radius: 16px;
+
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+  .auth-container h1 {
+  margin-bottom: 25px;
+  color: #ff4d4d;
+  font-size: 30px;
+}
+  .auth-form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 15px;
+  border-radius: 10px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  background: rgba(255,255,255,0.95);
+  margin-bottom: 16px;
+}
+
+.auth-form button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+  p {
+    font-size: 16px;
+  }
+}
+
+
+/* Mobile Devices */
+@media (max-width: 480px) {
+
+  .video-container {
+    padding: 10px;
+  }
+
+  .auth-container {
+    width: 90%;
+    padding: 18px 15px;
+    border-radius: 12px;
+  }
+
+  .auth-container h1 {
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
+
+  .auth-form input,
+  .auth-form select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px;
+    font-size: 14px;
+  }
+
+  .auth-form button {
+    padding: 11px;
+    font-size: 14px;
+  }
+
+  p {
+    font-size: 14px;
+  }
+
+  .address-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Very Small Mobile Devices */
+@media (max-width: 360px) {
+
+  .auth-container {
+    width: 92%;
+    padding: 15px 12px;
+  }
+
+  .auth-container h1 {
+    font-size: 20px;
+  }
+
+  .auth-form input,
+  .auth-form select {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .auth-form button {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  p {
+    font-size: 13px;
+  }
+}
