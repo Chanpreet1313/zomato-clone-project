@@ -1,67 +1,102 @@
-/* Base */
+/* ================================
+   BASE
+================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
 body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
-  min-height: 100vh;   
-  overflow-x: hidden;  
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: #111;
 }
 
-/* Wrapper */
+/* ================================
+   WRAPPER + VIDEO
+================================ */
 .video-container {
   position: relative;
+  isolation: isolate;
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 24px 20px;
+  padding-top: max(24px, env(safe-area-inset-top));
+  padding-bottom: max(24px, env(safe-area-inset-bottom));
 }
-/* Background Video */
+
 .bg-video {
   position: absolute;
-  inset: 0;             
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  z-index: -1;
+  z-index: -2;
 }
 
-/* Dark Overlay (improves readability) */
+/* dark overlay */
 .video-container::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  z-index: -1;
+  background: linear-gradient(160deg, rgba(0,0,0,0.75), rgba(120,20,30,0.55));
 }
 
-/* Main Card */
+/* ================================
+   CARD
+================================ */
 .auth-container {
   position: relative;
   z-index: 1;
-  width: 400px;
-  padding: 20px;
-  border-radius: 14px;
-
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  max-width: 420px;
+  padding: 32px 28px;
+  border-radius: 20px;
   text-align: center;
+
+  background: rgba(255, 255, 255, 0.10);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  animation: authIn 0.5s ease both;
 }
 
-/* Heading */
+@keyframes authIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .auth-container h1 {
-  margin-bottom: 18px;
+  margin: 0 0 22px;
   color: #ff4d4d;
-  font-size: 26px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
 }
 
-/* Form Group */
+/* error / success message */
+.auth-container .message {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #fff;
+  background: rgba(255, 77, 77, 0.28);
+  border: 1px solid rgba(255, 77, 77, 0.5);
+}
+
+/* ================================
+   FORM
+================================ */
 .form-group {
   margin-bottom: 16px;
   text-align: left;
 }
 
-/* Labels */
 .form-group label {
   display: block;
   margin-bottom: 6px;
@@ -69,204 +104,171 @@ body {
   color: #f1f1f1;
 }
 
-/* Inputs */
-.auth-form input{
-  width: 92%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  background: rgba(255,255,255,0.95);
-  transition: 0.2s;
-
-  margin-bottom: 14px;  /* ✅ ADD THIS */
-}
+.auth-form input,
 .auth-form select {
+  display: block;
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 13px 14px;
+  margin-bottom: 14px;
   border: none;
+  border-radius: 12px;
   outline: none;
+  font-family: inherit;
   font-size: 14px;
-  background: rgba(255,255,255,0.95);
-  transition: 0.2s;
-
-  margin-bottom: 14px;  /* ✅ ADD THIS */
+  color: #1a1a1a;
+  background: rgba(255, 255, 255, 0.95);
+  transition: box-shadow 0.2s;
 }
 
-/* Input Focus Effect */
+.auth-form input::placeholder { color: #8a8a8a; }
+
 .auth-form input:focus,
 .auth-form select:focus {
-  box-shadow: 0 0 0 2px rgba(255, 77, 77, 0.3);
+  box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.35);
 }
 
-/* Address Grid (2 per row) */
+/* 2 inputs per row (signup address etc.) */
 .address-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-/* Button */
-.auth-form button {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 10px;
-  font-weight: bold;
-  font-size: 15px;
-  letter-spacing: 0.5px;
-  border: none;
-
-  background: #ff4d4d;
-  color: white;
-
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.auth-form button:hover {
-  background: #e63946;
-  transform: translateY(-1px);
-}
-
-/* Footer Text */
-p {
-  margin-top: 12px;
-  font-size: 18px;
-  color: #ddd;
-}
-
-a {
-  color: #ff4d4d;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* ================================
-   RESPONSIVE DESIGN
-   ================================ */
-
-/* Tablets */
-@media (max-width: 768px) {
-
-  .video-container {
-    padding: 15px;
-  }
-
-  .auth-container {
-  width: 480px;
-  padding: 35px;
-  border-radius: 16px;
-
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
-  text-align: center;
-}
-
-  .auth-container h1 {
-  margin-bottom: 25px;
-  color: #ff4d4d;
-  font-size: 30px;
-}
-  .auth-form input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 15px;
-  border-radius: 10px;
-  border: none;
-  outline: none;
-  font-size: 15px;
-  background: rgba(255,255,255,0.95);
-  margin-bottom: 16px;
+  gap: 0 10px;
 }
 
 .auth-form button {
   width: 100%;
   padding: 14px;
-  margin-top: 10px;
-  border-radius: 10px;
-  font-size: 16px;
+  margin-top: 6px;
+  border: none;
+  border-radius: 12px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.4px;
+  color: #fff;
+  background: linear-gradient(135deg, #ff5a5f, #e63946);
+  box-shadow: 0 6px 18px rgba(230, 57, 70, 0.4);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
 }
 
-  p {
-    font-size: 16px;
+.auth-form button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(230, 57, 70, 0.5);
+}
+
+/* footer text */
+.auth-container p {
+  margin: 16px 0 0;
+  font-size: 15px;
+  color: #ddd;
+}
+
+a {
+  color: #ff6b6b;
+  text-decoration: none;
+  font-weight: 600;
+}
+a:hover { text-decoration: underline; }
+
+/* ================================
+   TABLETS (≤ 768px)
+================================ */
+@media (max-width: 768px) {
+  .video-container { padding: 20px 16px; }
+
+  .auth-container {
+    max-width: 480px;
+    padding: 34px 30px;
+    border-radius: 22px;
   }
+
+  .auth-container h1 { font-size: 30px; margin-bottom: 24px; }
+
+  .auth-form input,
+  .auth-form select {
+    padding: 15px 16px;
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+
+  .auth-form button { padding: 15px; font-size: 16px; }
+  .auth-container p { font-size: 15px; }
 }
 
-
-/* Mobile Devices */
+/* ================================
+   PHONES (≤ 480px)
+================================ */
 @media (max-width: 480px) {
-
   .video-container {
-    padding: 10px;
+    padding: 16px 12px;
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
   }
 
   .auth-container {
-    width: 90%;
-    padding: 18px 15px;
+    max-width: 100%;
+    padding: 26px 20px;
+    border-radius: 20px;
+  }
+
+  .auth-container h1 { font-size: 24px; margin-bottom: 18px; }
+
+  .auth-form input,
+  .auth-form select {
+    padding: 13px 14px;
+    font-size: 16px;            /* iPhone zoom rokne ke liye */
+    margin-bottom: 12px;
     border-radius: 12px;
   }
 
-  .auth-container h1 {
-    font-size: 22px;
-    margin-bottom: 15px;
-  }
-
-  .auth-form input,
-  .auth-form select {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 11px;
-    font-size: 14px;
-  }
-
   .auth-form button {
-    padding: 11px;
-    font-size: 14px;
+    padding: 14px;
+    font-size: 15px;
+    margin-top: 4px;
   }
 
-  p {
-    font-size: 14px;
-  }
+  .auth-container p { font-size: 14px; margin-top: 14px; }
 
-  .address-grid {
-    grid-template-columns: 1fr;
-  }
+  .address-grid { grid-template-columns: 1fr; }
 }
 
-
-/* Very Small Mobile Devices */
+/* ================================
+   VERY SMALL PHONES (≤ 360px)
+================================ */
 @media (max-width: 360px) {
+  .video-container { padding: 12px 8px; }
 
-  .auth-container {
-    width: 92%;
-    padding: 15px 12px;
-  }
-
-  .auth-container h1 {
-    font-size: 20px;
-  }
+  .auth-container { padding: 22px 16px; border-radius: 18px; }
+  .auth-container h1 { font-size: 21px; }
 
   .auth-form input,
-  .auth-form select {
-    padding: 10px;
-    font-size: 13px;
-  }
+  .auth-form select { padding: 12px; }
 
-  .auth-form button {
-    padding: 10px;
-    font-size: 13px;
-  }
+  .auth-form button { padding: 13px; font-size: 14px; }
+  .auth-container p { font-size: 13px; }
+}
 
-  p {
-    font-size: 13px;
-  }
+/* ================================
+   LANDSCAPE PHONE
+   (card chhoti height me cut na ho)
+================================ */
+@media (max-height: 520px) and (orientation: landscape) {
+  .video-container { align-items: flex-start; padding: 14px 16px; }
+  .auth-container { padding: 18px 22px; max-width: 460px; }
+  .auth-container h1 { font-size: 20px; margin-bottom: 12px; }
+  .auth-form input,
+  .auth-form select { padding: 10px 12px; margin-bottom: 10px; }
+}
+
+/* ================================
+   TOUCH + REDUCED MOTION
+================================ */
+@media (hover: none) {
+  .auth-form button:hover { transform: none; }
+  .auth-form button:active { transform: scale(0.98); opacity: 0.92; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-container { animation: none; }
+  .auth-form button { transition: none; }
 }

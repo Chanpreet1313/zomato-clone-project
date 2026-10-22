@@ -1209,6 +1209,259 @@
       background: var(--surface2);
       border-radius: 4px;
     }
+
+/* =====================================================
+   RESPONSIVE – OWNER DASHBOARD
+===================================================== */
+
+/* dish cards ko fixed width do, warna horizontal row me squeeze ho jate hain */
+.dish-card { flex: 0 0 170px; }
+
+/* table ko chhoti screen par side-scroll */
+.orders-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.orders-table { min-width: 640px; }
+
+/* ================================
+   LARGE LAPTOPS (≤ 1280px)
+   panels thode slim
+================================ */
+@media (max-width: 1280px) {
+  :root { --sidebar-w: 200px; --cart-w: 270px; }
+
+  .main { padding: 22px; }
+  .stats-grid { gap: 12px; }
+  .stat-card { padding: 16px; }
+  .stat-info h3 { font-size: 22px; }
+  .logo-icon-wrap { margin-left: 30px; }
+}
+
+/* ================================
+   SMALL LAPTOP / TABLET LANDSCAPE (≤ 1100px)
+   - Sidebar -> icon rail
+   - Cart panel -> main content ke neeche
+================================ */
+@media (max-width: 1100px) {
+  :root { --sidebar-w: 76px; }
+
+  body { flex-direction: column; }
+
+  /* ---- sidebar icon rail ---- */
+  .sidebar { align-items: center; padding: 20px 0 14px; }
+
+  .logo-icon-wrap {
+    margin: 0 auto 18px;
+    padding: 8px 10px;
+    border-radius: 12px;
+  }
+  .logo-brand { font-size: 12px; letter-spacing: 0.2px; }
+  .logo-sub { display: none; }
+
+  .nav-items li a {
+    position: relative;
+    justify-content: center;
+    gap: 0;
+    padding: 15px 0;
+    font-size: 0;               /* text hide, sirf icon */
+  }
+  .nav-items li a svg { width: 22px; height: 22px; }
+
+  .nav-badge {
+    position: absolute;
+    top: 6px;
+    right: 12px;
+    margin: 0;
+  }
+
+  .sidebar-user {
+    width: calc(100% - 16px);
+    margin: 0 8px 10px;
+    padding: 8px;
+    justify-content: center;
+  }
+  .user-info,
+  .user-menu-btn { display: none; }
+
+  /* ---- main + cart stacked ---- */
+  .main { margin-left: var(--sidebar-w); margin-right: 0; padding: 22px 20px; }
+
+  .cart-panel {
+    position: static;
+    width: auto;
+    margin-left: var(--sidebar-w);
+    border-left: none;
+    border-top: 1px solid var(--border);
+    padding: 24px 20px 32px;
+    overflow: visible;
+  }
+
+  /* cart ke andar ke blocks bade screen par wide na lagein */
+  .cart-panel > * { max-width: 560px; width: 100%; margin-left: auto; margin-right: auto; }
+}
+
+/* ================================
+   TABLETS PORTRAIT / BIG PHONES (≤ 768px)
+   Sidebar -> bottom navigation bar
+================================ */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 0px; }
+
+  /* ---- bottom nav ---- */
+  .sidebar {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px calc(6px + env(safe-area-inset-bottom));
+    border-right: none;
+    border-top: 1px solid var(--border);
+    background: rgba(36, 36, 36, 0.96);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .logo { display: none; }
+
+  .nav-items {
+    display: flex;
+    flex: 1;
+    justify-content: space-around;
+    width: auto;
+  }
+  .nav-items li { flex: 1; }
+
+  .nav-items li a {
+    flex-direction: column;
+    gap: 3px;
+    padding: 8px 4px;
+    font-size: 10px;            /* labels wapas dikhao */
+    border-left: none;
+    border-top: 3px solid transparent;
+    border-radius: 10px;
+  }
+  .nav-items li a:hover,
+  .nav-items li.active a { border-top-color: var(--red); }
+
+  .nav-badge { top: 2px; right: auto; left: calc(50% + 6px); }
+
+  .sidebar-user {
+    width: auto;
+    margin: 0 0 0 8px;
+    padding: 4px;
+    background: none;
+    border: none;
+  }
+
+  /* ---- content ---- */
+  .main { margin: 0; padding: 16px 14px 24px; }
+
+  .cart-panel {
+    margin-left: 0;
+    padding-bottom: calc(90px + env(safe-area-inset-bottom));  /* bottom nav ke liye jagah */
+  }
+
+  .top-bar { margin-bottom: 20px; }
+  .search-wrap input { padding: 13px 46px 13px 18px; font-size: 14px; }
+
+  .stats-grid { gap: 10px; margin-bottom: 24px; }
+  .stat-card { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px; }
+  .stat-icon { width: 38px; height: 38px; }
+  .stat-info h3 { font-size: 20px; }
+
+  .section-header h2 { font-size: 16px; }
+  .categories-row { margin-bottom: 24px; }
+
+  .dish-card { flex: 0 0 150px; padding: 16px 12px 14px; }
+  .dish-card img { width: 68px; height: 68px; }
+
+  .restaurant-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .card-img-wrap { height: 150px; }
+}
+
+/* ================================
+   PHONES (≤ 560px)
+================================ */
+@media (max-width: 560px) {
+  .main { padding: 14px 12px 20px; }
+
+  /* stats: ek ke neeche ek, horizontal card */
+  .stats-grid { grid-template-columns: 1fr; }
+  .stat-card { flex-direction: row; align-items: center; gap: 14px; padding: 14px 16px; }
+  .stat-icon { width: 44px; height: 44px; }
+  .stat-info h3 { font-size: 22px; }
+
+  .restaurant-grid { grid-template-columns: 1fr; gap: 14px; }
+  .card-img-wrap { height: 170px; }
+  .card-body { padding: 16px; }
+  .card-body h3 { font-size: 15px; max-width: none; }
+  .btn-primary,
+  .btn-secondary { padding: 10px 16px; font-size: 12px; }
+
+  .cat-chip { width: 64px; }
+  .cat-chip img { width: 54px; height: 54px; }
+
+  .orders-table th,
+  .orders-table td { padding: 12px 14px; }
+
+  .cart-panel { padding: 20px 14px calc(90px + env(safe-area-inset-bottom)); }
+  .cart-panel > * { max-width: none; }
+
+  .promo-row { flex-wrap: wrap; }
+}
+
+/* ================================
+   VERY SMALL PHONES (≤ 380px)
+================================ */
+@media (max-width: 380px) {
+  .main { padding: 12px 10px 18px; }
+
+  .nav-items li a { font-size: 9px; }
+  .search-wrap input { font-size: 13px; }
+
+  .dish-card { flex: 0 0 136px; }
+  .section-header h2 { font-size: 15px; }
+  .section-header .sub { font-size: 11px; }
+
+  .order-tab { font-size: 11px; padding: 8px 4px; }
+  .cart-item { gap: 10px; }
+  .cart-item-img { width: 42px; height: 42px; }
+}
+
+/* ================================
+   LANDSCAPE PHONE (height kam)
+   bottom nav screen na kha jaye
+================================ */
+@media (max-width: 900px) and (max-height: 480px) and (orientation: landscape) {
+  .sidebar { padding-top: 2px; padding-bottom: calc(2px + env(safe-area-inset-bottom)); }
+  .nav-items li a { flex-direction: row; justify-content: center; gap: 6px; padding: 6px 4px; font-size: 11px; }
+  .nav-badge { position: static; }
+}
+
+/* ================================
+   TOUCH DEVICES – hover jumps band
+================================ */
+@media (hover: none) {
+  .dish-card:hover,
+  .restaurant-card:hover { transform: none; box-shadow: none; }
+  .restaurant-card:hover .card-img-wrap img { transform: none; }
+  .dish-card:active,
+  .restaurant-card:active { transform: scale(0.98); }
+}
+
+/* ================================
+   REDUCED MOTION
+================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
   </style>
 </head>
 
