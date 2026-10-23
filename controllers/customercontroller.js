@@ -51,20 +51,20 @@ export async function customerDashboard(req, res) {
     });
 
 
-    menuItems.forEach(item => {
-      console.log({
-        itemName: item.itemName,
-        image: item.image
-      });
-    });
+    // menuItems.forEach(item => {
+    //   console.log({
+    //     itemName: item.itemName,
+    //     image: item.image
+    //   });
+    // });
 
 
-    restaurants.forEach(restaurant => {
-      console.log({
-        restaurantName: restaurant.restaurantName,
-        logoImage: restaurant.logoImage
-      });
-    });
+    // restaurants.forEach(restaurant => {
+    //   console.log({
+    //     restaurantName: restaurant.restaurantName,
+    //     logoImage: restaurant.logoImage
+    //   });
+    // });
 
 
 

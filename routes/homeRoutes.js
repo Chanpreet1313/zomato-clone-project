@@ -15,10 +15,10 @@ homeRouter.get("/", (req, res, next) => {
         case "customer":
             return res.redirect("/customer/customer-dashboard");
 
-        case "owner":
+        case "restaurantOwner":
             return res.redirect("/owner/owner-dashboard");
 
-        case "delivery":
+        case "deliveryAgent":
             return res.redirect("/delivery/delievery-dashboard");
 
         default:
