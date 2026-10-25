@@ -10,6 +10,7 @@ import { connectdb } from "./config/connection.js";
 
 import { authRouter } from "./routes/authRoutes.js";
 import { customerRouter } from "./routes/customerRoutes.js";
+import { aiChatRouter } from "./routes/aiChatRoutes.js";
 import { ownerRouter } from "./routes/ownerRoutes.js";
 import { homeRouter } from "./routes/homeRoutes.js";
 import { delieveryRouter } from "./routes/delieveryRoutes.js";
@@ -74,6 +75,7 @@ app.use(express.static(path.join(dirname, "public")));
 app.use("/", homeRouter);
 app.use("/auth", authRouter);
 app.use("/customer", authmiddleware, customerRouter);
+app.use("/customer", authmiddleware, aiChatRouter);
 app.use("/owner", authmiddleware, ownerRouter);
 app.use("/delievery", authmiddleware, delieveryRouter);
 app.use("/payment", authmiddleware, paymentRouter);

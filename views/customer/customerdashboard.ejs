@@ -730,6 +730,299 @@
       grid-column: 1 / -1;
     }
     .no-results svg { display: block; margin: 0 auto 12px; opacity: 0.3; }
+
+    /* ═══════════════════════════════════════════
+       FOODIE AI CHATBOT  (all classes prefixed fa-)
+    ═══════════════════════════════════════════ */
+    .fa-launcher {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1;
+      cursor: pointer;
+      z-index: 9998;
+      box-shadow: 0 8px 24px rgba(226, 55, 68, 0.45);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+    .fa-launcher:hover { background: var(--red-dark); transform: translateY(-3px) scale(1.04); box-shadow: 0 12px 30px rgba(226, 55, 68, 0.5); }
+    .fa-launcher:focus-visible { outline: 3px solid rgba(226, 55, 68, 0.35); outline-offset: 3px; }
+    .fa-launcher svg { width: 26px; height: 26px; display: block; }
+
+    .fa-panel {
+      position: fixed;
+      right: 20px;
+      bottom: 112px;
+      width: 480px;
+      max-width: calc(100vw - 40px);
+      height: min(690px, calc(100vh - 140px));
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(16px) scale(0.97);
+      transform-origin: bottom right;
+      transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+    }
+    .fa-panel.fa-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .fa-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+      flex-shrink: 0;
+    }
+    .fa-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--red);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .fa-avatar svg { width: 28px; height: 28px; }
+    .fa-avatar.fa-sm { width: 34px; height: 34px; }
+    .fa-avatar.fa-sm svg { width: 19px; height: 19px; }
+    .fa-head-text { flex: 1; min-width: 0; }
+    .fa-title { font-size: 18px; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .fa-subtitle { font-size: 14px; color: var(--muted); margin-top: 2px; }
+    .fa-close {
+      width: 38px;
+      height: 38px;
+      border: none;
+      background: transparent;
+      border-radius: 50%;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      color: var(--text);
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .fa-close:hover { background: #f3f3f3; }
+    .fa-close svg { width: 22px; height: 22px; }
+
+    .fa-messages {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 18px 16px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background: #fff;
+      scroll-behavior: smooth;
+    }
+    .fa-messages::-webkit-scrollbar { width: 6px; }
+    .fa-messages::-webkit-scrollbar-thumb { background: #ddd; border-radius: 6px; }
+
+    .fa-row { display: flex; align-items: flex-start; gap: 10px; max-width: 100%; animation: faIn 0.25s ease both; }
+    .fa-row.fa-user { justify-content: flex-end; }
+    @keyframes faIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .fa-col { display: flex; flex-direction: column; gap: 10px; min-width: 0; max-width: calc(100% - 46px); }
+    .fa-row.fa-user .fa-col { max-width: 85%; align-items: flex-end; }
+
+    .fa-bubble {
+      padding: 11px 16px;
+      font-size: 15px;
+      line-height: 1.45;
+      border-radius: 18px;
+      word-wrap: break-word;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+      max-width: 100%;
+    }
+    .fa-bot .fa-bubble { background: #f4f4f4; color: var(--text); border-top-left-radius: 6px; }
+    .fa-user .fa-bubble { background: var(--red); color: #fff; border-top-right-radius: 6px; font-weight: 500; }
+    .fa-bubble.fa-error { background: #fff0f1; color: var(--red-dark); border: 1px solid #ffd3d7; }
+
+    .fa-retry {
+      align-self: flex-start;
+      background: #fff;
+      color: var(--red);
+      border: 1.5px solid var(--red);
+      border-radius: 50px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .fa-retry:hover { background: var(--red); color: #fff; }
+
+    .fa-suggest { display: flex; flex-wrap: wrap; gap: 8px; }
+    .fa-suggest-btn {
+      background: #fff;
+      color: var(--red);
+      border: 1.5px solid #f3b4b9;
+      border-radius: 50px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-align: left;
+    }
+    .fa-suggest-btn:hover { background: var(--red); border-color: var(--red); color: #fff; }
+
+    /* typing indicator */
+    .fa-typing { display: inline-flex; align-items: center; gap: 5px; padding: 14px 16px; background: #f4f4f4; border-radius: 18px; border-top-left-radius: 6px; }
+    .fa-typing span { width: 7px; height: 7px; border-radius: 50%; background: #b5b5b5; animation: faBounce 1.2s infinite ease-in-out; }
+    .fa-typing span:nth-child(2) { animation-delay: 0.15s; }
+    .fa-typing span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes faBounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-5px); opacity: 1; } }
+
+    /* dish cards inside chat */
+    .fa-cards { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; max-width: 100%; }
+    .fa-cards::-webkit-scrollbar { display: none; }
+    .fa-dish {
+      flex: 0 0 168px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .fa-dish:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.10); }
+    .fa-dish-img { width: 100%; height: 108px; background: #f5f5f5; overflow: hidden; display: grid; place-items: center; font-size: 34px; }
+    .fa-dish-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .fa-dish-body { padding: 10px 12px 12px; }
+    .fa-dish-name { font-size: 14px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fa-dish-meta { font-size: 12px; color: var(--muted); margin: 3px 0 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fa-dish-price { font-size: 14px; font-weight: 700; color: var(--text); }
+    .fa-dish-price small { font-size: 10px; color: var(--muted); font-weight: 400; }
+    .fa-dish-link { display: block; margin-top: 6px; font-size: 13px; font-weight: 600; color: var(--red); }
+
+    .fa-rest {
+      flex: 0 0 190px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .fa-rest:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.10); }
+    .fa-rest-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fa-rest-meta { font-size: 12px; color: var(--muted); margin: 3px 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fa-rest-tag { display: inline-block; font-size: 11px; font-weight: 700; color: #1b6e29; background: #e8f5e9; padding: 2px 8px; border-radius: 6px; margin-right: 6px; }
+    .fa-rest-tag.fa-red { color: var(--red); background: var(--red-light); }
+
+    /* input */
+    .fa-input-bar {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      padding: 12px 16px 16px;
+      border-top: 1px solid var(--border);
+      background: #fff;
+      flex-shrink: 0;
+    }
+    .fa-input {
+      flex: 1;
+      min-width: 0;
+      resize: none;
+      border: 1.5px solid #e4e4e4;
+      border-radius: 24px;
+      padding: 13px 18px;
+      font-size: 15px;
+      font-family: inherit;
+      color: var(--text);
+      outline: none;
+      line-height: 1.35;
+      max-height: 120px;
+      background: #fff;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .fa-input:focus { border-color: var(--red); box-shadow: 0 0 0 3px rgba(226, 55, 68, 0.12); }
+    .fa-input::placeholder { color: #aaa; }
+    .fa-send {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      background: var(--red);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(226, 55, 68, 0.35);
+      transition: background 0.15s, transform 0.15s, opacity 0.15s;
+    }
+    .fa-send:hover:not(:disabled) { background: var(--red-dark); transform: scale(1.06); }
+    .fa-send:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+    .fa-send svg { width: 20px; height: 20px; }
+
+    /* tablet */
+    @media (max-width: 900px) {
+      .fa-panel { width: 420px; }
+    }
+
+    /* mobile */
+    @media (max-width: 600px) {
+      .fa-launcher { right: 14px; bottom: 14px; width: 66px; height: 66px; font-size: 10px; gap: 3px; }
+      .fa-launcher svg { width: 22px; height: 22px; }
+      .fa-panel {
+        left: 10px;
+        right: 10px;
+        bottom: 90px;
+        width: auto;
+        max-width: none;
+        height: calc(100vh - 110px);
+        height: calc(100dvh - 110px);
+        max-height: 700px;
+        border-radius: 18px;
+      }
+      .fa-header { padding: 12px 14px; gap: 10px; }
+      .fa-avatar { width: 44px; height: 44px; }
+      .fa-title { font-size: 16px; }
+      .fa-subtitle { font-size: 13px; }
+      .fa-messages { padding: 14px 12px 8px; }
+      .fa-bubble { font-size: 14px; }
+      .fa-suggest-btn { font-size: 13px; padding: 7px 14px; }
+      .fa-input-bar { padding: 10px 12px 12px; }
+      .fa-input { font-size: 16px; padding: 11px 16px; } /* 16px stops iOS zoom */
+      .fa-send { width: 44px; height: 44px; }
+      .fa-dish { flex-basis: 150px; }
+    }
   </style>
 </head>
 
@@ -1435,6 +1728,328 @@
 
       </script>
 
+
+      <!-- ═══════════════════════════════════════════════
+           FOODIE AI CHATBOT  (added — nothing above changed)
+      ═══════════════════════════════════════════════ -->
+
+      <!-- Floating launcher (always visible) -->
+      <button type="button" class="fa-launcher" id="faLauncher" aria-label="Open Foodie AI chat"
+        aria-expanded="false" aria-controls="faPanel">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M10.5 3.5l1.6 4.4a3 3 0 001.9 1.9l4.4 1.6-4.4 1.6a3 3 0 00-1.9 1.9l-1.6 4.4-1.6-4.4a3 3 0 00-1.9-1.9L2.6 11.4 7 9.8a3 3 0 001.9-1.9l1.6-4.4z" />
+          <path d="M18.5 2l.8 2.2a1.5 1.5 0 00.9.9l2.2.8-2.2.8a1.5 1.5 0 00-.9.9l-.8 2.2-.8-2.2a1.5 1.5 0 00-.9-.9l-2.2-.8 2.2-.8a1.5 1.5 0 00.9-.9L18.5 2z" />
+        </svg>
+        <span>Foodie AI</span>
+      </button>
+
+      <!-- Chat panel -->
+      <section class="fa-panel" id="faPanel" role="dialog" aria-label="Foodie AI chat" aria-hidden="true">
+        <header class="fa-header">
+          <div class="fa-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round" aria-hidden="true">
+              <rect x="4" y="8" width="16" height="11" rx="3.5" />
+              <path d="M12 4v4" />
+              <circle cx="12" cy="3.5" r="1" fill="currentColor" />
+              <circle cx="9" cy="13" r="1.2" fill="currentColor" stroke="none" />
+              <circle cx="15" cy="13" r="1.2" fill="currentColor" stroke="none" />
+              <path d="M9.5 16.2h5" />
+              <path d="M2 12.5v2.5M22 12.5v2.5" />
+            </svg>
+          </div>
+          <div class="fa-head-text">
+            <div class="fa-title">Foodie AI</div>
+            <div class="fa-subtitle">Your personal food assistant</div>
+          </div>
+          <button type="button" class="fa-close" id="faClose" aria-label="Close chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+              aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" />
+            </svg>
+          </button>
+        </header>
+
+        <div class="fa-messages" id="faMessages" aria-live="polite"></div>
+
+        <form class="fa-input-bar" id="faForm" autocomplete="off">
+          <textarea class="fa-input" id="faInput" rows="1" maxlength="500"
+            placeholder="Ask about food or restaurants…" aria-label="Message Foodie AI"></textarea>
+          <button type="submit" class="fa-send" id="faSend" aria-label="Send message">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M2.5 11.2l17.6-8a.9.9 0 011.2 1.2l-8 17.6a.9.9 0 01-1.7-.1l-1.9-6.6a.9.9 0 00-.6-.6l-6.6-1.9a.9.9 0 01-.1-1.6z" />
+            </svg>
+          </button>
+        </form>
+      </section>
+
+      <script>
+        (function () {
+          'use strict';
+
+          /* ── Config ── */
+          var CHAT_ENDPOINT = '/customer/chatbot';   // POST { message, history }
+          var REQUEST_TIMEOUT_MS = 30000;
+          var SUGGESTIONS = [
+            'Vegetarian food under ₹200',
+            'Spicy food',
+            'Best nearby restaurants',
+            'Recommend food for two people'
+          ];
+
+          /* ── Elements ── */
+          var launcher = document.getElementById('faLauncher');
+          var panel = document.getElementById('faPanel');
+          var closeBtn = document.getElementById('faClose');
+          var msgBox = document.getElementById('faMessages');
+          var form = document.getElementById('faForm');
+          var input = document.getElementById('faInput');
+          var sendBtn = document.getElementById('faSend');
+
+          var history = [];       // [{role:'user'|'assistant', content:'...'}]
+          var isLoading = false;
+          var greeted = false;
+          var lastUserText = '';
+
+          var BOT_SVG =
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+            '<rect x="4" y="8" width="16" height="11" rx="3.5"/><path d="M12 4v4"/><circle cx="12" cy="3.5" r="1" fill="currentColor"/>' +
+            '<circle cx="9" cy="13" r="1.2" fill="currentColor" stroke="none"/><circle cx="15" cy="13" r="1.2" fill="currentColor" stroke="none"/>' +
+            '<path d="M9.5 16.2h5"/><path d="M2 12.5v2.5M22 12.5v2.5"/></svg>';
+
+          /* ── Helpers ── */
+          function esc(str) {
+            return String(str == null ? '' : str)
+              .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+          }
+
+          function scrollDown() {
+            msgBox.scrollTop = msgBox.scrollHeight;
+          }
+
+          function autoGrow() {
+            input.style.height = 'auto';
+            input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+          }
+
+          function setLoading(state) {
+            isLoading = state;
+            sendBtn.disabled = state;
+            input.disabled = state;
+            if (!state && panel.classList.contains('fa-open')) input.focus();
+          }
+
+          /* ── Open / close ── */
+          function openPanel() {
+            panel.classList.add('fa-open');
+            panel.setAttribute('aria-hidden', 'false');
+            launcher.setAttribute('aria-expanded', 'true');
+            if (!greeted) { greet(); greeted = true; }
+            setTimeout(function () { input.focus(); scrollDown(); }, 220);
+          }
+
+          function closePanel() {
+            panel.classList.remove('fa-open');
+            panel.setAttribute('aria-hidden', 'true');
+            launcher.setAttribute('aria-expanded', 'false');
+            launcher.focus();
+          }
+
+          launcher.addEventListener('click', function () {
+            panel.classList.contains('fa-open') ? closePanel() : openPanel();
+          });
+          closeBtn.addEventListener('click', closePanel);
+          document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && panel.classList.contains('fa-open')) closePanel();
+          });
+
+          /* ── Rendering ── */
+          function addUser(text) {
+            var row = document.createElement('div');
+            row.className = 'fa-row fa-user';
+            row.innerHTML = '<div class="fa-col"><div class="fa-bubble">' + esc(text) + '</div></div>';
+            msgBox.appendChild(row);
+            scrollDown();
+          }
+
+          function botRow(innerHtml) {
+            var row = document.createElement('div');
+            row.className = 'fa-row fa-bot';
+            row.innerHTML =
+              '<div class="fa-avatar fa-sm">' + BOT_SVG + '</div>' +
+              '<div class="fa-col">' + innerHtml + '</div>';
+            msgBox.appendChild(row);
+            scrollDown();
+            return row;
+          }
+
+          function addBot(text, extraHtml) {
+            return botRow('<div class="fa-bubble">' + esc(text) + '</div>' + (extraHtml || ''));
+          }
+
+          function addError(text) {
+            return botRow(
+              '<div class="fa-bubble fa-error">⚠️ ' + esc(text) + '</div>' +
+              '<button type="button" class="fa-retry">Try again</button>'
+            );
+          }
+
+          function greet() {
+            var chips = SUGGESTIONS.map(function (s) {
+              return '<button type="button" class="fa-suggest-btn" data-q="' + esc(s) + '">' + esc(s) + '</button>';
+            }).join('');
+            addBot('Hi! What are you craving today?', '<div class="fa-suggest">' + chips + '</div>');
+          }
+
+          function dishCardsHtml(dishes) {
+            var html = '<div class="fa-cards">';
+            dishes.forEach(function (d) {
+              var rid = d.restaurantId && d.restaurantId._id ? d.restaurantId._id : (d.restaurantId || '');
+              var rname = d.restaurantName || (d.restaurantId && d.restaurantId.restaurantName) || '';
+              var emoji = d.foodType === 'nonveg' ? '🍗' : '🥗';
+              var img = d.image
+                ? '<img src="' + esc(d.image) + '" alt="' + esc(d.itemName) + '" loading="lazy" onerror="this.parentNode.textContent=\'' + emoji + '\'">'
+                : emoji;
+              var price = d.hasHalfFullOption
+                ? '<small>from </small>₹' + esc(d.halfPrice)
+                : '₹' + esc(d.price);
+              var meta = [rname, d.category].filter(Boolean).join(' · ');
+              html +=
+                '<a class="fa-dish" href="/customer/menu/' + esc(rid) + '">' +
+                '<div class="fa-dish-img">' + img + '</div>' +
+                '<div class="fa-dish-body">' +
+                '<div class="fa-dish-name">' + esc(d.itemName) + '</div>' +
+                '<div class="fa-dish-meta">' + esc(meta) + '</div>' +
+                '<div class="fa-dish-price">' + price + '</div>' +
+                '<span class="fa-dish-link">View dish →</span>' +
+                '</div></a>';
+            });
+            return html + '</div>';
+          }
+
+          function restCardsHtml(list) {
+            var html = '<div class="fa-cards">';
+            list.forEach(function (r) {
+              var tags = '';
+              if (r.rating) tags += '<span class="fa-rest-tag">★ ' + esc(r.rating) + '</span>';
+              if (r.deliveryTime) tags += '<span class="fa-rest-tag fa-red">' + esc(r.deliveryTime) + ' mins</span>';
+              var meta = [r.foodType, r.location].filter(Boolean).join(' · ');
+              html +=
+                '<a class="fa-rest" href="/customer/menu/' + esc(r._id) + '">' +
+                '<div class="fa-rest-name">' + esc(r.restaurantName) + '</div>' +
+                '<div class="fa-rest-meta">' + esc(meta) + '</div>' +
+                '<div>' + tags + '</div>' +
+                '<span class="fa-dish-link">View menu →</span></a>';
+            });
+            return html + '</div>';
+          }
+
+          function showTyping() {
+            var row = botRow('<div class="fa-typing" aria-label="Foodie AI is typing"><span></span><span></span><span></span></div>');
+            row.id = 'faTypingRow';
+          }
+
+          function hideTyping() {
+            var t = document.getElementById('faTypingRow');
+            if (t) t.remove();
+          }
+
+          /* ── Sending ── */
+          function friendlyError(err, status) {
+            if (err && err.name === 'AbortError') return 'The request took too long. Please try again.';
+            if (status === 401 || status === 403) return 'Please log in again to use Foodie AI.';
+            if (status === 429) return 'Too many requests. Please wait a moment and try again.';
+            if (status >= 500) return 'Foodie AI is having trouble right now. Please try again shortly.';
+            if (!navigator.onLine) return 'You seem to be offline. Check your connection and try again.';
+            return 'Something went wrong. Please try again.';
+          }
+
+          function send(text) {
+            text = (text || '').trim();
+            if (!text || isLoading) return;
+
+            lastUserText = text;
+            addUser(text);
+            input.value = '';
+            autoGrow();
+            setLoading(true);
+            showTyping();
+
+            var controller = new AbortController();
+            var timer = setTimeout(function () { controller.abort(); }, REQUEST_TIMEOUT_MS);
+            var status = 0;
+
+            fetch(CHAT_ENDPOINT, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+              credentials: 'same-origin',
+              body: JSON.stringify({ message: text, history: history.slice(-6) }),
+              signal: controller.signal
+            })
+              .then(function (res) {
+                status = res.status;
+                return res.json().catch(function () { return {}; }).then(function (data) {
+                  if (!res.ok) {
+                    var e = new Error(data.error || data.message || 'Request failed');
+                    e.serverMessage = data.error || data.message || '';
+                    throw e;
+                  }
+                  return data;
+                });
+              })
+              .then(function (data) {
+                hideTyping();
+                var reply = data.reply || "Here's what I found.";
+                var extra = '';
+                if (data.dishes && data.dishes.length) extra += dishCardsHtml(data.dishes);
+                if (data.restaurants && data.restaurants.length) extra += restCardsHtml(data.restaurants);
+                addBot(reply, extra);
+                history.push({ role: 'user', content: text });
+                history.push({ role: 'assistant', content: reply });
+              })
+              .catch(function (err) {
+                hideTyping();
+                addError(err.serverMessage || friendlyError(err, status));
+              })
+              .then(function () {
+                clearTimeout(timer);
+                setLoading(false);
+              });
+          }
+
+          /* ── Events ── */
+          form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            send(input.value);
+          });
+
+          // Enter = send, Shift+Enter = newline
+          input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
+              e.preventDefault();
+              send(input.value);
+            }
+          });
+          input.addEventListener('input', autoGrow);
+
+          // suggested prompts + retry (event delegation)
+          msgBox.addEventListener('click', function (e) {
+            var chip = e.target.closest('.fa-suggest-btn');
+            if (chip) { send(chip.getAttribute('data-q')); return; }
+
+            var retry = e.target.closest('.fa-retry');
+            if (retry && !isLoading) {
+              var row = retry.closest('.fa-row');
+              if (row) row.remove();
+              // remove the user bubble that failed, then resend it
+              var rows = msgBox.querySelectorAll('.fa-row.fa-user');
+              if (rows.length) rows[rows.length - 1].remove();
+              send(lastUserText);
+            }
+          });
+        })();
+      </script>
 
 </body>
 
