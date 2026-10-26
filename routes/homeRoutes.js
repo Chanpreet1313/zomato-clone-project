@@ -19,7 +19,7 @@ homeRouter.get("/", (req, res, next) => {
             return res.redirect("/owner/owner-dashboard");
 
         case "deliveryAgent":
-            return res.redirect("/delivery/delievery-dashboard");
+            return res.redirect("/delievery/delievery-dashboard");
 
         default:
             return getHome(req, res, next);

@@ -20,13 +20,13 @@ export function redirectIfAuthenticated(req, res, next) {
 
     switch (role) {
         case "customer":
-            return res.redirect("/customer/dashboard");
+            return res.redirect("/customer/customer-dashboard");
 
-        case "owner":
-            return res.redirect("/owner/dashboard");
+        case "restaurantOwner":
+            return res.redirect("/owner/owner-dashboard");
 
-        case "delivery":
-            return res.redirect("/delivery/dashboard");
+        case "deliveryAgent":
+            return res.redirect("/delievery/delievery-dashboard");
 
         default:
             return res.redirect("/");
